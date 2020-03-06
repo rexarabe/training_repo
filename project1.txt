@@ -1,0 +1,36 @@
+This is a paragraph from a book I am reading now:
+The paragraph is from the book "How Linux Works"
+In The Chapter 3, we discussed some of the top-level disk devices that the kernel makes available.
+In this chapter, we'll discuss in detail how to work with disks on a Linux system.
+You'll learn how to partition disks, create and maintain the filesutems that go inside disk partitions, and work with swap space.
+Recal that disk devices have names like /dev/sda, the first SCSI subsystem disk.
+This kind of block device represents the entire disk, but there are many different component and layers inside a disk.
+
+Figure 4-1 illustrates the schematic of a typical Linux disk (note that the figure is not to scale).
+As you progress through this chapter, you'll learn where each piece fits in.
+Figure 4-1: Typical Linux disk schematic.
+Partition are subdivisions of the whole disk. On Linux, they're denoted with a number after the whole block device, and therefore have device names such as /dev/sda1 and /dev/sdv3.
+The kernel presents each partition as a block device, just as it would an entire disk. Partitions are defined on a small are of the disk called a partition table.
+
+
+
+Note:
+Multiple data partions weer once common on sytems with large disks because older PCs could boot only from certain parts of the disk.
+Also, administrators used partions to reserve a cetain amount of space for operating system areas; for examplem, they didn't want users to be able to fill up the entire system and prevent critical service from working.
+This practice is not unique to Unix; you'll still find many new Windows system with several partitions on a single disk. In addition, most systems have a separate swap partition.
+
+
+Although the kernel makes it possible for you to access both an entire disk and one of its partitions at the same time, you would bot normally do so, unless you were copying the entire disk.
+The nest layer after the partition is the filesystem, the database of files and directories that you're accustomed to interacting with in user space. We'll explore filesystem in Section 4.2.
+
+As you can see in Figure 4-1, if you want to access the data in a file, you need to get the appropriate partition location from the partiion table and then search the filesystem database on that partition for the desired file data.
+To access data on a disk, the Linux kernel use the system of layers shown in Figure 4-2.
+The SCSI system and everything else described in Section 3.6 are representated by a single box. (Notice that you can twork with the disk through the filesystem as well as directly through the disk devices. You'll do both in this chapter)
+To get a handle on how everything fits together, let's start at the bottom with partitions.
+
+
+
+User Process <--> (Linux kernel) system Calls <--> Filesystem <--> Block device interface and Partition Mapping <--> SCSI Subsystem and other drivers(/ end Linux Kernel) <--> Storage Device
+
+User Process <--> (Linux kernel) system Calls <--> Raw (Direct) Device Access Device Files(Nodes) <--> Block device interface and Partition Mapping <--> SCSI Subsystem and other drivers(/ end Linux Kernel) <-->Storage device
+
