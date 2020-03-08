@@ -1,0 +1,48 @@
+4.1.2) Changing Partition Tables
+Viewing partition tables is a relatively simple and harmless operation. 
+Altering partition tables is also relatively easy, but there are risks involved in making this kind of tchange to the disk. Keep the following in mind:
+
+1)Changing the partition table makes it quite difficult to recover any data on partitions that you delete it change the initial point of reference for a a filesystem. 
+Make sure that you have a backup id the disk you're partitioning contains critical data.
+
+2) Ensure taht no partitions on your target disk are currently in use.
+This is a concern because most Linux distributions automatically mount any detected filesystem. 
+(See Section 4.2.3 for more on mounting and unmounting.) 
+
+
+   When You're ready, choose your partitioning program. If you'd like to use parted, you can use the command-line parteed utility or a graphical interface such as gparted; for an fdisk-style interface, use gdisk if you're using GPT partitioning. 
+  These utilities all have online hep and are easy to learn, 
+  (Try using them on a flash device or something similar if you don't have any spare disks.) 
+
+     That said, there is a major difference in the way that fdisk and parted work.
+     With fdisk, you design your new partition table before making the actual changes to the disk; fdisk only makes the changes as you exit the program. 
+     But with parted, partitions are created, modified, and removed as you  issue the commands. You don't get the chance to review the partition table before you change it.
+       These differences are also important to understanding how these two utilities interact with the kernel.
+       Both fdisk and parted modify the partitions entirely in user space; there is no need to provide kernel support for rewriting a partition table because user space can read and modify all of a block device. 
+     
+
+Eventually, through, the kernel must read the partition table in order to present the partitions as block devices.
+The fdisk utility uses a relatively simple method: After modifying the partition table, fdisk issues a single system call on the disk to tell the kernel that it should reread the partition table.
+The kernel then generates debugging output that you can view with dmesg. For example, if you create two partitions on /dev/sdf, you'll see this: 
+
+sdf: sdf1 sdf2 
+
+In comparison, the parted tools do not use this disk-wide system call. 
+Instead, they signal the kernel when individual partitons are altered. 
+After processing a single partition change, the kernel does not produce the preceding debugging output. 
+  There are a few ways to see the partition changes: 
+ *Use udevadm to watch the kernel event changes. For example, udevadm monitor --kernel will show the old partition devices being removed and the new ones being added.
+ *Check /proc/partions for full partition information.
+  *Check /syst/blcok./device/ for altered partition system interfaces or /dev for altered partition devices. 
+
+
+ If you absolutely must be sure that you have modified a partition table, you can perfom the old-style system call that fdisk uses by using the blockdev command. 
+For example, to force the kernel to reload the partition table on /dev/sdf, run this: 
+
+#blockdev --rereadpt /dev/sdf
+
+
+At this this point, you have all you need to know about partitioning disks.
+However, if you're interested in learning a few more fetails about disks, read on. 
+Otherwise, skip ahead to Section 4.2 to learn about putting a file-system on the disk. 
+
