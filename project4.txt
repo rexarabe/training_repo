@@ -1,0 +1,27 @@
+4.1.3) Disk and Partition Geometry
+Any device with moving parts introduces complexity into a software system because there are physical elements that resit abstration.
+A hard disk is no exception; even though you can think of a hard disk as a block device with random access to any block, there are serious performance consequences if you aren't careful about how you lay out data on the disk.
+Consider the physical properties of the simple single-plater disk illustrated in FIgure 4-3.
+  The disk consists of a spinning platter on a spindle, with a head attached to a moving arm that can sweep across the radius of the disk.
+As the disk spins underneath the head, the head reads data. When the arm is in one position, the head can only read data from a fixed circle. 
+This circle is called a cylinder because larger disks have more than one platter, all stacked and spinning around the same spinlde.
+Each platter can have one or two heads, for the top and/or bottom of the platter, and all heads are attached to the same arm and move in concert.
+Because the arm moves, there are many cylinders on the disk, from small ones around the center to large ones around the periphery of the disk. 
+Finally, you can divide a cylinder into slices called sectors. 
+This way of thinking about the disk geometry is called GHS< for cylinder-header-sector.
+
+
+Note: A track is a part of a cylinder that a single head accesses, so in Figure 4-3, a cylinder is also a track. 
+You probably don't need to worry about tracks.
+
+The kernel and the various partitioning programs can tell you what a disk reports as its number of cylinders (and sectors, which are slices of cylinders).
+However, on a modern hard disk, the reported values are fiction! 
+The tradition addressing scheme that uses CHS doesn't scale with modern disk hardware, nor does it account for the fact that you can put more data into outer cylinders than inner cylinders.
+Disk hardware supports Logical Block Addressing (LBA) to simply address a location on the disk by a block number, but remnants of CHS remain. 
+For example, the MBR partition table contains CHS information as well as LBA equivalents, and some boot loaders are still dumb enough to believe the CHS values(don't worry - most Linux boot loaders use LBA values).
+
+Nevertheless, the idea of cylinders has been important to partitioning because cylinders are ideal boundaries for partitions. Reading a data stream from a cylinder is very fast because the head can continuously pick up data as the disk spins. 
+A partition arranged as a set of adjacent cylinders also allows for fast continuous data access because the head doesn't need to move very far between cylinders.
+  Some partitioning programs complain if you don't place your partitions precisely on cylinder boundaries.
+Ignore this; there's little you can do because the reported CHS values of modern disks simply arent' true. The disk's LBA sheme ensures that your partitions are where they're supposed to be.
+
