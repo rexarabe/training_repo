@@ -1,0 +1,49 @@
+4.1) Partitioning Disk Devices
+  There are many kinds of partition tables.
+  The traditional table is the one found inside the Master Boot Record(MBR).
+  A newer standard starting to gain traction is the Globally Unique identifier Partition Table (GPT).
+    Here is an overview of the many Linux partitioning tools available:
+
+    parted A text-based tool that supports both MBR and GPT.
+    gparted A graphical version of parted.
+    fdisk the traditionnal text-based Linux disk partitioning too. fdisk does not support GPT.
+    gdisk A version of fdisk that supports GPT but not MBR.
+
+
+Note:
+Although parted can create and resize filesytems, you shouldn't use it for filesyustem manipulation because you can easily get confused.
+There is a critical difference between partitioning and filesytem manipulation. THe partition table defines simple boundaries on the disk, whereas a filesyutem is a much more involved data system.
+For this reason, we'll use parted for partitoning but use separate utilities for creating file-systems (see Section 4.2.2)
+Even The parted documentation encouratges you to create filesystems separately.
+
+4.1.1  Viewing a partition Table
+You can view your system's partition table with parted -l. Here is sample output from two disk devices with two different kinds of partition tables:
+*****************
+**************
+#parted -l
+**************
+
+
+The first device, /dev/sda, uses the traditional MBR partition table (called "msdos" by parted), and the second contains a GPT table.
+Notice that there are different parameters for each partition table, because the tables themsleves are different. In particular, there is no Name column for the MBR table because names don't exist under that scheme.
+(I arbitrarily chose the names myfirst and mysecond in the GPT table.)
+  The MBR table in this example contains primary, extended, and logical partitions. A primary partition is a normal subdivision of the disk; partion 1 is such a partition.
+  The basic MBR has a limit of four primary partitions, so if you want more than four, you designate one partition as an extended partition.
+  Next, you subdivide the extended partition into logical partitions that the operating system can use as it would any other partition.
+  In this example, partition 2 is an extended partition that contains logical partition 5.
+
+Notice:
+The filesystem that poarted lists is not necessarily the system ID field defined in most MBR entries. The MBR system IS is just a number; for example, 83 is a Linux partition and 82 is linux 82 is Linux swap.
+Therefore, parted atttemps to determine a filesystem on its own.
+If you absoluetely must know the system ID for an MBR, use fdisk -l.
+
+Initial Kernel Read
+When initially reading the MBR table, the Linux kernel produces the following debugging output (remember that you can view thsi with dmesg):
+
+*************
+*************
+*************
+
+  The sd2 < sda5 > output indicates that /dev/sda2 is an extended partition containing one logical partition, /dev/sda5.
+  You'll normally ignore extended partitions because you'll typically want to access only the logical partitions inside.
+
