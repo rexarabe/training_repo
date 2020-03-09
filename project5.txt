@@ -1,0 +1,26 @@
+4.1.4)  Solid-State Disks (SSDs)
+Storage devices with no moving parts, such a solid-state disks(SSDs), are radically different from spinning disks in terms of their access characteristics.
+For these, random access is not a problem because there's no head to sweep across a platter, but certain factors affect performance.
+  One of the most significant factors affecting the performance of SSDs is partition alignment. When you read data from an SSD, you read it in chunks - typically 4096 byes at a time-
+  and the read must begin at a multiple of that same size.
+  So if your partition and its data do not lie on a 4096-byte boundary, you may have to do two reads instead of one for small, common operation, such as reading the contents of a directory.
+    Many partitioning utilitites (parted and gparted, for example) include functionality to put newly created partitions at the proper offsets from the beginning of the disks, so you may never need to worry about improper partition alignement.
+    However, if you're curious about where your partitions begin and just want to make sure that they begin on a boundary, you can easily find this informatino bny looking in /sys/block. Here's an example for a partition /dev/sdf2:
+
+    $cat /sys/block/sdf/sdf2/start
+
+    This partition starts at 1,953,126 bytes from the beginning of the disk.
+    Because this number is not divisible by 4,096, the partition would not be attaining optimal performance if it were on SSD.
+
+
+4.2) Filesystems
+  The last link between the kernel and user space for disks is typically the filesystem; this is what you're accustomed to interacting with when you run compmands such as ls and cd.
+  As previously mentioned, the filesystem is a form of database; it supplies the structure to transform a simple block device into the sophisiticated hierarchy of files and subdirectories that users can understand.
+
+ At one time, filesystems resided on disks and other physical media used exclusively for data storage.
+ However, the tree-like directory structure and I/O interface of filesystems are quite versatile, so filesystems now perform a variety of tasks, such as the sytem interfaces that you see in /sys and /proc.
+ Filesystems are also traditionally implemented in the kernel, but the innovation of 9P from Paln 9 (https://9p.io/sys/doc/9.html) has inspired the development of user-space filesytems in Linux.
+
+   The Virtual File System (VFS) abstration layer completes the filesystem implemntation.
+   Much as the SCSI sybsystem standardizes communication between different device types and kernel control commands, VFS ensures that all filesystem implementations support a standard interface so that user-space applications access files and directories in the same manner.
+   VFS support has enabled Linux to support an extraordinarily large number of filesystems.
