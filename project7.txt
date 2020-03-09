@@ -1,0 +1,52 @@
+The mkfs program automatically determines the number of blocks in a device and sets some reasonable defaults.
+Unless you really know what you're doing and feel like reading the documentation in detail, don't change these.
+
+   When you create a filesystem, mkfs prints diagnostic output as it works, including output pertaining to the superblock.
+   The suypperblock is a key component at the top level of the filesystem database, and it's so important that mkfs creates a number of backups in case the original is destroyed.
+   Consider recording a few of the superblock backup numbers when mkfs runs, in case you need to recover the superblock in the even of a disk failure(see Section 4.3.11)
+
+
+Warning:
+      Filestystem creation is a task that you should only need to perform after adding a new disk or repartitioning an old one.
+      You should create a filesystem just once for each new partition that has no preexisting data (or that has data that you want to remove).
+      Creating a new filesystem on top of an existing filesystem will effectively destroy the old data.
+
+It turns out that mkfs is only a frontend for a seires of filesystem creation  programs, mkfs.fs, where fs is a filesystem type.
+So when you run mkfs -h ext4 in turn runs mkfs.ext4.
+
+  And there's even more indirection. Inspect the mkfs.* files behind the commands and you'll see the following:
+
+
+
+ls -l /sbin/mkfs.*
+-rwxr-xr-x 1 root root  30800 Jan  8 20:31 /sbin/mkfs.bfs
+-rwxr-xr-x 1 root root  34824 Jan  8 20:31 /sbin/mkfs.cramfs
+lrwxrwxrwx 1 root root      9 Jan 10 20:07 /sbin/mkfs.exfat -> mkexfatfs
+lrwxrwxrwx 1 root root      6 Jan 22 16:40 /sbin/mkfs.ext2 -> mke2fs
+lrwxrwxrwx 1 root root      6 Jan 22 16:40 /sbin/mkfs.ext3 -> mke2fs
+lrwxrwxrwx 1 root root      6 Jan 22 16:40 /sbin/mkfs.ext4 -> mke2fs
+-rwxr-xr-x 1 root root  35328 Jan 25  2017 /sbin/mkfs.fat
+lrwxrwxrwx 1 root root     12 Jan 10 20:07 /sbin/mkfs.hfs -> mkfs.hfsplus
+-rwxr-xr-x 1 root root  36968 Feb  5  2018 /sbin/mkfs.hfsplus
+-rwxr-xr-x 1 root root  55296 Nov  7  2016 /sbin/mkfs.jfs
+-rwxr-xr-x 1 root root  79960 Jan  8 20:31 /sbin/mkfs.minix
+lrwxrwxrwx 1 root root      8 Jan 10 20:07 /sbin/mkfs.msdos -> mkfs.fat
+lrwxrwxrwx 1 root root      6 Jan 10 20:07 /sbin/mkfs.ntfs -> mkntfs
+lrwxrwxrwx 1 root root     10 Jan 10 20:07 /sbin/mkfs.reiserfs -> mkreiserfs
+lrwxrwxrwx 1 root root      8 Jan 10 20:07 /sbin/mkfs.vfat -> mkfs.fat
+-rwxr-xr-x 1 root root 433688 Apr 18  2018 /sbin/mkfs.xfs
+
+As you can see, mkfs.ext4 is just a symbolik link to mke2fs.
+This is important to remember if you run across a system without a specific mkfs command or when you're looking up the documentatino for a particular command or when you're looking up the documentation for a particular filesystem.
+EAch filesystem's creation utility has its own manual page, like mke2fs(8).
+This shouldn't be a problem on most systems, because accessing the mkfs.ext4(8) manual page should redirect you to the mke2fs(8) manual page ,but keep it in mind.
+
+4.2.3) Mounting a Filesystem
+On Unix, the process of attaching a filesystem is called mounting. WHen the system boots, the kernel reads some configuration data and mounts root(/) based on the configuration data.
+  In order to mount a filesystem, you must know the following:
+  * The filesystem's device (such as a disk partition; where the actual filesystem data resides).
+  *The fisystem type.
+  *The mount point - that is, the place in the current system's directory hierarchy where the filesystem will be attached.
+  The mount point is always a normal directory.
+  For instance, you could use /cdrom as a mount point for CD-ROM devices.
+  The mount point need not be directly below /; it may be anywhere on the system.
