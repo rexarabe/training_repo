@@ -1,0 +1,22 @@
+When mounting a filesystem, the common terminology is "mount a device on a mount point."
+TO learn the current filesystem status of your system, run mount. The output should look like this:
+
+See project8.txt for more details
+
+Each Line corresponds to one currenlty mounted filesystem, with items in this order:
+*the device, such as /dev/sda3. Notice that some of these aren't real deives (proc, for example) but are stand-ins for real device names because these special-purpose filesystems do not need devices.
+*The word on.
+*The mount point.
+*The word type.
+*The filesystem type, usually in the form of a short identifier.
+* Mount options (in parentheses). (See Section 4.2.6 for more details.)
+
+To mount a filesystem, use the mount command as follows with the file system type, device, and desire mount point:
+
+#mount -t type device mountpoint
+
+For Example, to mount the Fourth Extended filesystem /dev/sdf2 on /home/extra, use this command:
+
+#umount mountpoint
+
+You can also unmount a filesytem with its device instead of its mount point.
