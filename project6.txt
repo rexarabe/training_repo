@@ -1,0 +1,31 @@
+4.2.1 Filesystem Types
+Linux filesystem support includes native designs optimized for Linux, foreign types such as the Windows FAT family, universal filesystems like ISO 9660, and many others.
+The following list includes the most common types of filesystems for data storage.
+The type names as recognized by Linux are in parentheses next to the filesystem names.
+
+ * The fourth Extended filesystem (ext4) is the current iteration of a line of filesystems native to Linux.
+ The Second Exteneded filesystem (ext2) was a longtime default for Linux systems inspired by traditional Unix file-systems such as the Unix File System (UFS) and the Fast FIle System (FFS).
+ The Third Extended filesystem (ext3) added a journal feature (a small cache outside the normal filesystem data structure) to enhance data integrity and hasten booting.
+ The ext4 filesystem is an incremental improvement with support for larger files than ext2 and ext3 filesystems as each other, and you can mount ext2 and ext23 filesystems as ext4, but you cannot mount ext4 as ext2 or ext3.
+
+ *ISO 9660 (iso9660) is a CD-ROM standard.
+ Most CD-ROMs use some variety of the ISO 9660 standard.
+
+ *FAT filesystems (msdos, vfat, umsdos) pertain to Microsoft systems. THe simple msdos type supports the very primitive monocase variety in MS-DOS systems.
+ For most modern Windows filesystems, you should use the vfat filesystem in order to get full access from Linux.
+ The rarely used umsdos filesystem is peculiar to Linux. It supports Unix features such as symbolic links on top of an MS-DOS filesystem.
+
+ *HFS+ (hfsplus) is an Apple standard used on most Macintosh systems.
+
+Although the Extended filesystem series has been perfectly acceptable to most casual users, many advances have been made in filesystem technology that even ext4 cannot utilize due to the backward compatibility requirement.
+The advances are primarily in scalability enhancements pertaining to very large numbers of files, large files, and similar scenarios.
+New Linux filesystems, such as Btrfs, are under development and may be poised to replace the Extended series.
+
+4.2.2 Creating a Filesystem
+Once you're done with the partitioning process described in Section 4.1, you're ready to create filesytems.
+As with partitioning, you'll do this in user space because a user-space because a user-space process can directly access and manipulate a block device.
+The mkfs utility can create many kinds of filesystem.
+For example, you can create an ext4 partition on /dev/sdf2 with this command:
+
+#mkfs -t ext4 /dev/sdf2
+
