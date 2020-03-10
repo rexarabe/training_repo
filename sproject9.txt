@@ -1,0 +1,42 @@
+4.2.4) Filesystem UUID
+The method of mounting filesystems discussed in the preceding section depends on device names.
+However, device names can change because theyh depend on the order in which the kernel finds the devices.
+To solve this problem, ,you can identify and mount filesystems by their Universally Unique Identifier (UUID), a software standard.
+The UUID is a type of seiral number, and each one should be different.
+Filesystem creation programs like mke2fs generate a UUID identifier when initializing the filesystem data structure.
+  To view a list of devices and the corresponding filesystems and UUIDs on your system, use the blkid (block ID) program:
+
+#blkid
+
+See the project9.txt
+
+In this example, blkid found four partitions with data: two with ext4 filesystems, one with a swap space signature (see Section 4.3), and one with a FAT-based filesystem.
+ The Linux native partions all have standard UUIDs, but the FAT doesn't have one.
+ You can reference the FAT partition with its FAT volume serial number (in this case, 3762-6138).
+
+ To mount a filesystem by its UUID, use the UUID = syntax.
+ For example, to mount the first filesystem from the preceding lis on /home/extra, enter:
+
+#mount UUID=a9011c2b-1c03-4288-b3f3-8ba961ab0898 /home/extra
+
+  You will typically not manuallly mount filesystems by UUID as above, because you'll probably know the device, and it's much easier to mount a device by its name than by its crazy UUID number.
+  Still, it's important to understand UUIDs.
+  For one thing, they're the preferred way to automatically mount filesystem in /etc/fstab at boot time (See Section 4.2.8).
+  In addition, many distributions use the UUID as a mount point whenn you insert removable media card.
+  In the preceding example, the FAT filesystem is on a flash media. card.
+  And Ubuntu system with someone logged in will mount this partition at /media/3762-6138 upon insertion.
+  The udevd daemondescibeed in Chapter 3 handles the initial event for the device insertion.
+     You can change the UUID of a filesystem if necessary  (for example, if you copied the complete filesystem from somewhere else and now need to distinguish it from the original).
+     See the tune2fs(8) manual page for how to do this on an ext2/ext3/ext4 filesytem.
+
+4.2.5 Disk Buffering, Caching, and Filesystems
+Linux, like other versions of Unix, buffers writes to the disk.
+This means that the kernel usually doesn't immediately write changes to filesystems when processes request changes.
+Instead it stores the changes in RAM until the kernel can conveniently make the actual change to the disk.
+This buffering system is transparent to the user and improves performance.
+  When you unmount a filesystem with unmount, the kernel automatically synchronizes with the disk.
+  At any other time, you can force the kernel to write the changes in its buffer to the disk by running the sync command.
+  If for some reason you can't unmount a filesystem before you turn off the system, be sure to run sync first.
+    In Addition, the kernel has a series of mechanisms that use RAM to automatically cache blocks red from a disk.
+     Therefore, if one or more processes repeatedly access a file, the kernel doesn't have to go to the disk again and again - it can simply read from the cache and save time and resources.
+
