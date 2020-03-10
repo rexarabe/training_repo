@@ -1,0 +1,52 @@
+5.4 Boot loaders
+  At the start of the boot process, before the kernel and init start, a boot loader starts the kernel.
+The task of a boot loader sounds simple: It loads the kernel into memory, and then starts the kernel with a set of kernel parameters.
+But consider the questions that the boot loader must answer:
+
+* where is the kernel?
+* What kernel paramters should be passed to the kernel when it starts?
+
+THe answers are (typically) that the kernel and its parameters are usually somehwere on the root filesystem.
+It sounds like the kernel parametrs should be easy to find, except that the kernel is not yet running, so it can't traverse a filesytem to find the necessary files.
+Worse, the kernel device drivers normally used to access the disk are also unavailable.
+Think of this as a kind of "chicken or egg" problem.
+
+Let's start with the driver concern.
+On PCs, boot loaders use the Basic Input-Output system (BIOS) or Unified Extensible Firmware Interface (UEFI) to access disks.
+Nearly all disk hardware has firmaware that allows the BIOS to access attached storage hardware with Linear Block Addressing (LBA).
+Although it exhibits poor performance, this mode of access does allow universal access to disks.
+Boot loaders are often the only programs to use the BIOS for disk access; the kernel uses its own high-performance drivers.
+   The filesystem question is trickier.
+   Most modern boot loader can read partition tables and have built-in support for read-only access to file-systems.
+   Thus, they can find and read files.
+   This capability makes it far easier to dynamically configure and enhance the boot loader.
+   Linux boot loaders have not always had this capability; without it, configuring the boot loader was more difficult.
+
+5.4.1 Boot Loader Tasks
+A Linux boot loader's core functionality includes the ability to do the following:
+ Select among multiple kernels.
+ Switch between sets of kernel parameters.
+ Allow the user to manually overide and edit kernel image names and parameters (for example, to enter single-user mode).
+ Provide support for booting other operating systems.
+
+Boot loader have become considerable more advanced since the inception of the Linux kernel, with feature such as history and menu systems, but the basic need has always been flexibility in kernel image and parameter selection.
+One interesting phenomenon is that cerain needs have diminished.
+For example, because you can nnow perform an emergency or recovery boot partially or entirely from a USB storage device, you probably won't have to worry about manually entering kernel parameters or going into single-user mode.
+But modern boot loaders offer more power than ever, which can be particularly handy if you're building custom kernels or just wasnt to tweak paramters.
+
+5.4.2 Boot Loader Overview
+Here are the main boot loader that you may encounter, in order of popularity:
+GRUB  A near-universal standard on Linux systems.
+LILO One of the first Linux boot loaders. ELILO is a UEFI version.
+SYSLINUX Can be configured to run from many different kinds of filesystems
+LOADLIN boots a kernel from MS-DOS
+efilinux A UEFI boot loader intended to serve as a model and reference for other UEFI boot loaders
+coreboot (Formely LinuxBIOS) A high-performance replacement for the PC BIOS that can include a kernel.
+LinuxKernel EFISTUB A kernel plugin for loading the kernel directly from the EFI/UEFI System Partition (ESP) found on recent systems
+
+This book deal exclusively with GRUB.
+The rationale behind using other boot loaders is either that they are simpler to configure than GRUB or that they are faster.
+To enter a kernel name and parameters, you first need to know how to get to a boot prompt.
+Unfortunately, this can sometimes be difficult to figure out because Linux distributions customize boot loader behavior and appearance to their hearts' content.
+The next sections tell you how to get to a boot prompt in order to enter a kernel name and parameters.
+Once oyou're comfortable with that, you'll see how to configure and install a boot loader.
