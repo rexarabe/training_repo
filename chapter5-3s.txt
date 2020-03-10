@@ -1,0 +1,26 @@
+5.3 Kernel Parameters
+When running the Linux Kernel, the boot loader passes in a set of text-based kernel parameters that tell the kernel how it should start.
+The parameters speficy many fidderent tyupes of behavior, such as the amount of diagnostic output the kernel should produce and device driver-specific options.
+ You can view the kernel parameters from your system's boot by looking at the /proc/cmdline file:
+
+$cat /proc/cmdline
+
+See the chapter-5-3.txt
+
+The parameters are either simple one-word flags, such as ro and quiett or key=value pairs, sucha as vt.handoff=7. Many of the parameters are unimportant, such as the splash flag for isplaying a splash screen, but one that is critical is the root parameter.
+This is the location of the root filesystem; without it, the kernel cannot find init and therefore cannot perform the user space start.
+
+The root filesystem can be specified as a device file, such as in this example:
+
+See the chapter-5-3.txt
+
+
+
+
+
+
+The ro parameter is normal; it instructs the kernel to mount the root filesystem in read-only mode upon user space start. (Read-only mode ensures that fsck can check the root filesyste, safely; after the check, the bootup process remounts the root filesystem in read-write mode.)
+Upon encountering a parameter that it does not understand, the Linux kernel saves the parameter.
+The kernel later passes the parameter to init when performing the user space start.
+For example, if you add -s to the kernel parameters, the kernel passes the -s to the init program to indicate that it should start in single-user mode.
+Now let's look at the mechanics of how boot loader start the kernel.
