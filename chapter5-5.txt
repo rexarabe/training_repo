@@ -1,0 +1,50 @@
+5.5 GRUB Introduction
+ GRub stands for GRAND Unified Boot Loader.
+ We'll cover GRUB 2; there is also an older version now called GRUB Legacy that is slowing falling out of use.
+ One of GRUB's most important capabilities is filesystem navigation thatt allows for much easier kernel image and configuration selection.
+ One of the best way to see this in action and to learn about GRUB in general is to look at its menu.
+ The interface is easy to navigate, but there's a good change that you've never seen it.
+ Linux distributions often do their best to hide the boot loader from you.
+   To access the GRUB menu, press and hold SHIFT when you BIOS or firmware startup screen first appears. Otherwise, the boot loader configureation may not pause before loading the kernel.
+   Firgure 5-1 shows the GRUB menu.
+   Press ESC to temporarily disable the automatic boot timeout after the GRUB meny appears.
+
+
+   Figure 5-1: GRUB  menu
+
+
+   Try the following to explore the boot loader:
+   1. Reboot or power on your Linux system.
+   2. Hold down SHIFT during the BIOS/Firmware self-test and/ or splash screen to get the GRUB menu.
+   3. Press e to view the boot loader configuration commands for the default boot option.
+   You should see something like Figure 5-2.
+
+
+   Figure 5-2: GRUB configuration editor
+   This screen tells us that for this configuration, the root is set with a UUID, the kernel image is /boot/vmlinuz-3.2.0-31-generic-pae, and the kernel parameters include ro, quiet and splash.
+   The initial RAM filesystem is /boot/inittrd.img-3.2.0-31-generic-pae.
+   But if you've never seen this sort of configuration before, you may find it somewhat confusing.
+   Why are there multiple references to root, and why are they different?
+   Why is insmod here?
+   Isn't that a Linux kernel feature normally run by udevd?
+   The double-takes are warranted, because GRUB doesn't really use the Linux kernel - it starts it.
+   The configuration you see consists wholly of GRUB internal commands. GRUB really is an entirely separte world.
+   The confusion stems from the fact that GRUB borrows terminology from many sources.
+   GRUB has its own "kernel" and its own insmod command to dynamically load GRUB modules, completely independent of the Linux kernel.
+   Many GRUB commands are similar to Unix shell commands; there's even an ls command to list files.
+   But the most confusion comes from the use of the word root.
+   To clear it up, there is one simple rule to follow when you're looking for your system's root filesystem: Only the root kernel parameter will be the root filesystem when you boot your system.
+   In the GRUB configuration, that kernel parameter is somehwere after the image name of the linux command.
+   Every other reference to root in the configuration is to the GRUB root, which exists only inside of GRUB.
+   The GRUB "root" is the filesystem where GRUB searches for kernel and RAM filesystem images files.
+
+   In figure 5-2, the GRUB root is first set to a GRUB-specific device (hd0,msdos1).
+   Then in the following command, GRUB search for a particular UUID on a partition.
+   If it finds that UUID, it sets the GRUB root to that partition.
+
+   To wrap things up, the linux command's first argument (/boot/vmlinuz-...) is the location of the Linux kernel image file.
+   GRUB loads this file from the GRUB root. The initrd command is similar, specifying the file for the initial RAM filesystem.
+
+   You can edit this configuration inside GRUB; doing so is usually the easiest way to temporarily fix an erroneous boot.
+   To permanently fix a boot problem, you'll need to change the configuration (see Section 5.5.2), but for now, let's go one step deeper and examonie some GRUB internals with the command-line interface.
+
