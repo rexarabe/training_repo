@@ -1,0 +1,42 @@
+5) How the Linux kernel boots
+
+
+You now now the physical and logical structure of a Linux system, what the kernel is, and how to work with processes.
+This chapter will teach you how  the kernel starts - or boots. In other words, you'll learn how the kernel moves into memory up to the point  where the first user process starts.
+
+A simplified view of the boot process looks like this:
+1. The machine's BIOS or boot firmware loads and runs a boot loader.
+2. THe boot loader finds the kernel image on disk, loads it into memory, and starts it.
+3. The kernel initializes the devices and its drivers.
+4. The kernel mounts the root filesystem.
+5. The kernel starts a program called init with a process ID of 1.
+This point is the user space start.
+6. init sets the rest of the system process in motion.
+7. At some point, init starts a process allowing you to log in, usually at the end or near the end of the boot.
+
+
+This chapter cover the first four starge, focusing on the kernel and boot loaders. Chapter 6 continues with the user space start.
+Your ability to identify each stage of the boot process will prove invaluable in fixing boot problems and understanding the system as a whole.
+However, the fegault behavior in  many Linux distributions often makes it difficult, if not impossible, to to identify the first few boot stages as they proceed, so you'll probebly be able to get a good look only after they've completed and you log in.
+
+5.1) Startup Messages
+Traditional Unix systems produce many diagnostic messages upon boot that tell you about the boot process.
+The messages come first from the kernel and then from processes and initialization procedures that init starts.
+However, these messags aren't pretty or consistent, and in some cases they aren't even very informative.
+Most current Linux distributions do their best to hide them with splash screens, filler, and boot options.
+In Addition, hardware improvements have caused the kernel to start much faster than before; the messages flash by so quickly, it can be difficult to see what is happening.
+
+There are two ways o view the kernel's boot and runtime diagnostic messags. You can:
+   * Look at the kernel system log file.
+   You'll ofeten find this in /var/log/kern.log, but depending on how your system is configured, it might also be lumped together with a lot of other system logs in /var/log/messages or elsewhere.
+   *Use the dmesg command, but be sure to pipe the output to less because there will be much more than a screen's worth. The dmesg command uses the kernel ring buffer, which is of limited size, but most newer kernels have a large enough buffer to hold boot messages for a long time.
+
+   Here's a sample of what you can expect to see from the dmesg command:
+   $dmesg
+
+
+   After the kernel has started, the user-space startup procedure often generates messages.
+   These messages will likely be more difficult to view and review because on most system you won't find them in a single log file.
+   Startup scrips usually print the messages to the console and they're erased after the boot process finishes.
+   However, this usually isn't a problem because each script typically writes its own log.
+   Some versios of inti, such as Upstart and systemd, can capture disgnostic messages from startup and runtime that would normally go to the console.

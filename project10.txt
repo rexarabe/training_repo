@@ -1,0 +1,48 @@
+4.2.6)  Filesystem Mount Options
+There are many way to change the mount command behavior, as is often necessary with removable media or when perofming system maintenance.
+In fact, the total number of mount options is staggering.
+The extensive mount(8) manual is a good reference, but it's hard to know where to start and what you can fafely ignore.
+You'll see the most useful options in this section.
+  Options fall into two rough categories: general and filesystem-specific ones.
+  General options include -t for specifying the filesystem type (as mentioned earlier).
+  In contrast, a filesystem-specific option pertains only to certain filesystem types.
+To activate a filesystem option, use the -o switch followed by the option.
+For example, -o norock turns off Rock Ridge extensions on an ISO 9660 file-system, but it has no meaning for any other kind of filesystem.
+
+Short Options
+The most important general option are these:
+ -r The -r option mounts the filesystem in read-only mode.
+ This has a number of uses, from write protection to bootstrapping.
+ You don't need to specify this option when accessing a read-only device susch as a CD-ROM; the system will do it for you (and will also tell you about the read-only status).
+
+ -n The -n option ensure that mount does not try to update the system runtime mount database, /etc/mtab.
+ The mount operation fail when it cannot write to this file, which is important at boot time because the root partition (and, therefore, the system mount database) is read-only at first.
+ You'll also find this option handy when trying to fix a system problem in single-user mode, because the system mount database may not be available at the time.
+
+ -t The -t type option specifies the filesystem type.
+
+Long Options
+Short options like -r are too limited for the ever-increasing number of mount options; there are too few letters in the alphabet to accommodate all possible options.
+Short options are also troublesome because it is difficult to determine an option's meanning based on a single letter.
+Many general options and all filesystem-specific options use a lnoger, more flexible option format.
+  To use lnog options with mount on the command line, start with -o and supply some keywords. Here' a comlete example, with the long options following -o:
+
+#mount -t vfat /dev/hda1 /dos -o ro,conv=auto
+
+The two long options here are ro and conv-auto.
+The ro option specifies read-only mode and is the same as the -r short option.
+The conv-auto option tells the kernel to automatically convert certain text files from the DOS newline format to the Unix style (you'll see more shortly).
+  The most usefult long options are these:
+
+  exec, noexec Enables or disables execution of programs on the filesystem.
+  suid, nosuid Enables or disables setuid programs.
+  ro Mounnts the filesystem in read-only mode (as does the -r short option).
+  rw  Mounts the filesystem in read-write mode.
+
+  conv=rule (FAT-base filesystems) Converts the newline characters in fiels based on rule, which can be binary, text, or auto.
+  The default is binary, which disables any character translation.
+  To treat all files as text, use text.
+  The auto setting converts files based on their extension.
+  For example, a ;jpg files get no special treatment, but a .txt file does.
+  Be careful with this option because it can damage files.
+  Consider using it in read-only mode.
