@@ -1,0 +1,33 @@
+5.2 Kernel Intialization and Boot Options
+Upon startup, the Linux kernel initializes in thiis general order:
+
+1. CPU inspection
+2. Memory inspection
+3. Device bus discovery
+4. Device discovery
+5. Auxiliary kernel subsystem setup (networking, and so on)
+6. Root fileystem mount
+7. User space start
+
+  The first step aren't too remarkable, but when the kernel get to devices, a question of dependencies arise.
+  For example, the disk device drivers may depend on bus support and SCSI subsystem support.
+  Later in the initialization process, the kernel must mount a root file-system before starting intit.
+  In general, you won't have to worry about any of this, execpt that some necessary components may be loadable kernel modules rather than part of the main kernel.
+  On some machines, you may need to load these kernel modules before true root filesytem is mounted.
+  We'll cover this problem and its initial RAM filesystem workaround solutions in Section 6.8.
+
+  As of this writing, the kernel does not emit specific messages when it's about to  start its first user process.
+  However, the follwing memory management messages are a good indication that the user-space handoff is about to happen because this is where the kernel oprotects its own memory from user -space processes:
+
+  -
+  Freeing unused kernel memory: 740k free
+  Write protecting the kernel text: 5829k
+  Write protecting the kernel read-only data: 2376k
+  NX-protecting the kernel data: 4420k
+  -
+
+  You may also see a message about the root filesystem being mounted at this point.
+
+Note: Feel free to skip ahead to chapter 6 to learn the specifics of user space start and the init program that the kernel runs as its first process.
+The raminder of this capter details how the kernel starts.
+
