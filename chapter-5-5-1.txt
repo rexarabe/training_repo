@@ -1,0 +1,67 @@
+5.5.1 Exploring Devices and Partitions with the GRUB Command line.
+As you can see in Figure 5-2, GRUB has its own device-addressing scheme.
+For example, the first hard disk found is hd0, followed by hf1l and so on.
+But device assigmenents are subject to change. Fortunately, GRUB can search all partitions for a UUID in order to find the one where the kernel resides, as you just saw with the search command.
+Listing Devices
+To get a felel for how GRUB refers to the devices on your system, access the GRUB command line by pressing C at the boot menu or configurations editor.
+You should get the GRUB prompt:
+-
+grub>
+-
+ You can enter any command here that you see in a configuration, but to get started, try a diagnostic command instead: ls.
+ With no arguments, the output is a list of devices known to GRUB:
+
+-
+grub> ls
+(hd0) (hd0,msdos1) (hdo,msdos5)
+-
+ In this case, there is one main disk device denoted by (hd0) and the partitions (hd0,msdos1) and (hd0, msdos5).
+ The msdos prefix on the partitions tells you that the disk contains an MBR partition table; it would begin with gpt for GPT.
+ (You will find even deeper combiniations with a third identifier, where a BSD disklabel map resides inside a prtition, but you won't normally have to worry about this unless you're running mutiple operating systems on one machine.)
+
+ To get more detailed information, use ls -l.
+ This command can be particularly useful because it displays any UUIDs of the partitions on the disk.
+ For example:
+ --
+ grub> ls -l
+ -
+
+  This particular disk has a Linux ext2/3/4 filesystem on the first MBR partittion and a Linux swap signature on parition 5, which is a fairly common configuration.
+  (You can't tell that (hdo, msdos5) is a swap partition from this output, thought.)
+
+  File Navigation
+  Now let's look at GRUB's filesystem navigation capabilities.
+  Determine the GRUB root with the echo command (recall that this is where GRUB expects to find the kernel):
+  -
+  grub> echo $root
+  hd0, msdos1
+  -
+
+  To use GRUB's ls command to list the files and directories in that root, you can append a forward slash to the end of the partition:
+  -
+  grub> ls (hd0,msdos1)/
+  -
+  But it's pain to remmeber and type the actual root partition, so use the root variable to save yourself some time:
+  grub> ls ($root)/
+
+  The output is a short list of file and directory names on that partition's filesystem, such as etc/, bin/, and dev/. You should realize that this is now a completely different function of the GRUB ls:
+  Before, you were listing device, partition tables, and perhaps some filesystem header information.
+  Now you're actually looking at the contents of filesytems.
+  You can take a deeper look into the files and directories on a partition in a similar manner. For example, to inspect the /boot directory, start with the following:
+  grub> ls ($root)/boot
+
+Note:
+    Use the up and down arrow keys to flips through GRUB command history and the left and right arrows to edit the current command line.
+    The standard readline keys (CTRL-N, CTRL-P, and so on) also work.
+
+    You can also view all currently set GRUB variables with the set command:
+    --
+    grub> set
+    --
+
+
+    One of the most important of these variables is $prefix, the filesystem and directory where GRUB expects to find its configuration and auxiliary support.
+    We'll explore this in the next section.
+    Once you've finished with the GRUB command-line interface, enter the boot command to boot your current configuration or just press ESC to return to the GRUB menu.
+    In any case, boot your system; we're going to explore the GRUB configuration, and that's best done when you have your full system available.
+
