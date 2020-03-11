@@ -1,0 +1,15 @@
+Chapter 6
+How user space starts
+The point where the kernel starts its first user-pace process, init, is significant -not just because that's where the memory and CPU are finally ready for normal system operation, but because that's where you can see how the rest of the sytem builds up as a whole.
+Prior to this point, the kernel executes a well-controlled path of execution defined by a relatively small number of software developers.
+User space is far more modular.
+
+It's much easier to see what goes into the user space startup and operation.
+For the adventurous, it's also relatively easy to change the user space startup because doing so requires no low-level programming.
+  User space stars in roughly this order:
+  1. init
+  2. Essential low-level service s such as udevd and syslogd
+  3. Network configuration
+  4. Mid-and high-level services (cron, printing, and so on)
+  5. Login prompts, GUIs, and other high-level applications.
+
