@@ -1,0 +1,45 @@
+6.2 System V Runlevels
+
+At any given time on a Linux system, a certain base set of processes (such as crond and udevd) is running.
+In system V init, this state of the machine is called its runlevel, which is denoted by a number from 0 through 6.
+A system spends most of its time in a single runlevel, but when you shut the machine down, init switches to a different runlevel in order to terminate the system services in an orderly fashion and to tell the kernel to stop.
+You can check your system's runlevel with the who -r command.
+A system runnig Upstart responds with something like this:
+------
+$ who -r
+run-level 5  Mar 11 16:57
+-----
+ This output tells us that the current runlevel is 2, as well as the date and time that the runlevel was established.
+ Runlevels serve various purposes, but the most common one is to distinguish between system startup, shutdown, single-user mode, and console mode states.
+ For example, Fedora-based systems traditionally used runlevels 2 though 4 for the text console; a runlevel of 5 means that the system will start a GUI login.
+  But runlevels are becoming a thing of the past.
+  Even thoug all three init versions in this book support them, systemd and Upstart consider runlevels obsolete as end states for the system.
+  To systemd and Upstart, runlevels exit primarily to start services that suppoort only the System V init scripts, and the implementations are so differnt that even if you're familiar with one type of init, you won't necessarily know that to do with another.
+
+6.3 Identifying Your init
+ Before proceeding, you need to determine your system's your system's version of init.
+ If you're not sure, check your system as follows:
+
+ *If your system has /usr/lib/sytemd and /etc/systemd directories, you have systemd. Go to 6.4.
+ *If you have an /etc/init/directory that contains serveral .conf files, you're probably running Upstart (unless you're running Debian 7, in which case you probably System V init). Go to Section 6.5.
+ *If neither of the above is true, but you have an /etc/inittab file, you're probably runing System V init. Go to Section 6.6.
+
+ If your system has manual pages installed, viewing the init(8) manual page should help identify your version.
+
+6.4 systemd
+ The systemd init is one of the newest init implementations on Linux.
+ In addition to handling the regular boot process, systemd aims to incorportate a number of standard Unix sevices such as cron and inetd.
+ As such, it takes some inspiration from Apple's launchd.
+ Once of its most significant features is its ability to defer the start of services and operating system features until they are necessary.
+ There are so many systemd features that it can be very difficult to know where to start learning the basics.
+ Let's Outline what happens when systemd runs at boot time:
+
+ 1. systemd loads its configuration.
+ 2. systemd determines its boot goal, which is usually named deafault.target.
+ 3. systemd determines all of the dependencies of the default boot goal, dependencies of these dependencies, and so on.
+ 4. systemd actives the dependecies and the boot goal.
+ 5. After boot, systemd can react to system event (such as uevents) and activate additional components.
+
+When starting services, systemd does not follow a rigid sequence.
+As with other modern init systems, there is a considerable amount of flexibility in the systemd bootup process.
+Most systemd configurations deliberately try to avoid any kind of startup sequence, preferring to use other methods to resolve strict dependencies.
