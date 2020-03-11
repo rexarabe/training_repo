@@ -1,0 +1,40 @@
+6.1 Introduction to init
+The init program is a user-space program like any other program on the Linux system, and you'll find it in /sbin alont with many of the other system binaries.
+Its main purpose is to start and stop the essential service processes on the system, but newer versions have more responsibilties.
+ There are three major implementations of init in Linux distributions:
+
+ System V init  A tradition sequenced init (Sys V, usually pronounced "sys, five"). Red Entreprise Linux and several other distributions use this version.
+
+ systemd  The emerging standard for init. Many distributions bhave moved to systemd, and most that have not yet done so are planning to move to it.
+
+ Upstart  The init on Ubuntu installations. However, as of this writing, Ubuntu has also planned to migrate to systemd.
+
+ There are various other versions of init as well, especially on embedded platforms.
+ For example, Android has its own init.
+ THe BSDs also have their version of init, but you are unlikely to see them on a modern Linux machine.
+ (Some distributions have also modified the System V init configuration to resemble the BSD style.)
+ There are many different implementations of init because System V init and other older versions relied on a sequence that performed only one startup task at a time.
+ Under this scheme, it is relatively easy to resolve dependencies.
+ However, performance isn't terribly good, because two parts of the boot sequence cannot normally run at once.
+ Another limitation is that you can only start a fixed set of services as defined by the boot sequence:
+   When you plug in new hardware or need a service that isn't already running, there is no standardized way to coordinate the new components with init.
+   systemd and Upstart attempt to remedy the performance issue by allowing many services to start in parallel thereby speeding up the boot process.
+Their implementations are quite different, through:
+  * sytem is goal oriented. You define a target that you want to achieve, along with its dependencies, and when you want to reach the target.
+  systemd satisfies the dependencies and resolves the target. systemd can also defer the start of a service until it is absolutely needed.
+
+  *Upstart is reactionary. It receives even and, based on those event, runs jobs that can in turn produce more events, causing Upstarts to run more jobs, and so on.
+
+The systemd and Upstart init systems also offer a more advanced way to start and track services. In traditonal init systems, service daemons are expected to start themselves from scripts.
+A script run a daemon program, which detaches itself from the script and runs autonomously. To find the PID of a service daemons, you need to use ps or some other mechanism specific to the service.
+In constrat, Upstart and systemd can manage individual service daemons from the beginning, giving the user more power and insight into exactly what is running on the system.
+ Because the new init systems are not script-centric, configuring services for them also tends to be easier.
+ In particular, System V init scripts tend to contain many similar commands designed to start, stop, and restart services.
+ You don't need all of this redundancy with systemd and Upstart, which allow you to concentrate on the services themselves, rather than their scripts.
+
+Finally, system and Upstart both offer some level of on-demand services.
+Rather than trying to start all the services that may be necessary at boot time (as the System V init would do), they start some services only when needed.
+This idea is not really new; this was done with the traditional in daemon,
+but the new implementations are more sophisticated.
+Both systemd and Upstart offer some System V backward compatibility.
+For example, both support the concept of runlevels.
