@@ -1,0 +1,54 @@
+5.5.2 GRUB Configuration
+The GRUB confifguration directory contains the central congifuration file (grub.cfg) and numerous loadable modules ith a .mod suffix.
+(As GRUB version progress, these modules will move into subdirectories such as i386-pc.)
+The directory is usually /boot/grub or /boot/grub2.
+We won't modify grub.cfg directly; instead, we'll use the grub-mkconfig command (or grub2-mkconfig on Fedora).
+
+Reviewing GRUB.cfg.
+First, take a quick look at grub.cfg to see how GRUB initializes its menu and kernel options.
+You'll see that the grub.cfg file consists of GRUB commands, which usually begin with a number of initialization steps followed by a series of menu entries for different kernel and boot configurations.
+The initialization isn't complicated; it's a bunch of function definitions and video setup commands like this:
+------------
+if loadfont  /usr/share/grub/unicode.pf2; then
+    set gfxmode=auto
+    load_video
+    insmod gfxterm
+    --snip--
+--------
+  Later in this file you should see the available boot configurations, each beginning with the menuentry command.
+  You should be able to read and understand this example based on what you learned in the preceding section:
+--------
+_______
+Watch for submenu commands.
+If your grub.cfg file contains numerous menuentry commands, most of them are probably wrapped up inside a submenu command for older version of the kernel so that they don't crowd the GRUB menu.
+
+Generating a New Configuration File
+If you want to make change to your GRUB configuration, you won't edit your grub.cfg file directly because it's automatically generated and the system occasionally overwrites it.
+You'll add your new configuration elsewhere, then run grub-mkconfig to generate the new configuration.
+
+To see how the configuration generation works, look at the very beginning of grub.cfg.
+There should be comment lines such as this:
+## BEGIN /etc/grub.d/OO_header ###
+
+ Upon further inspection, you'll find that every file in /etc/grub.d is a shell script that produces a piece of the grub.cfg file.
+ The grub-mkconfig command itself is a shell script that runs everything in /etc/grub.d.
+ Try it yourself as root. (Dont' worry about overwriting your current configuration. This command by itself simply prints the configuration to the standard output.)
+
+#grub-mkconfig
+
+ What if you want to add meny entries and other comands to the GRUB configuration?
+ The short answer is that you should put your customizations into a new custom.cfg file in you GRUB configuration directory, such as /boot/grub/custom.cfg.
+ The long answer is a little more complicated.
+ The /etc/grub.d configuration directory gives you two options:
+ 4-_custom and 41_custom.
+ The first, 4-_custom, is a script that you can edit yourself, but it's probably the least stable; a package upgrade is ilkely to destroy any changes you make.
+ The 41_custom script is simpler; it's just a series of commands that load custom.cfg when GRUB starts.
+ (Keep in mind that if you choose this second option, your changes won't appear when you genrate your configuration file.)
+  The two options for custom configuration files aren't particularly extensive.
+  You'll see addition in your particular distribution's /etc/ grub.d directory. For example, Ubuntu adds memory tester boot options (memtest86++) to the configuration.
+  To write and install a newly generated GRUB configuration file, you can write the configuration to your GRUB directory with the -o option to grub-mkconfig, like this:
+#grub-mkconfig -o /boot/grub/grub.cfg
+  Or if you're an Ubuntu user, just run install0-grub.
+  In any acase, back up your old configuration, make sure that you're installing to the correct directory, and so on.
+  Now we're going to get into some of the more technical details of GRUB and boot loaders.
+  If you're tired of hearing about boot loaders and the kernel, feel free to skip to Chapter
