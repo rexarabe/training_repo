@@ -1,0 +1,51 @@
+6.4.1) Units and Unit Types
+One of the most interesting things about systemd is that it does not just operate processes and services; it can also mount filesystems, monitor network sockets, run timers, and more.
+Each type of capability is called a unit type, and each specific capabilityis called a unit.
+When you turn on a unit, you activate it.
+Rather than describe all of the unit types (you'll find them in the systemd(1) manual page), here's a look at a few of the unit types that perform the boot-time tasks required in any Unix system:
+ Service units   Control the traditional service daemons on a Unix system.
+ Mount units  Control the attachment of filesytems to system.
+ Target units Control other units, usually by grouping them.
+
+The default boot goal is usually a target unit that groups together a number of service and mount units as dependencies.
+As a reuslt, it's easy to get a partial picture od that's going to happen when you boot, and you can even create a dependency tree diagram with the systemctl dot command.
+You'll find the treet to be quite large on a typical system, because many units don't run by default.,
+Figure 7-1 shows a part of the depedency tree for the default.target unit found on a Fedora system.
+When you activate that unit, all of the units below it on the tree also activate.
+
+Figure 6-1: Unit depedency tree
+
+6.4.2 systemd Dependencies
+Boot-time and operational dependencies are more complicated than they may seem at first because strict dependencies are too inflexible.
+For example, image a sceneario in which you want to display a login prompt after starting a database server, so you define a dependency from the login prompt to the database server.
+Howerver, if the database server fails, the login prompt will also dail due to that dependency, and you won't even be able to log in to your machine to fix it.
+
+Unix boot-time tasks are faily are fairly fault tolerant and can often fail without causing serious problems for standard services.
+For example, if a data disk afor a system was removed byt its /etc/fstab entry remained, the initial filesystem mount would fail.
+However, that failure typically wouldn't seriously affect standard operating system operation.
+ To accommodate the need for flexibility and fault tolerance, systemd offers a myriad of dependency types and styles.
+ We'll label them by their keyword syntwax, and but we won't go into details about configuration syntax until Section 6.4.3.
+ Let's first look at the basic types:
+  --Requires  Strict dependencies. When activating a unit with a Requires dependency unit, systemd attempts to activate the dependency unit.
+  If the dependency unit fails, systemd deactivates the dependent unit.
+  --Wants  Dependencies for activation only.
+  Upon activating a unit, systemd activates the unit's Wants dependencies, but it doesn't care if those dependencies fail.
+  --Requisite  Units that must alredy be active.
+  Before activating a unit with a Requisite dependency has not been activated, systemd fails on activation of the unit  with the dependeny
+  --Conflicts  Negative dependencies.
+  When activating a unit with a Conflict dependency, systemd automatically deactivates the dependency if it is active.
+  Simultaneous activation of two conflicting units fails.
+
+Note: The Wants dependecy type is especially significant because it does not propoagate failures to other units.
+The systemd documentation states that this is the way you should speficy dependencies if possible, and it's easy to see why.
+This behavior produces a much more robust system, similar to that of a traditional init.
+
+You can also attach dependencies "in reverse."
+For example, in order to add Unit A as a Wants dependency to Unit B, you don't have to add the Wants in Unit D's configuration.
+Instead, you can install it as a WantedBy in Unit A's configuration.
+The same is true of the RequiredBy dependency.
+The configuration for (and result of) a "By" dependency is slightly more involved than just editing a configuration file; see "enablling Units and the [Install] Section on page 119.
+
+You can view a unit's dependnecies with the systemctl command, as long as you specify a type of dependency, such as you specify a type of dependency, such as Wants or Requires:
+# systemctl show -p type unit
+
