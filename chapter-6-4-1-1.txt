@@ -1,0 +1,55 @@
+Ordering
+None of the dependency sysntax that you've seen so far explicitly specifies order.
+By default, activating a unit with a Requries or Wants causes systemd to activate all of these dependencies at the same time as the first unit.
+This is optimal, because you want to start as many services as possible as quickly as possible to reduce boot time.
+However, there are situations when one unit must start after another.
+For instance, in the system that Figure 6-1 is based on, the default.target unit is set to start after multi-user.service (this order distinction is not shown in the figure).
+To activate units in a particular order, you can use the follwing dependnecy modifiers:
+
+Before  The current unit will activate before the listed unit(s). For example, if Before=bar.target appears in foo.target, systemd activates foo.target before bar.target.
+After  The current unit activates after the listed unit(s).
+
+Conditioonal Dependecies
+Several dependency condition keywords operate on various operation system states rather than system units. For examples:
+        ConditionPathExist=p:  True if the (file) path p exists in the system.
+        ConditionPathIsDirectory=p:  True if p is directory.
+        ConditionFileNotEmpty=p:  True if p is a file and it's not zero-length.
+
+if conditional dependency in a unit is false when systemd tries to activate the unit, the unit does not activate, through this applies only to the unit in which it appears.
+Therefore, if you activate a unit that has a condition dependency as well as some other unit dependencies, systemd attempts to activate the unit dependencies regardless of whether the condition is true or false.
+
+Other, dependencies are primarily variations on the preceding. For example, the RequiresOverridable dependency is just like Requires when running normally, but it acts like a Wants dependency if a unit is maually activated.
+(For a full list, see the system.unit(5)manual page).
+
+Now that you've seen some of the a few pieces of the systemd configuration, let's look at some actual unit files and how to work with them.
+
+6.4.3  systemd Configuration
+The systemd configuration files are spread among many directories across the system, so you typically won't find the files for all of the units on a system in one place.
+That said, there are two main directories for systemd configuration: the system unit directory (gloabally configured, usually /usr/lib/systemd/system) and a system configuration directory (local definitions, usually /etc/systemd/system).
+
+To prevent confusion, stick to this rule: Avoid making changes to the system unit directory because your distribution will maintain if for you.
+Make your local changes to the system configuration directory.
+So when given the choice between modifying something in /usr and etc/, always change /etc.
+
+Note: You can check the current systemd configuration search path (including procedence) with this command:
+#systemctl -p UnitPath show
+
+However, this particular setting comes from a third source: pkg-config settings.
+To see the system unit and configuration directories on your system, use the following commands:
+$pkg-config systemd --variable=systemdsystemunitdir
+$pkg-config systemd --variable=systemdsystemconfdir
+
+Unit Files:
+Unit files are derived from the XDG Desktop Entry Specification (for .desktop files, which are very similar to .ini on Microsoft system system), with section names in brackets ([]) and variable and value assignments (options) in each section.
+Consider the example unit file medi.mount in /usr/lib/systemd/system, which is standard on Fedora installations.
+This file represetns the /media tmpfs filesystem, which is a container directory for mountain removable media.
+
+////
+
+THere are two section here.
+The [Unit] section gives some details about the unit and contains description and dependency information.
+In particular, this unit is set to activate before the local-fs.target unit.
+
+The [Mount] section details the unit as being a mount unit, and it gives the details on the mount point, the type of filesystem, and the mount options as described in Sectino 4.2.6. The What= variable identifies the device or UUID of the device to mount.
+Here, it's set to tmpfs because this filesystem does not have a device. (For a full list of mount unit options, see the systemd.mount(5) manual page.)
+
