@@ -1,0 +1,44 @@
+Many other unit configuration files are similarly straightforward.
+For example, the service unit file sshd.service enables secure shell logins:
+
+Go to page 119
+
+Because this is a service target, you'll find the details about the service in the [Service] section, including how to prepare, start, and reload the service.
+You'll find a complete listing in the systemd.serivice(5) manual page (and in systemd.exec(5)), as well in the discussion of process tracking in Section 6.4.6.
+
+Enabling Units and the [Install] Section
+The [Install] sectino in the sshd.service unit file is important because it helps us to understand how to use systemd's WantedBy and RequiredBy dependency options.
+It's actually a mechanism for enabling units without modifying any configuration files.
+During normal operation, systemd ingores the [Install] section.
+However, consider the case when sshd.service is disabled on your system and you would like to turn it on.
+When you enable a unit, systemd reads the [Install] section; in this case, enabling the sshd.service unit cuses systemd to see the Wantedby dependecy for multi-uder.target.
+In response, systemd created a symbolic link to sshd.service in the system configuration directory as follows:
+
+see the page 119
+
+Notice that the symbolic link is placed into a subdirectory corresponding to the dependent unit(mutli-user.target in this case).
+The [Install] section is usually responsible for the the .wants and .require directories in the sytem configuration directory (/etc/systemd/system), and you may also add links that don't correspond to [Install] sections in the unit files.
+These manual additions are a simple way to add a dependency without modifying a unit file that may be overwritten in the future (by a software upgrade, for instance).
+
+Note:
+Enabling a unit is different from activiting a unit.
+When you enable a unit, you are installing it into systemd's configuratino, making semipermanent changes that will survive a reboot.
+But you don't always need to explicity enable a unit.
+If the unit file has an [Install] section, you must enable it with systemdctl enable; otherwise, the existence of the file is enough to enable it.
+When you activate a unit with systemctl start, you're just turning it on in the current runtime environment.
+In addition, enabling a unit does not activate it.
+
+Variables and Specifiers
+The sshd.servicec unit file also whows use of variables - speficically, the $OPTIONS and $MAINPIS enviroment variables that are passed in by systemd.
+$OPTIONS are options that you can pass to ssh when you activate the unit with systemdctl, and $MAINPID is the tracked process of the service (see Section 6.4.6).
+A specifier is another variable-liek feature often found in unit files.
+Specifiers start with a percent (%).
+For example, the %n specifier is the current unit name, and the %H specifier is the current hostname.
+
+Note:
+The unit name can contain some itneresting specifiers.
+You can parameterize a single unit file in order to spawn multiple copies of a service, such as getty processes running on tty, tty2, and so on.
+To use these specifiers, add the @ symbol to the end of the unit name.
+For getty, create a unit file named getty@.service, which allow you to refer to units such as getty@tty and getty@tty2.
+Anything after the @ is called the instance, and when processing the unit file, systemd expands the %I specifier to the instance.
+You can see this in action with the getty@.service unit files that come with most distributions running systemd.

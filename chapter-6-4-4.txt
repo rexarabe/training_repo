@@ -1,0 +1,59 @@
+6.4.4 system Operation
+You'll interact with systemd primarily through the systemctl command, which allows you to activate and deactivate services, list status, reload the configuration, and much more.
+The most essential basic commands deal with obtaining unit information.
+For example, to view a list of active units on you system, issue a list-units command.
+(This is acutally the default command for systemctl, so you don't really need the list-units part.):
+
+$systemctl list-units
+
+The output format is typical of a Unix information-listing command.
+For example, the header and the line for media.mount would look like this:
+
+see the page 120
+
+
+This command produces a lot of output, because a typical system has numerous active units, but it will still be abridged because systemctl truncates any really large unit names.
+To see the full names of the units, use the --full option, and to see all units (not just active), use the --all option.
+A particularly useful systemctl operation is getting the status of a unit.
+For example, here is a typical status command and its output:
+
+$systemctl status apache2.service
+
+Notice that there is much more information output here than you would see on any traditional init system.
+You get not only the state of the unit but also the exact command used to perform the mount, its PID, and its exit status.
+
+One of the most interesting pieces of the output is the control group name.
+In the preceding example, the control group doesn't include any information other than the name systemd:/system/media.mount because the unit's processes have already tereminated.
+However, if you get the status of a service unit sych as NetworkManager.service, you'll also see the process three of the control group.
+You can view control groups without the rest of the unit status with the systemd-cgls command.
+You'll learn more about control groups in Section 6.4.6.
+The status command also display recent information from the units' journal (a log that records diagnostic information for each unit).
+You can view a unit's entire journal with this command:
+
+$journalctl _SYSTEMD_UNIT=unit
+
+(This sysntax is a bit odd because journalctl can access the logs of more than just a systemd unit.)
+To activate, deactivate, and restart units, use the systemd start, stop, and restart commands.
+However, if you've changed a unit configuration file, you can tell systemd to reload the file in one of two ways:
+systemctl reload unit           Reloads just the configuration for unit.
+systemctl daemon-reload         Reloads all unit configurations.
+
+Requests to activate, reactivate and restart units are known as jobs in systemd, and they are essentially unit state changes.
+You can check the current jobs on a system with
+
+$systemctl list-jobs
+
+If a system has been running for some time, you can reasonabley expect there to be no active jobs no it because all of the activations should be complete.
+However, at boot time, you can sometimes log in fast enough to see some units start so slowly that they are not yet fully active.
+For example:
+
+see the page 122
+
+In this case, job 76, the sendmail.service unit start is taking a really long time.
+The other listed jobs are in a waiting state, most likely because they're all waiting for job 76.
+When sendmail.service finishes starting and becomes fully active, job 76 will complete, the rest of the jobs will also complete, and the job list will be empty.
+
+Note:
+The term job can be confusing, especially because Upstart, another init system described in this chapter, uses the word job to (roughtly) refer to what systemd calls a unit.
+It's important to remember that although a systemd job associated with a unit will terminate, the unit itself can be active and running afterward, especially in the case of service units.
+See Section 6.7 for how to shut down and reboot the system.
