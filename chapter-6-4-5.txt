@@ -1,0 +1,40 @@
+6.4.5  Adding Units to systemd
+Adding units to systemd is primarily a matter of creating, then activating and possibly enabling, unit files.
+You should normally put your own unit files in the system configuration directory /etc/systemd/system so that you won't confuse then with anything that came with your distribution and so that the distribution won't overwrite them when you upgrade.
+
+Because it's easy to create target units that don't do anything and don't interfere with anything, you should try it. 
+Here's how to create two targets, one with a dependency on the other:
+1.Create a unit file named test1.target:
+[Unit]
+Description=test 1
+
+2.Create a test2.target file with a dependency on test1.target:
+[Unit]
+Description=test 2
+Wants=test1.target
+
+3.Actuvate the test2.target unit (remmeber that the dependency in test2.target cause systemd to activate test1.target when you do this):
+
+#systmctl start test2.target
+
+4.Verify that both units are active:
+#systemctl status test1.target test2.target
+
+
+Note:
+If your unit file has an [Install] section, "enable" the unit before activating it:
+#systemctl enable unit
+
+Try this with the preceding example.
+Remove the dependecy from test2.target and add an [Install] section to test1.target containing WantedBy=test2.target.
+
+
+Removing Units 
+To remove a unit, follow these steps:
+1. Deactivate the unit if necessary:
+#systemctl stop unit
+
+2. If the unit has an [Install] section, disable the unit to remove any dependent symbolic links:
+#systemctl disable unit
+
+3. Remove the unit file, if you like.
