@@ -1,0 +1,11 @@
+6.4.8 systemd System V Compatibility
+One feature that sets systemd apart from other newer-generation init systems is that it tries to do a more complete job of tracking services started by System V-compatible init scripts.
+It works like this:
+1. First, systemd activates runlevel<N>.target, where N is the runlevel.
+2. For each symbolic link in /etc/rc<N>.d, system identifies the script in /etc/init.d.
+3. systemd associates the script name with a service unit (for example, /etc/ init.d/foo would be foo.service).
+4. systemd activates the service unit and runs the script with either a start or stop argument, based on its name in rc<N>.d.
+5. systemd attempts to ssicate any processes from the script with the service unit.
+
+Because systemd makes the association with a service unit name, you can use systemctl to restart the service or view its status.
+But don't expect any miracles fro System V compatibility mode; it still must run the init scripts serially, for example.

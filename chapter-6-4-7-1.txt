@@ -1,0 +1,51 @@
+An Example Sockett Unit and Service
+We'll now klook at an example, a simple network echo service that uses a socket unit.
+This is somewhat advanced materialm, and you may not really understand it unitl you've read the discussion of TCP, port, and listening in Chapter 9 and sockets in Chapter 10, so feel free to skip this come back later.
+The idea behind this service is that when a network client connects to the service, the service repeats anything that the cliend sends back to the client.
+The unit will listen on TCP port 22222.
+We'll call it the echo service and stat with a socket unit, represented by the following echo.socket unit file:
+
+See page 127
+
+Note that there's no mention of the service unit that this socket supports inside the unit file.
+So what is the corresponiding service unit file&
+Its name is echo@.service. The link is done by naming convention; if a service unit file has the same prefix as a .socket file (in this case, echo), systemd knows to activate that service unit when there's activity on the socket unit.
+In this case, systemd creates an instance of echo@.service when there's activity on echo.socket.
+Here is the echo@.service unit file:
+
+See page 127
+
+Note:
+  If you don't like the implicit actication of units based on the prefixes, or you need to create an activation mechanism between two units with different prefixes, you can use an explicit option in the unit defining your resource.
+  For example, use Socket= Bar.socket inside foo.service to have bar.socket hand its socket to foo.service.
+
+To get this example serice unit running, you need to start the echo.socket unit behind it, like this:
+#systemctl start echo.socket
+
+Now you can test the service by connecting to your local port 22222.
+When the following telnet command connets, type anythiing and press ENTER.
+The service repeats what you typed back to you:
+
+page 128
+
+WHen you're bored with this, press CRTRL-] on line by itself, and then CTRL-D.
+To stop the service, stop the socket unit:
+#systemctl stop echo.socket
+
+Instances and Handoff
+Because the echo@.service unit supports multiple simultaneous instance, there's an @ in the name (recall from page 120 that @ @ signifies parameterization).
+Why would you want multiple instance?
+The reason is that you may have more than one network client connecting to the service at the same time, and each connection should have its own instance.
+In this case, the service unit must support multiple instances because of the Accept option in echo.socket.
+That option instructs systemd not only to listen on the port, but also to accept incoming, connections and pass the incoming connections on to the service unit, with each connection a separate instance.
+Each instance reads data from the connection as standard input, but it doesn't necessarily need to know that the data is coming from a network connection.
+
+Note:
+Most network connections require more flexiblity than just a simple gateway to standard input and output, se don't expect to be able to create network services with a service unit file like the echo@.service unit file shown here.
+
+Although the service unit could do all of the work of accepting the connection, it wouldn't have the @ in its name if it did.
+In that case, if would take complete control of the socket, and systemd wouldn't attempt to listen on the network port again until the service unit has finished.
+The many different resources and options for handoff to service units make it difficult to provide a categorical summary.
+Also, the documentation for the options is spread out over several manual pages.
+The ones to check for the resource-oriented units are systemd.socket(5), systemd.path(5), and systemd.device(5).
+One document that's often overlooked for service units is systemd.exec(5), which contains information about how the service unit can expect to receive a resource upon activation.
