@@ -1,0 +1,14 @@
+6.4.9 systemd Auxiliary Programs
+When starting out with systemd, you may notice the exceptionally large number of programs in /lib/systemd.
+These are primarily support programs for units.
+For example, udevd is part of systemd, and you'll find it there as systemd-udevd.
+Another, the systemd-fsck program, works as a middleman between systemd and fsck.
+Many of these progarms exist because they contain notification mechanisms that the standard system utilities lack.
+Often, they simply run the standard system utilities and notify systemd of the results.
+(After all, it would be silly to try to reimplement all of fsck inside systemd.)
+
+Note:
+One other interesting aspect of these programs is that they are written in C, because one goal of systemd is to reduce the number of shell scripts on a system.
+There is some debate as to whether it's a good idea to do so(after all, many of these programs could probably be written as shell scripts), but as long as everything works and does so reliably, securely, and reasonably quickly, there's little reason to bother taking sides.
+When you see a program in /lib/systemd that you can't identify, see the manual page.
+There's a good chance that the manual page will not only describe the utility but also describe the type of unit that it's meant to augment.
