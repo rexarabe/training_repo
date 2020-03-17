@@ -1,0 +1,25 @@
+6.4.6 systemd Process Tracking and Synchonization
+
+systemd wants a reasonable amount of information and control over every process that itstart.
+The main problem that it faces is that a service can start in different ways; it may fork new infostance of itself or even daemonize and detach itself from the original process.
+To minimize the work that a package developer or administrator needs to do in order to create a working unit file, systemd uses control groups (cgroups), an optional Linux kernel feature that allows for finer tracking of a process hierarchy.
+If you've worked with Upstart before, you know that you have to do a little extra work to figure out what the main process is for a service.
+In systemd, you don't have to worry about how many times a process forks - just whether it forks.
+Use the Type option in your service unit file to indicate its startup behavior. There are two basic startup style:
+Type=simple The service process doesnt' fork.
+Type=forking the service forks, and systemd expects the original serivce process to terminate.
+Upon termination, systed assumes that the service is ready.
+
+The Type=simple option doesn't account for the fact that a service may take some time to set up, and systemd doens't know when to start any dependencies that absolutely require such a servicec to be ready.
+One way to deal with this is to use delayed startup (see Section 6.4.7).
+However, some Type startup styles can indicate that the service itself will notify systemd when it is ready:
+Type=notify the service sends a notification specific to system (with the sd_notify() function call) when it's ready.
+Type=dbus The service registers itself on the D-bus (Desktop Bus) when it's ready.
+
+Another service startup style is specified with Type=oneshot; here the service process actually terminates completely completely when it's finished.
+With such a service, you will almost certainly need to add a RemainAfterExit=yes option so that systemd will still regard the service as active even after its processes terminate.
+Finally, there's one last style: Type=idle.
+This simply instructs systemd not to start the service until there are no active jobs.
+The idea here is just to delay a service start until other services have started to keep the system load down, or to keep services from stepping on one another's output.
+(Remember, once a service has started, the systemd job that started the service terminates.)
+

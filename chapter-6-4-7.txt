@@ -1,0 +1,58 @@
+6.4.7 systemd On-Demand and REsource-Parallelized Startup
+One of systemd's mostt significant features is its ability to delay a unit startup unil it is absolutely needed.
+The steup typically works like this:
+1. You create a systemd unit (call it Unit A) for the system service that you'd like to provide, as normal.
+2. You identify a system resrouce such as a network port/socket, file, or device that Unit A uses to offer its services.
+3. You create another systemd unit, Unit R, to represent that resource.
+These units have special types such as socket units, path units, and device units.
+
+Operationally, it goes like this:
+1. Upon activation of Unit R, systemd monitors the resource.
+2. When anything tries to access the resource, systemd blocks the resource, and the input to the resource is buffered.
+3. systemd activates Unit A.
+4. When the service from Unit A is ready, it takes control of the resource, reads the buffered input, and runs normally.
+
+THere are a few concerns:
+* You must make sure that your resrouce unit covers every resrouce that the service provides.
+This normally isn't a problem, as most services have just one point of access.
+
+*You need to make sure your resrouce unit is tied to the service unit that it represents.
+This can be implicit or explicity, and in some cases, many options represent different ways for systemd to perform the handoff to the service unit.
+
+* Not all servers know how to interface with the units that systemd can provide.
+
+If you already know what utilities like inetd, xinetd, and automount do, you'll see that there are a lot of similiarities. Indeed, the concept is nothing new (and in fact, systemd includes support for automount units).
+We'll go over an example of a socket unit on page 127.
+But let's first take a look at how these resrouce units help you at boot time.
+
+Boot Optimization with Auxiliary Units
+A common style of unit activation in systemd attemps to simplify dependency order and speed up boot time.
+It's similar to on-demand startup in that a service unit and an auxiliary unit represent the service unit's offered resrouce, exceptthat in this case systemd starts the service unit as asoon as it activates the auxiliary unit.
+
+The reasoning behind this scheme is that essential boot-time service units such as syslog and dbus take some time to start, and many other units depend on them.
+However, systemd can offer a unit's essential resource(such as a socket unit) very quickly, and then it can immedialtely activate not only the essential unit but also any units that depend on the essential resrource.
+Once the essential unit is ready, it takes control of the resource.
+Figure 6-2 shows how this might work in a traditional system.
+In this boot timeline, Service E provides an essential Resource R.
+Services !, B, and C depend on this resrouce and must wait until Service E has started.
+When booting, the system takes quite a long time to get around to starting Service C.
+
+
+See page 126
+
+Figure 6-2: Sequential boot timeline with a resrouce dependency
+
+Figure 6-3 shows an equivalent systemd boot configuration.
+The services are represented by Units A, B, C, and E, and a new Unit R represents the resrouces that Unit E provides.
+Because systemd can provide an interface for Unit R while Unit E starts, Units A, B, C, and E can all be started at the same time.
+Unit E takes over for Unit R when ready.
+(An interesting point here is that Units A, B, and C may not need to explicity access Unit R before they finish their startup, as Unit B in the figure demonstrates.)
+
+See page 126
+
+Figure 6-3: systemd boot time with a resource unit
+
+Note: When parallelizing startup like this, there is a chance that your system may slow down temporarily due to a large number of units starting at once.
+The takeaway is that, although you're not creating an on-demand unit startup in this case, you're using the same features that make on-demand startup possible.
+For common real-life examples, see the syslog and D-Bus configuration units on a machine running systemd; they're very likely to be paralelleized in this way.
+
