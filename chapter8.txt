@@ -1,0 +1,71 @@
+8) A closer look at processes and resrouce utilization
+
+This chapter takes you deeper into the relationships between processes, the kernel, and system resources.
+There are three basic kinds of hardware resrouces:
+CPU, memory, and I/O.
+Processes vie for these resrouces, and the kernel's job is to allocate resrouces fairly.
+The kernel itself is also a resource - a software resource that processes use to perform tasks such a creating new processes and communicating with other processes.
+Many of the tools that you see in this capter are often thought of as performance-monitoring tools.
+They're praticularly helpful if your system is slowing to a crawl and you're trying to figure out why.
+However, you shouldn't get too disrtacted by performance; trying to optimize a system that's already working correctly is often a waste of time.
+Instead, concentration understanding what the tools actually measure, and you'll gain great isight into how the kernel works.
+
+
+8.1 Tracking Processes
+You learned how to use ps in Sectin 2.16 to list prcess running on your system at a particular time.
+The ps command lists current process, but it does little to tell you how processes change over time.
+Therefore, it won't really help yo uto determine which process is using too much CPU time or memory.
+
+The top program is often more useful than ps because it displays the current system status as well as many of the firelds in a ps listing, and it updates the display every second.
+Perhaps most important is that top shows the most active processes (that is, those curenlty taking up the most CPU time) at the top of its display.
+You can send commands to top with keystrokes.
+These are some of the most important commands:
+Spacebar   Update the dispay immediately.
+M sorts by current resident memory usage.
+T sorts by toral (cumulative) CPu usage.
+P Sorts by current CPU usage (the default)
+u Displays only one user's processes.
+f Selects differnt staticvs to diplay.
+? Dispalys a usage summary for all top commands.
+
+Two other utilities for Linux, similar to top, offer an enhanced set of views and features: atop and htop.
+Most of the extra features are available from other utilities.
+For example, htop has many of abilities of the lsof command described in the next section.
+
+8.2 Finding Open File with lsof
+The lsof command list open files and the processes using them.
+Because Unix places a lot of emphais on files, lfsof is amont the most useful tools for findnig trouble spots.
+But lsof doesn't stop at regular files -- it can list network resources, dynamic libraries, pipes and more.
+
+8.2.1 Reading the lsof Output
+Running lsof on the command line usually produces a tremendous amount of output.
+Bellw is a fragment of what you might see.
+This output includesd oepn files form the init process as well as a running vi process:
+
+COMMAND     PID   TID             USER   FD      TYPE             DEVICE  SIZE/OFF       NODE NAME
+systemd       1                   root  cwd       DIR               8,21      4096          2 /
+systemd       1                   root  rtd       DIR               8,21      4096          2 /
+systemd       1                   root  txt       REG               8,21   1612152    2896353 /lib/systemd/systemd
+systemd       1                   root  mem       REG               8,21   1700792    2888743 /lib/x86_64-linux-gnu/libm-2.27.so
+systemd       1                   root  mem       REG               8,21    121016    2883788 /lib/x86_64-linux-gnu/libudev.so.1.6.9
+systemd       1                   root  mem       REG               8,21     84032    2888721 /lib/x86_64-linux-gnu/libgpg-error.so.0.22.0
+systemd       1                   root  mem       REG               8,21     43304    2888732 /lib/x86_64-linux-gnu/libjson-c.so.3.0.1
+systemd       1                   root  mem       REG               8,21     34872     662879 /usr/lib/x86_64-linux-gnu/libargon2.so.0
+--snip--
+
+The output shows the follwongs fileds (listed in the top row):
+COMMAND  The command name for the process that holds the file desciptor.
+PID The porcess ID
+USER The user running the process.
+FD this field can contain two kinds of elements.
+   In the output aboev, the FD column shows the purpose of the file descriptor of the open fire - a number that a process uses together with the system libraries and kernel to identify and manipulate a file.
+TYPE The file type (regular file, directory, socket, and so on.)
+DEVICE the major and minor number of the device that holds the files.
+SIZE the file's size.
+NODE The file's inode number.
+NAMEE the filename.
+
+The lsof (1) manual page contains a full list of what you might see for each filed, but you should be able to figure out what you're looking at just by looking at the ouput.
+FOr example, look at the entire swith cwd in the FD field as highlighted in bold. These lines indicate the current working directories of the processes.
+Another example is the very last line, which shows a file that the user is currently editing with vi.
+
