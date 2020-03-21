@@ -1,0 +1,21 @@
+8.2.2 Using lsof
+There are two basic approaches to running lsof:
+*List everything and pipe the output to a command like less, and then search for what you're looking for.
+This can take a while due to the amount of output generated.
+*Narrow down the list that lsof provides with command-line options.
+
+You can use command-line options to provide a filename as an argument and have lsof list only the entries that match the argumnet.
+For example, the following command displays entries for open files in /usr:
+$lsof /usr
+
+To list the open files fo a particular process ID, run:
+$lsof -p pid
+
+For a brief summary of lso's many options, run lsof -h.
+Most options pertain to the output format.
+(See Chapter 10 for a discussion of the lsof network features.)
+
+Note:
+lsof is highly dependent on kernel information.
+If you upgrade your kernel and you're not routinely updating everything, you might need to upgrade lsof.
+In addition, if you perform a distribution update to both the kernel and lsof, the update lsof might not work until you rebot with the new kernel.
