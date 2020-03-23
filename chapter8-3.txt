@@ -48,3 +48,13 @@ For example:
 see page 175
 
 In this example, the -o option to strace logs the action of any child process that crummyd spawns into crummyd_strace.pid, where pid is the process ID of the child process.
+
+8.3.2 ltrace
+The ltrace command tracks shared library calls.
+The output is similar to thatt of strace, which is why we're mentioning it here, but it doesn't track anything at the kernel level.
+Be warned that there are many more shared library calls than system calls.
+You'll definitely need to filter the ouput, and ltrace itself has many built-in options to assist you.
+
+Note:
+See Section 15.1.4 for more on shared libraries.
+The ltrace command doesn't work on statically linked binaries.
