@@ -1,0 +1,52 @@
+8.4 Theads
+In Linux, some processes are divided into pieces called threads.
+A thread is very similar to a process - it has an identifier (TID, or thread ID), and the kernel sschedules and runs threads just like processes.
+However, unlike separate processes, which usually do not share system resources such as memory and I/O connections with other processes, alll threads inside a single process share their system resources and some memory.
+
+8.4.1 Single-Threaded and Multithreaded Processes
+Many processes have only one thread.
+A process with one thread is single-threaded, and a process with more than one thread is multithreaded.
+All processes start out single-threaded.
+This starting thread is usually called the main thread.
+The main thread may then start new threads in order for the process to become multithreaded, similar to the way a process can call for() to start a new process.
+
+Note:
+It's rare to refer to threadll when a process is single-threaded.
+This book will not mention threads unless multithreaded processes make a difference in what you see or experience.
+
+The primary advantage of a multithreaded procecss is that when the process has a lot to do, threads can run simultaneously on multiple processors, potentially speeding up computation.
+Although you can also achieve simulaneous computation with multiple processes, threads start faster than processes, and it is often easier and/or more efficient for threads to intercommunicate using their shared memory than it is for processes to communicate over a channel such as a network connection or a pipe.
+Some programs use threads to overcome problems managing multiple I/O resrouces.
+Traditionally, a process would sometimes use fork() to start a new subprocess in order to deal with a new input or output stream.
+Threads offer a similar mechanism without without the overhead of starting a new process.
+Threads offer a similar mechanism without the overhead of starting a new process.
+
+8.4.2 Viewing Threads
+By default, the ouput from the ps and top commands shows only processes.
+To display the thread information in ps, add the m option.
+Here is some sample output:
+
+see page 177
+
+Listing 8-1: Viewing threads with ps m
+
+Listing 8-1 shows processes along with threads.
+Each line with a number in the PID column (at 1, 2 and 3) represents a process, as in the normal ps output.
+The line with the dashes in the PID column represent the threads associated with the process.
+In this output, the processes at 1 and 2 have only one thread each, but process 12287 at 3 is multithreaded with four threads.
+If you would like to view the thread IDs with ps, you can use a custom output format.
+This example shows only the process IDs, thread IDs, and command:
+
+see page 177
+
+Listing 8-2: Showing process IDs and thread IDs with ps m
+The sample output in Listing 8-2 corresponds to the threads shows in Listing 8-1. Notice that the thread IDs of the single-threaded processes are identical to the process IDs; this is the main thread.
+For the multithreaded process 12287, thread 12287 is also the main thread.
+
+Note:
+Normally, you won't interact with individual threads as you would processes.
+You need to know a lot about how a multithreaded program was written in order to act on one thread at a time, and even then, doing so might not be a good idea.
+
+Threads can confuse things when it comes to resource monitoring because individual threads in a multithreaded process can consume resources simultationeously.
+For example, top doesn't show threads by default; you'll need to press H to turn it on.
+For most of the resource monitoring tools that you're about to see, you'll have to do a little extra work to turn on the thread display.
