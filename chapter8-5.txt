@@ -1,0 +1,41 @@
+8.5 Introduction to Resource Monitoring
+Now we'll discuss some topics in resource monitoring, including processor (CPU) time, memory, and disk I/O.
+We'll examine utilization on a system-wide scale, as well as on a per-process basis.
+Many people touch the inner workings of the Linux kernel in the interest of improving performance.
+However, most Linux system perfomr well under a distribution's default settings, and you can spend days trying to tune your machine's performance without meaningful results, especially if you don't know what to look for.
+So rather than think about performance as you experiment with the tools in this chapter, think about seeing the kernel in action as it divides resources among processes.
+
+8.6 Measuring CPU Time
+To monitor one or more specific processes over time, use the -p option to top, with this syntax:
+
+see page 178
+
+To find out how much CPU time a command uses during its lifetime, use time.
+Most shells have a built-in time command that doesn't provide extensive statistics, so you'll probably need to run /usr/bin/time.
+For example, to measure the CPU time used by ls, run
+
+8.6 Measuring CPU Time
+TO monitor one or more specific processes over time, use the -p option to top, with this syntasx:
+
+see page 178
+
+To find out how much CPU time a command uses during its lifetime, use time.
+Most shells have a huilt-in time command that doesn't provide extendsive statistics, so you'll probably need to run /usr/bin/time.
+For example, to measure the CPU time use by ls, run
+
+see page 178
+
+After ls terminates, time should print output like that below.
+The key fields are in boldface:
+see page 178
+
+User time    The number of seconds that the CPU has psent running the program's own code. On modern processors, some commands run so quickly, and therefore the CPU time is so low, that time rounds down to zero.
+System time  How much time the kernel spends doing the process's work (for example, reading files and directories).
+
+Elapsed time The total time it took to run the process from start to finish, including the time that the CPU spent doing other tasks.
+             This number is normally not very useful for performance measurement, but subtracting the user and system time from elapsed time can give you a general idea of how long a process spends waiting for system resources.
+
+The remainder of the output primarily details memory and I/O usage.
+You'll learn more about the page fault output in Section 8.9.
+
+
