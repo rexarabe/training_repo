@@ -1,0 +1,24 @@
+8.7 Adjusting Process Priorities
+You can change the way the kernel schedules a process in order to give the process more or less CPU time than other processes.
+The kernel runs each process according to its scheduling priority, which is a number runs each process according to its scheduling priority, which is a number between -20 and 20, with -20 being the foremost priority.
+(Yes, this can be confusing.)
+The ps -l command lists the current priority of a process, but it's a little easier to see the priorities in action with the top command, as shown here:
+
+see page 179
+
+In the top output above, the PR (priority) column list the kernel's current schedule priority for the process.
+The higher the number, the less likely the kernel is to schedule the process if others need CPU time.
+The schedule priority alone does not determine the kernel's decision to give CPU time to a process, and it change frequently during program execution according to the amount of CPU time that the [rpcess consumes.
+Next to the priority column is the nice value (NI) column, which gives a hint to the kernel's scheduler.
+This is what you care about when trying to influence the kernel's decision.
+The kernel adds the nice value to the current priority to determine the next time slot for the process.
+By default, the nice value is 0.
+Now, say, you're running a big compuration in the background that you don't wan to bog down your interactive session.
+To have that process take a backseat to other processes and run only when the other tasks have nothing to do, you could change the nice values to 20 with the renice command
+(where pid is the process ID of the process that you want to change):
+
+see page 180
+
+If you're the superuse , you can set the nice value to a negative number, but doing so is almost always a bad idea because system processes may not get enough CPU time.
+In fact, you probably won't need to alter nice values much because many Linux systems have only a single user, and that user does not perform much real computation.
+(The nice value was much more important back when there were many user on a single machine.)
