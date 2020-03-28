@@ -1,0 +1,40 @@
+8.8 Load Averages
+CPU performance is one of the easier metrics to measure.
+THe load average is the average is the average number of processes currently ready to run.
+That is, it is an estimate of the number of processes that are capable of using the CPU at any given time.
+When thinking about a load average, keep in mind that most processes on your system are usually waiting for input(from the keyboard, mouse, or network, for example), meaning that most processes are not ready to run and should contribute nothing to the load average.
+Only processes that are actually doing something affect the load average.
+
+8.8.1 Using uptime
+The uptime commands tells you three load averages in addition to how long the kernel has been running:
+$uptime
+
+The three bolded numbers are the load averages for the past 1 minutes, 5 minutes, and 15 minutes, respectively.
+as you can see, this system isn't very busy:
+An average of of only 0.01 processes have been running across all processors for the past 15 minutes.
+In other words, if you had just one processor, it was only running user-space applications for 1 percent of the last 15 minutes.
+(Traditionally, most desktop systems would exhibit a load average of about 0 when you were doing anything except compiling a program.
+or playing a game.
+A load average of 0 is usually a good sign, because it means that your processor isn't being challenged and you're saving power.)
+
+Note: User interfacec components on current desktop systems tend to occupy more of the CPU than those in the past.
+For example, on Linux systems, a web browser's Flash plugin can be a particularly notorious resource hog, and Flash applications can easily occupy much of a system's CPU and memory due to poor all-around implementation.
+
+If a load average goes up to around 1, a single process is probably using the CPU nearly all of the time.
+To identify that process, use the top command; the process will usually rise to the top of the display.
+
+Most modern systems have more than one processor core or CPu, so multiple processes can easily run simulaneously.
+If you have two cores, a load average of 1 means that only one of the cores is likely active at any given time, and a load average of 2 means that both cores have just enough to do all of the time.
+
+8.8.2 High Loads
+
+A high load average does not necessarily mean that your system is having trouble.
+A system with enough memory and I/O resources can easily handle many running processes.
+If your load average is high and your system still responds well, don't panic: The system just has a lot of processes sharing the CPU.
+The processes have to compete with each other for processor time, and as a result they'll take longer to perform their computation than they would if they were each allowed to use the CPU all of the time.
+Another case where you might see a high load average as normal is a web server, where processes can start and terminate so quickly that the load average measurement mechanism can't function effectively.
+
+However, if you sense that the system is slow and the load average is high, you might be running into memory performance problems.
+When the system is low on memory, the kernel can start to thrash, or rapidly swap memory for processes to and from the disk.
+When this happens, many processes will become ready to run, but their memory might not be available, so they will remain in the ready-to-run state (and contribute to the load average) for much longer than they normally would.
+We'll now look at memory in much more detail.
