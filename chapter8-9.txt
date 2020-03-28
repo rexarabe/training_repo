@@ -1,0 +1,66 @@
+8.9 Memory
+One of the simplest ways to check your system's memory status as a whole is to run the free command or view /proc/meminfo to see how muc real memory is bieng used for caches and buffers.
+As we've just mentionned, performance problems can arise from memroy shortages.
+If there isn't much cache/buffer memory being used (and the rest of the real memory is taken), you may need more memory.
+However, it's too easy to blame a short-age of memory for every performance problem on you machine.
+
+8.9.1 How Memory works
+Recall from Chapter 1 that the CPu has a memory management unit (MMU) that translates the virtual memory addresses used by processes into real ones.
+The kernel assists the MMU by breaking the memory used by processes into smaller chunks called pages.
+The kernel maintains a data structure, called page table, that contains a mapping of a processes' virtual page addresses to real page addresses in memory.
+As process accesses memory, the MMU translates the virtual addresses used by the process into real addresses based on the kernel's page table.
+A user process does not actually need all of its pages to be immediately available in order to run.
+The kernel generally loads and allocates pagesas a process needs them; this system is known as on-demand paging or just demand paging.
+To see how this works, consider how a program starts and runs as a new process:
+
+1. The kernel loads the beginning of the program's instruction code into memory pages.
+2. The kernel may allocate some working-memory pages to the new process.
+3. As the process runs, it might reach a point where the next instruction in its code isn't in any of the pages that the kernel initially loaded.
+   At this point, the kernel takes over, loads the necessary pages into memory, and then lets the program resume execution.
+4. Similarly, if the program requires more working memory than was initially allocated, the kernel handles it by finding free pages (or by making room) and assigning them to the process.
+
+8.9.2 Page Faults
+If a memory page is not ready when a process wants to use it, the process triggers a page fault.
+In the event of a page fault, the kernel takes control of the CPU from the process in order to get the page ready.
+There are two kinds of page faults: minor and major.
+
+Minor Page Faults
+A minor page fault occurs when the desired page is actually in main memory but the MMU doesn't know where it is.
+This can happen when the process requests more memory or when the MMU doesn't have enough space to store all of the page locations for a process.
+In this case, the kernel tells the MMu about the page and permits the process to continue.
+Minor page faults aren't such a big deal, and many occur as a process runs.
+Unless you need maximum performance from some memory-intensive program, you probably shouldn't worry about them.
+
+Major Page Faults
+A major page fault occurs when the desired memory page isn't in main memory at all, which means that the kernel must load it from the disk or some other slow storage mechanism.
+A lot of major page faults will bog the system down because the kernel must do a substantial amount of work to provide the pages, robbing normal processes of their chance to run.
+
+Some major page faults are unavoidable, such as those that occur when you load the code from disk when runningg a program for the first time.
+The biggest problems happen when you start running out of memory and the kernel starts to swap pages of working memory out to the disk in order to the disk in order to make room for pages.
+
+Watching Page Faults
+You can drill down to the paeg faults for individual processes with the ps, top, time commands.
+The follwing command shows a simple example of how the time command displays page faults.
+(The output of the cal command doesn't matter, so we're discarding it by redirecting that to /dev/null.)
+
+$ /usr/bin/time cal > /dev/null
+
+cal: setlocale: No such file or directory
+0.00user 0.00system 0:00.03elapsed 2%CPU (0avgtext+0avgdata 2352maxresident)k
+64inputs+0outputs (1major+97minor)pagefaults 0swaps
+
+As you can see from the bolded text, when this program ran, there were 2 major page page faults and 154 minor ones.
+The major page faults occured when the kernel needed to load the program from the disk for the first time.
+If you ran the command again, you probably wouldn't get any major page faults because the kernel would have cached the pages from the disk.
+If you'd rather see the page faults of processes as they're running, use top or ps.
+When running top, use f to change the displayed fields and u to display the number of major page faults.
+(The results will show up in a new, nFLT column. You won't see the minor page faults.)
+When using ps, you can use a custom output format to view the page faults for a particular process.
+Here's an example for process ID 20365:
+
+See the page 183
+
+The MINFL and MAJFL columns show the numbers of minor and major page faults.
+Of course, you can combine this with any other process selection options, as described in the ps(1) manual page.
+Viewing page faults by process can help you zero in on certain problematic components.
+However, if you're interested in your system performance as a whole, you need a tool to summarize CPU and memory action across all processes.
