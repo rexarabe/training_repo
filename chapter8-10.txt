@@ -1,0 +1,38 @@
+8.10 Monitoring CPu and Memory Performance with vmstat
+
+Among the many tools available to monitor system performance, the vmstat command is one of the oldest, with minimal overhead.
+You'll find it handy for getting a high-level view of how often the kernel is swapping pages in and out, how bydy the CPU is, and IO utilization.
+
+The trick to unlocking the power of 8.10 Monitoring CPu and Memory Performance with vmstat is to understand its output.
+For example, here's some output from vmstat 2, which reports statistics every 2 seconds:
+________________
+See Page 184
+----------------
+
+The output falls into categories: procs for processes, memory for memory usage, swap for the pages pulled in and out of swap, io for disk usage, system for the number of times the kernel switches into kernel code, and cpu for the time used by different parts of the system.
+The preceding output is typical for a system that isn't doing much.
+You'll usually start looking at the second line of output-the first one is an average for the entire uptime of the system.
+For example, here the system has 32025000KB of memory swapped out to the disk (swpd) and around 3025000KB (3GB) of real memory free.
+Even though some swap space is in use, the zero-valued si (swap-in) and so (swap-out) columns report that the kernel is not currently swapping anything in or out from the disk.
+The buff column indicates the amount of memory that the kernel is using for disk buffers (see Section 4.2.5).
+On the far right, under the CPU heading, you see the distribution of CPU time is the us, sy, id, and wa columns.
+These list (in order) the percentage of time that the CPU is spending on user tasks, system (kernel) tasks, idle time, and waiting for I/O.
+In the preceding example, there aren't too many user processes running (they're using a maximum of 1 percent of the CPU); the kernel is going practically nothing, while the CPU is sitting around doing nothing 99 percent of the time.
+
+Now, watch what happens when a big program starts up sometime later (the first two lines occur right before the program runs):
+
+As you can see at (1) in Listing 8-3, the CPU starts to see some usage for an extended period, especially from user processes.
+Because there is enough free memory, the amount of cache and buffer space used starts to increase as the kernel starts to use the disk more.
+Later on we, see something interesting: Notice at (2) that the kernel pulls some pages into memory that were once swapped out (the si column).
+This means that the program that just ran probably accessed some pages shared by another process.
+This is common; many processes use the code in certain shared libraries only when starting up.
+Also notice from the b column that a few processes are blocked (prevented from running) while waiting ro memroy pages.
+Overall, the amount of the free memory is decreasing, but it's nowhere near being depleted.
+There's also a fair amount of disk activity, as seen by the increasing numbers in the bi (blocks in) and bo (blocks out) columns.
+The output is quite different when you run out of memory.
+As the free space depleted, both the buffer and cache sizes decrease because the kernel increasingly needs the space for user processes.
+Once there is nothing left, you'll start to see activity in the so (swapped out) column as the kernel starts moving pages onto the disk, at which point nearly all of the other output columns change to reflect the amount of work that the kernel is doing.
+You see more system time, more data going in and out of the disk, and more processes blocked because the memory they want to use is not available (it has been swapped out).
+We haven't explained all of the vmstat output columns.
+You can dig deeper into them in the vmstat(8) manual page, but you might have to learn more about kernel memory management first from a class or a book like Operating System Concepts, 9th edition(Wiley, 2012) in order to understand them.
+
