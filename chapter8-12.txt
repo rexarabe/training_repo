@@ -1,0 +1,13 @@
+8.12 Per-Process Monitoring with pidstat
+You've seen how you can monitor specific processes with utilities such as top and iotop.
+However, this display refreshes over time, and each update erases the previous output.
+The pidstat utility allows you to see the resource consumption of a process over time in the style of vmstat.
+Here's a simple example for monitoring process 1329, updating every second:
+
+See page 187
+
+The default ouput shows the percantages of user and system time and the overall percentage of CPU time, and it even tells you which CPU the process was running on.
+(The %guest here is somewhat odd-it's the percentage of time that the process spent running something inside a virtual machine. Unless you're running a virtual machine, don't worry about this.)
+Although pidstat shows CPU utilization by default, it can do much more.
+For exmaple, you can use the -r option to monitor memory and -d to turn on disk monitoring.
+Try them out, and then look at the pidstat (1) manual page to see even more options for threads, context switching, or just about anything else that we've talked about in this chapter.
