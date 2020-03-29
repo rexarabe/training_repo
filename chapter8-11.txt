@@ -1,0 +1,52 @@
+8.11 Monitoring
+
+By default, vmstat shows you some general I/O statistics.
+Although you can get very detailed per-partition resource usage with vmstat -d, you'll get a lot of output from this option, which might be overwhelming.
+Instead, try starting out with a tool just for I/O called iostat.
+
+8.11.1 Using iostat
+Like vmstat, when run without any options, iostat shows the statistics for your machine's current uptime:
+
+see page 185
+
+The avg-cpu part at the top reports the same CPU utilization information as other utilities that you've seen in this chapter, so skip down to the bottom, which shows you the following for each device:
+
+tps            Average number of data transfers per second.
+kB_read/s      Average number of kilobytes read per second.
+kb_wrtn/s      Average number of kilobytes written per second.
+kB_read        Total number of kilobytes read.
+kB_wrtn        Total number of kilobytes written.
+
+Another similarity to vmstat is that you can give an interval argument, such as iostat 2, to give an update every 2 seconds.
+When using an interval, you might want to display only the device report by using the -d option (such as iostat -d 2).
+
+By default, the iostat output omits partition information.
+To show all of the partition information, use the -p ALL option.
+Because there are many partitions on a typical system, you'll get a lot of output.
+Here's part of what you might see:
+
+See page 186
+
+In this example, sda1, sda2. and sda5 are all partitions of the sda disk, so there will be some overlap between the read and written columns.
+However, the sum of the partition columns won't necessarily add up to the disk column.
+Although a read from a sda also counts as a read from sda, keep in mind that you can read from sda directly, such as when reading the partition table.
+
+8.11.2 Per-Process I/O Utilization and Monitoring: iotop
+If you need to dig even deeper to see I/O resources used by individual processes, the iotop tool can help. Using iotop is similar to using top.
+There is a continuously updating display that shows the processes using the most I/O, with a general summary at the top:
+
+See the page 186 and page 187
+
+Along with the user, command, and read/write columns, notice that there is a TID column (Thread ID) instead of a process ID.
+The iotop tool is one of the few utilities that displays threads instead of processes.
+The PRIO (priority) column indicates the I/O priority.
+It's similar to the CPU priority that you've already seen, but it affects how quickly the kernel schedules I/O reads and writes for the process.
+In a priority such as be/4, the be part is the scheduling class, and the number is the priority level.
+As with CPU priorities, lower numbers are more important; for example, the kernel allows more time for I/O for a process with be/3 than one with be /4.
+The kernel uses the scheduling class to add more control for I/O scheduling.
+You'll see three scheduling classes from iotop:
+be   Best-effort. The kernel does its best to fairly schedule I/O for this class. Most processes run under this I/O scheduling class.
+rt   Real-time. The kernel schedules any real-time I/O before any other class of I/O, no matter what.
+idle Idle. The kernel performs I/O for this class only when there is no other I/O to be done. There is no priority level for the idle scheduling class.
+
+You can check and change the I/O priority for a process with the ionice utility; see the ionice (1) manual page for details. You probably will never need to worry about the I/O priority, thought.
