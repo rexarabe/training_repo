@@ -1,0 +1,23 @@
+8.13 Further Topics
+
+One reason there are so many tools to measure resource utilization is that a wide array of resource types are consumed in many different ways.
+In this chapter, you've seen CPU, memory, and I/O as system resources being consumed by processes, threads inside processes, and the kernel.
+The other reason that the tools exist is taht the resources are limited and, for a system to perform well, its components must strive to consume fewer resources.
+In the past, many users shared a machine, so it was necessary to make sure that each user had a fair share of resources.
+Now, although a modern deskto computer may not have multiple users, it still has many processes competing for resources.
+Likewise, high-performance network servers require intense system resource monitoring.
+Further topics in resource monitoring and performance analysis include the following:
+
+sar (System Activity Reporter) The sar package has many of the continuous monitoring capabilities of vmstat, but it also records resource utilization over time.
+With sar, you can look back at a particular time to see what your system was doing. This is handy when you have a past system even that you want to analyze.
+
+acct (Process accounting) the acct package can record the processes and their resource utilization.
+
+Quotas  You can limit many system resources on a per-process or per-user basis.
+        See /etc/security/limits.conf(5) manual page.
+        This is PAM feature, so processes are subject to this only if they've been started from something that uses PAM (such as a login shell).
+        You can also limit the amount of disk space that a user can use with the quota system.
+
+If you're interested in systems tuning and performance in particular, Systems Performance: Entreprise and the CLoud by Brendan Gregg (Prentice Hall, 2013) goes into much more detail.
+We also haven't yet touched on the many, many tools that can be used to monitor network resource utilization.
+To use thhose, you first have to understand how the network works. That's where we're headed next.
