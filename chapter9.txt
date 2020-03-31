@@ -1,0 +1,19 @@
+Chapter 9:
+Understanding your network and its configuration
+
+Networking is the practice of connecting computers and sending data between them.
+Thats sounds simple enough, but to understand how it works, you need to ask two fundamental questions:
+* How does the computer sending the data know where to send its data? know where to send its data?
+* When the destination computer receives the data, how does it know what it just received?
+
+A computer answers these questions by using a series of components, with each one responsible for a certain aspect of sending, receivingm, and indentifying data.
+The components are arranged in groups that form network layers, which stack on top of each other in order to form a complete system.
+The Linux kernel handles networking in a similar way to the SCSI subsystem described in Chapter 3.
+
+Because each layer tends to be independent, it's possible to build networks with many different combinations of components.
+This is where network configuration can become very complicated.
+For this reason, we'll begin this chapter by looking at the layers in very simple networks.
+You'll learn how to view your own network settings, and when you understand the basic workings of each layer, you'll be ready to learn how to configure those layers by yourself.
+Finally, you'll move on to more advanced topics like building your own networks and configuring firewalls.
+(Skip over that material if your eyes start to glaze over, you can always come back.)
+
