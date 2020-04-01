@@ -1,0 +1,64 @@
+9.1 Network Basics
+Before getting into the theory of network layes, take a look at the simple network shown in Figure 9-1.
+
+See page 190
+
+s type of network is ubiquitous: most home and small office networks are configured this way.
+Each machine connected to the network is called a host.
+The hosts are connected to a router, which is a host that can move data from one network to another.
+These machines (here, Hosts A, B, and C) and the router form local area network (LAN).
+The connections on the LAN can be wired or wireless.
+
+The router is also connected to the Internet - the cloud in the figure.
+Because the router is connected to both the LAN and the Internet, all machines on the LAN also have access to the Internet thought the router.
+One of the goals of this chapter is to see how the router provides this access.
+Your initial point of view will be from a Linux-based machine such as How A on the LAN in Figure9-1.
+
+9.1.1 Packets
+A computer transmits data over a newtwork in small chinks called packets, which consissts of two parts: a header and a payload.
+The header contains identifier information such as the origin/destination hosts and basic protocol.
+The payload, on the other hand, is the actual application data that the computer wants to send (for xample, HTML or image data).
+
+Packets allow a host to communicate with others "simultaneously," because hosts can send, receive, and process packets in any order, regardless of where they cam e from or where they're going.
+Breaking messages intop smaller units also makes it easier to detect and compensate for errors in transmission.
+For the most part, you don't have to worry about translating between packets and the data that your application uses, because the operating system has facilities that do this for you.
+However, it is helpful to know the role of packets in the network layers that you're about to see.
+
+9.2 Newtwork Layers
+A fully functioning network includes a full set of network layers called a network stack.
+Any functionnal network has a stack. The typical Internet stack, from the top to bottom layer, looks like this:
+
+Application layer Contains the "language" that applications and servers use to communicate; usually a high-level protocol of some sort.
+Common application layer protocols include Hypertext Transfer Protocol (HTTP, used for the Web), Secure Socket Layer (SSL), and File Transfer Protocol(FTP).
+Application layer protocols can often be combined.
+For example, SSL is commonly used in conjuction with HTTP.
+
+Transport layer  Defines the data transmission characteristics of the application layer. This layer includeds data integrity checking, source and destinatino ports, and specifications for breaking application data into packets
+(if the application layer has not already done so).
+Transmission Control Protocol (TCP) and User Datagram Protocol (UDP) are the most common transport layer protocols.
+The transport layer is also sometimes called the protocol layer.
+
+Network or Internet layer  Defines how to move packets from a source host to a destination host.
+THe particular packet transit rule set for the Internet is known as Internet Protocol(IP).
+Because we'll only talk about Internet networks in this book, we'll really only be talking about the Internet layer.
+However, because network layers are meant to be hardware independent, you can simulataneously configgure several independent network layers (such as IP, IPv6, IPX, and AppleTalk) on a single hosts.
+
+Physical layer  Defines how to send raw data accross a physcial medium, such as Ethernet or a modem.
+This is sometimes called the link layer or host-to-network layer.
+
+It's important to understand the structure of a network stack because your data must must travel through these layers at least twice before it reaches a program at its destination.
+For example, if you're sending data from Host A to Host B, as shown in Figure 9-1, your bytes leave the application layer on Host A and travel through the transport and network layers on Host A;
+then they go down to the physical medium, accross the medium, and up again through the various lower levels to the application layer on Host B in much the same way.
+If you're sending something to a host on the Internet through the router, it will go through some (but usually not all) of the layers on the router and anything else in between.
+
+The layers sometimes bleed into each other in strange ways because it can be inefficient to process all of them in order.
+For example, devices that historically dealt with only the physical layer now sometimes looks at the transport and Internet layer data to filter and route data quickly.
+(Don't worry about this when you're learning the basics.)
+
+We'll begin by looking at how your Linux machine connects to the network in order to the network in order to answer the where question at the begining of the chapter.
+This is the lower part of the stack - the physical and network layers.
+Later, we'll look at the upper two layers that answer the what question.
+
+Note: You might have heard of another set of layers knowns as the Open Systems Interconnection (OSI) Reference Model.
+This is a seven-layer network model often used in teaching and designing networks, but  we won't cover the OSI model because you'll be working directly with the four layers described here.
+To learn a lot more about layers (and networks in general), see Andrew S. Tanenbaum and David J. Wetherall's Computer Networks, 5 th edition (Prentice Hall, 2010).
