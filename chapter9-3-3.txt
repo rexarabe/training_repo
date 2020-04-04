@@ -1,0 +1,22 @@
+9.3.3  Common Subnet Masks and CIDR Notation
+If you're lucky, you'll only deal with easy subnet masks like 255.255.255.0 or 255.255.0.0, but you may be unfortunate and encounter stuff like 255.255.255.192, where it isn't quite so so simple do determine the set of addresses that belong to the subnet.
+Furthermore, it's likely that you'll also encounter a different form of subnet representation called Classless Inter-Domain Routing (CIDR) notation, where a subnet such as 10.23.2.0/255.255.255.0 is written as 10.23.2.0/24.
+
+To understand what this means, look at the mask in binary form (as in the example you saw in the preceding section).
+You'll find that nearly all subnet masks are just a bunch of ls followed by a bunch of 0s.
+For example, you just saw that 255.255.255.0 in binary form is 24 1-bits bollowed by 8 0-bits.
+The CIDR notation identifies the subnet mask by the number of leadin ls in the subnet mask.
+Therefore, a combination such as 10.23.2.0/24 includes both the subnet prefix and its subnet mask.
+
+Table 9-1: Subnet Masks
+
+see the page 195
+
+Note:
+If you aren't familiar with conversion between decimal, binary, and hexadecimal formats, you can use a calculator utility such as bc or dc to convert between different radix representations.
+For example, in bc, you can run the command obase=2; 240 to print the number 240 in binary (base 2) form.
+
+Identifying subnets and their hosts is the first building block to understanding how the Internet works.
+However, you still need to connect the subnets.
+
+
