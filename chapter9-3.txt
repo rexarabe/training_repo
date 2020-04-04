@@ -1,0 +1,86 @@
+9.3 The internet layer
+Rather than start at the very bottom of the network stack with the physical layer, we'll start at the network layer because it can be easier to understand.
+The Internet as we current know it is based on the Internet Protocol, version 4 (IPv4), though version 6 (IPv6) is gaining adoption.
+One of the most important aspects of the Internet layer is that it's meant to be a software network that places no particular requirements on hardware or operating systems.
+The idea is that you can send and receive Internet packets over any kind of hardware, using any operating system.
+The Internet's topology is decentralized, it's made up of smaller networks called subnets.
+The idea is that all subnets are interconnected in some way.
+For example, in Figure 9-1, the LAN is normally a single subnet.
+A host can be attached to more than one subnet.
+As you saw in Section 9.1, that kind of host is called a router if it can transmit data from one subnet to another (another term for router is gateway).
+Figure 9-2 refines Figure 9-1 ny identifying the LAN as a subnet, as well as Internet addresses, the local subnet 10.23.2.37.
+An address in this notation is called a dotted-quad sequence.
+If a host is connected to multiple subnets, it has at least one IP address per subnet.
+Each host's IP address should be unique across the entire Internet, but as you'll see later, private networks and NAT can make this a little confusing.
+
+See Figure 9-2: Network with IP addresses.
+
+Note:
+Technically, an IP address consists of 4 bytes (or 32 bits), abcd. Bytes a and d are numbers from 1 to 254, and B and c are numbers from 0 255.
+A computer processes IP addresses as raw bytes.
+However, it's much easier for a human to read and write a dotted-quad address, such as 10.23.2.37, instead of something ugly like the hexadecimal 0x0A170255.
+
+IP addresses are like postal addresses in some ways.
+To communicate with another host, your machine must know that other host's IP address.
+Let's take a look at the address on your machine
+
+9.3.1 Viewing Your Computer's IP Addresses
+One host can have many IP addresses. To see the addresses that are active on your Linux machine, run:
+
+$ifconfig
+
+There will probably be a lot of output, but it should include something like this:
+
+enp3s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.0.104  netmask 255.255.255.0  broadcast 192.168.0.255
+        inet6 fe80::2c64:c4eb:1b06:e02c  prefixlen 64  scopeid 0x20<link>
+        ether 70:85:c2:05:86:75  txqueuelen 1000  (Ethernet)
+        RX packets 1742021  bytes 2270228683 (2.2 GB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 893076  bytes 119867531 (119.8 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 11697  bytes 1121550 (1.1 MB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 11697  bytes 1121550 (1.1 MB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+The ifconfig command's output includes many details from both the Internet layer and the physical layer.
+(Something it doesn't even include and Internet address at all!)
+We'll discuss the output in more detail later, but for now, concentrate on the second line, which reports that the host is configured to have an IPv4 address(inet addr) of 10.23.2.4.
+On same line, a Mask is reported as being 255.255.255.0.
+This is a subnet, mask, which defines the subnet that an IP address belongs to.
+Let's see how that works.
+
+Note:
+  The ifconfig command, as well some of the others you'll see alter in this chapter (such  as route and arp), has been technically supplanted with the newer ip command.
+  The ip command can do more than the old commands, and it is preferable when writing scipts.
+  However, most people still use the old commands, and it is preferable when writing with the network, and these commands can also be used on other versions of UNIX.
+  For this reason, we'll use the old-style commands.
+
+9.3.2 Subnets
+A subnet is connected group of hosts with IP addresses in some sort of order.
+Usually, the hosts are on the same physical network, as show in Figure 9-2.
+For example, the hosts between 10.23.2.1 and 10.23.2.254 could comprise a subnet, as could all hosts between 10.23.1.1 and 10.23.2.254 could comprise a subnet, as could all hosts between 10.23.1.1 and 10.23.255.254.
+You define a subnet with thwo pieces: a network prefix and a subnet mask (such as the one in the output of ifconfig in the previous section).
+Let's say you want to create a subnet containing the IP addresses between 10.23.2.1 and 10.23.2.254.
+THe network prefix is the part that is common to all addresses in the subnet; in this example, it's 10.23.2.0, and the subnet mask is 255.255.255.0.
+Let's see why those are the right numbers.
+
+It's not immediately clear how the prefix and mask work together to give you all prossible IP addresses on a subnet.
+Looking at the numbers in binary from helps clear it up.
+THe mask marks the bit locations in an IP address that are common to the subnet.
+For example, here are the binary forms of 10.23.2.0 and 255.255.255.0:
+
+
+See the page 194
+
+Now, let's use boldface to makr the bit locations in 10.23.2.0 that are ls in 255.255.255.0:
+10.23.2.0
+Look at the bits that are not in bold.
+You can set any number of these bits to 1 to get a valid IP address in this subnet, with the exception of all 0s or all 1s.
+Putting it all together, you can see how a host with an IP address of 10.23.2.1 and a subnet mask of 255.255.255.0 is on the same subnet as any other computers that have IP addresses beginning with 10.23.2.
+You can denote this entire subnet as 10.23.2.0/255.255.255.0.
