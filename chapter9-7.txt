@@ -1,0 +1,17 @@
+9.7 Understading Kernel Network Interface
+
+The physical and the Internet layers must be connected in a way that allows the Internet layer to retain its hardware-independent flexibility.
+The Linux kernel maintains its own division between the two layers and provides communication standards for liking them called a (kernel) network interface.
+When you configure a network interface, you link the IP address settings from the Internet side with the hardware indentification on the physical device side.
+Network interface have names that usually indicate the kind of hardware underneath, such as eth0 (the first Ethernet card in the computer) and wlan0 (a wireless interface).
+In Section 9.3.1, you learned the most important command for viewing or manually configuring the network interface settings: ifconfig.
+Recall this output:
+
+see the page 200
+
+For each network interface, the left side of the output shows the interface name, and the right side contains settings and statistics for the interface.
+In addition to the Internet layer pieces that we've already covered, you also see the MAC address on the physical layer (HWaddr).
+The lines containing UP and RUNNING tell you that the interface is working.
+Although ifconfig shows some hardware informtion (in this case, even some low-level device settings such as the interrupt and memory used), it's designed primarily for viewing and configuring the software layer attached to the interfaces.
+To dig deeper into the hardware and physical layer behind a network interface, use something like the ethtool command to display or change the settings on Ethernet cards.
+(We'll look briefly at wireless networks in Section 9.23)
