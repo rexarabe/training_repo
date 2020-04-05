@@ -1,0 +1,21 @@
+9.6 The Physical Layer and Ethernet
+One of the key things to understand about the Internet is that it's a software network.
+Nothing we've discussed so far is hardware specific, and indeed, one reason for the Internet's success is that it works on almost any knind of computer, operating system, and physical network.
+However, you still have to put a network layer on top of some kind of hardware, and that interface is called the physical layer.
+
+In this book, we'll look at the most common kind of physical layer: an Ethernet network.
+The IEEE 802 family of standards documents defines many different kinds of Ethernet networks, from wired to wireless, but they all ahve a few things in common, in particular , the following:
+
+*All devices on an Ethernet network have a Media Access Control (MAC) address, sometimes called a hardware address.
+This address is independentof a host's IP address, and it is unique to the host's Ethernet network (but not necessarily a larger software network such as the Internet).
+A sample MAC address is 10:78:d2:eb:76:97.
+
+*Devices on an Ethernet network send messages in frames, which are wrappers around the data sent.
+A frame contains the origin and destination MAC addresses.
+
+Ethernet doesn't really attempt to go beyond hardware on a single network.
+For example, if you have two different Ethernet networks with one host attached to both networks (and two different network interface devices.), you can't directly transmit a frame from one Ethernet network to the other unless you set up a special Ethernet bridge.
+And this is where higher network layers (such as the Internet layer) come in.
+By convention, each Ethernet network is also usually an Internet subnet.
+Even though a frame can't leave one physical network, a router can take the data out of a frame, repackage it, and send it to a host on a different physical network, which is exactly what happens on the Internet.
+
