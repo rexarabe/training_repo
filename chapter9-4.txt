@@ -1,0 +1,48 @@
+9.4 Routes and the Kernel Routing Table
+
+Connecting Internet subnets is mostly a process of identifuing the hosts connected to more than one subnet.
+Returning to Figure 9-2, think about Host A at IP address 10.23.2.4.
+This host is connected to a local network of 10.23.2.0/24 and can directly reach hosts on network.
+To reach hosts on the rest of the Internet, it must communicate through the router at 10.23.2.1.
+How does the Linux kernel distinguish between these two different kinds of destinations?
+It uses a destination configuration called a routing table to determine its routing behavior.
+To Show the routing table, use the route -n command.
+Here's what you might see for a simple host such as 10.23.2.4:
+
+$route -n
+
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         192.168.0.1     0.0.0.0         UG    100    0        0 enp3s0
+169.254.0.0     0.0.0.0         255.255.0.0     U     1000   0        0 enp3s0
+192.168.0.0     0.0.0.0         255.255.255.0   U     100    0        0 enp3s0
+
+The last two lines here contain the routing information.
+The Destination column tells you a network prefix, and the Genmask column is the netmask corresponding to that network.
+There are two networks defined in this output: 0.0.0.0/0 (which matches every address on the Internet) and 10.23.2.0/24.
+Each network has a U under its Flags column, indicating that the route is active ("up").
+
+Where the destinations differ is in the combination of their Gateway and Flags columns.
+For 0.0.0.0/0, there is a G in the Flags column, meaning that communication for this netwrok must be sent through the gateway in the Gateway column (10.23.2.1, in this case).
+However, for 10.23.2.0/24, there is no G in flags, indicating that the network is directly connected in some way.
+Here, 0.0.0.0 is used as a stand-in under Gateway.
+Ignore the other columns of output for now.
+
+There's one tricky detail: Say the host wants to send something to 10.23.2.132, which matches both rules in the routing table, 0.0.0.0/0 and 10.23.2.0/24.
+How does the kernel know to use the second one?
+It chooses the longest destination prefix that matches.
+This is there CIDR network form comes in particularly handy: 10.23.2.0/24 matches, and its prefix is 24 bits long; 0.0.0.0/0 also matches, but its prefix is 0 bits long (that is, it has no prefix), so the rule for 10.23.2.0/24 takes priority.
+
+Note: The -n option route to show IP addresses instead of showing hots and networks by name.
+This is an important option to rememeber because you'll be able to use it in other network-related commands such as netstat.
+
+9.4.1 The Default Gateway
+An entry for 0.0.0.0/0 in the routing table has special significance because it matches any address on the Internet.
+This is the default route, and the address configured under the Gateway column (in the route -n output) in the default route is the default gateway.
+When no other rules match, the default route always does, and the default gateway is where you send messages when there is no other choice.
+You can configure a host without a default gateway, but it won't be able to reach hosts outside the destinations in the routing table.
+
+Note:
+On most networks with a netmask of 255.255.255.0, the router is usually at address  1 of the subnet (for example, 10.23.2.1 in 10.23.2.0/24).
+Because this is simply a convention, there can be exceptions.
+
