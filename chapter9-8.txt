@@ -1,0 +1,47 @@
+9.8 Introduction to Network Interface Configuration
+
+You've now seen all of the basic elements that go into the lower levels of a network stack: the physical layer, the network (Internet) layer, and the Linux kernel's network interfaces.
+In order to combine these pieces to connect a Linux machine to the Internet, yuo or a piece of software must do the following:
+
+1. Connect the network hardware and ensure that the kernel has a driver for it.
+If the driver is present, ifconfig -a displays a kernel network interface corresponding to the hardware.
+
+2.Perform any additional physical layer setup, such as choosing a network name or password.
+
+3.Bin an IP address and netmask to the kernel network interface so that the kernel's device drivers(physical layer) and Internet subsystems (Internet layer) can talk to each other.
+
+4. Add any additional necessary routes, including the defautl gateway.
+
+When all machines were big stationary boxes wired together, this was relatively straightforward: The kernel did step 1, you didn't need step 2, and you'd do step 3 with the ifconfig command and step 4 with the route command.
+
+To manually set the IP address and netmask for a kernel network interface, you'd do this:
+
+see page 201
+
+Here, interface is the name of the interface, such as eth0.
+When the interface was up, you'd be ready to add routes, which was typically just a matter of setting the default gateway, like this:
+
+see page 202
+
+The gw-address parameter is the IP address of your default gateway; it must be an address in a locally connected subnet defined by the address and mask settings of one of your network interfaces.
+
+9.8.1 Manually Adding and Deleting Routes
+To remove a default gateway, run
+
+See page 201
+
+You can easily override the default gateway with other routes.
+For example, say your machine is on subnet 10.23.2.0/24, you want to reach a subnet at 192.168.45.0/24, and you know that 10.23.2.44 can act as router for that subnet.
+Run this command to send traffic bound for 192.168.45.0 to that router:
+
+see 201
+
+You don't need to specify the router in order to delete a route:
+
+see page 201
+
+Now, before you go crazy with routes, you should know that messing with routes is often more complicated than it appeas.
+For this particular example, you also have to make sure that the routing for all hosts on 192.163.45.0/24 can lead back to 10.23.2.0/24, or the first route you add is basically useless.
+Normally, you should keep things as simple as possible for your clients, setting up networks so that their hosts need only a default route.
+If you need multiple subnets and the ability to route between them, it's usually best to configure the routers acting as the default gateways to do all of the work of routing between different local subnets.
+(You'll see an example in Section 9.17)
