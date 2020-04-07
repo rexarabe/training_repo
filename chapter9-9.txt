@@ -1,0 +1,13 @@
+9.9 Boot-Activated Network Configuration
+We've discussed ways to manually configure a network, and the traditional way to ensure to correctness of machine's network configuration was to have inti run a script to run the manual configuration at boot time.
+This boils down to running tools like ifconfig and route somewhere in the chain of boot event.
+Many servers still do it this way.
+There have been many attempts in Linux to standardize configuration files for boot-time networking.
+The tools ifup and ifdown do so - for example, a boot script can (in theory) run ifup eth0 to run to correct ifconfig and route commands for the eth0 interface.
+Unfortunetly, different distributions have completly differnt implementations of ifup and ifdown, and aas a result, their configuration files are also completely different.
+Ubuntu, for example, uses the ifupdown suite with configuration files in /etc/network, and Fedora uses its own set of scripts with configuration in /etc/sysconfig/network-scripts.
+
+You don't need to know the details of these configuration files, and if you insist on doing it all by hand and bypass your distribution's configuration tools, you can just look uop the formats in manual pages such as ifup(8) and interface(5).
+But it is important to know that this type of boot-activated configuration is often not even used.
+You'll most often see it for the local-host (or lo; see Section 9.13) network interface but nothing else because it's too inflexible to meet the needs of modern systems.
+
