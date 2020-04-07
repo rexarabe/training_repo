@@ -1,0 +1,25 @@
+9.10 Problems with Manual and Boot-Activated Network Configuration
+Although most systems used to configure the network in their boot mechanisms - and many servers still do- the dynamic nature of modern networks means that most machines don't have static (unchanging) IP addresses.
+Rather than storing the IP address and other network information on your machine, your machine gets this information from somewhere on the local physical network when it first attaches to that network.
+Most normal network client applications don't particularly care what IP address your machine uses, as long as it works.
+Dynamic Host Configuration Protocol (DHCP, described in Section 9.16) tools do the basic network layer configuration on typical clients.
+
+There's more to the story, though.
+For example, wireless networks add additional dimensions to interface configuration, such as network names, authentication, and encryption techniques.
+When you step back to look at the bigger picture, you see that your system needs a way to answer the following questions:
+
+1. If the machine has multiple physical network interface (such as a notebook with wired and wireless Ethernet), how do you choose which one(s) to use?
+
+2. How should the machine set up the physical interface?
+For wireless networks, this includes scanning for network names, choosing a name, and negotiating authentication.
+
+3. Once the physical network interface is connected, how should the machine set up the software network layers, such as the Internet layer?
+
+4. How can you let a user choose connectivity options?
+For example, how do you let a user choose a wireless network?
+
+5. What should the machine do if it loses connectivity on a network interface?
+
+Answering these question is usually more than simple boot scripts can handle, and it's a real hassle to do it all by hand.
+The answer is to use a system service that can monitor physical networks and choose (and automatically configure) the kernel network interfaces based on a set of rules that makes sense to the user.
+The service should also be able to respond to requests from users, who should be able to change to wireless network they're on without having to become root just to fiddle around with network settings every time something changes.
