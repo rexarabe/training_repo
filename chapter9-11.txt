@@ -1,0 +1,96 @@
+9.11 Network Configuration Managers
+There are several way to automatically configure networks in Linux-based systems.
+The most widely used option on desktops and notebooks is NetworkManager.
+OTher network configuration management system are mainly trageted for smaller embedded system, such as OpenWRT's netfid, Android's ConnectivityManagerManager service, COnnMan, and Wicd.
+We'll briefly discuss NetworkManager because it's the one you're most likely to encounter.
+We don't go into a tremendous amount of detail, though, because after you see the big pictures, NetworkManager and other configuration systems will be more transparent.
+
+9.11.1 NetworkManager Operation
+NetworkManager is a daemon that the system starts upon boot. Like all daemons, it does not depend on a runnig desktop component.
+Its job is to listen to events from the system and users and to change the network configuration based on a bunch of rules.
+When running, NetworkManager maintains two basic levels of configuration.
+The first is a collection of information about available hardware devices, which it normally collects from the kernel and maintains by monitoring udev over the Desktop Bus (D-Bus).
+The second configuration level is a more specific list of connections;
+hardware devices and additional physical and ntwork layer configuration parameters.
+For example, a wireless network can be represented as a connection.
+To activate a connection, NetworkManager often delegates the tasks to other specialized network tools and daemons such as dhclient to get Internet layer configuration from a locally attacehd physical network.
+Because network configuration tools and schemes vary among distributions, NetworkManager uses plugins to interface with them, rather than imposing its own standard.
+There are plugins for the both the Debian/Ubuntu and Red Hat-style interface configuration, for example.
+Upon startup, NetworkManager gathers all available network device information, serches its list of connections, and then decides to try to activate one.
+Here's how it makes that decision for Ethernet interfaces:
+1. If a wired connection is available, try to connect using it.
+Otherwise, try the wireless connections.
+
+2. Scan the list of available wireless networks.
+If a network is available that you've previously connected to, nEtworkManager will try it again.
+
+3. If more than one previously connected wireless networks are available, select the most recetly connected.
+
+AFter establishing a connection, NetworkManager maintains it until the connection is lost, a better network becomes available (for example, you plug in a network cable while connected over wireless), or the user forces a change.
+
+9.11.2 Interacting with NetworkManager
+Most users interact with NetworkManager through an applet on the desktop-it's usually an icon in the upper or lower right that indicates the connection status (wired, wireless, or not connected).
+When you click on the icon , you can click on the icon, you get a number of connectivity options, such as a choice of wireless networks and an option to disconnect from your current network.
+Each desktop environment has its own version of this applet, so it looks a little different on each one.
+In addition to the applet, there are a few tools that you can use to query and control NetworkManager from your shell.
+For a very quick summary of your current connection status, use the nm-tool command with no arguments.
+You'll get a list of interfaces and configuration parameters.
+In some ways, this is like ifconfig except that there's more detail, especially when viewing wireless connections.
+
+To control NetworkManager from the command line, use the ncmli command nmcli command.
+This is a somewhat extensive command.
+See the nmcli(1) manual page for more information.
+
+Finally, the utility nm-online will tell you whether the network is up or down.
+If the network is up, the command returns zero as its exit code; it's nonzero otherwise.
+(For more on how to use an exit code in a shell script, see Chapter 11)
+
+9.11.3 NetworkManager Configuration
+The generation configuration directory for NetworkManager is usually /etc/NetworkManager, and there are several different kinds of configuration.
+The general configuration file is NetworkManager.conf.
+The format is similar to the XDG-style . desktop and Microsoft .ini files, with key-value parameters falling into different sections.
+You'll find that nearly every configuration file has a [main] section that defines the plugions to use.
+Here's a simple exmaple that activate the ifupdown plugin used by Ubuntu and Debian:
+[main]
+plugin-ifupdown, keyfile
+
+Other distribution-specific plugins are ifcfg-rh (for Red Hat-style distributions) and ifcfg-suse (for SuSE).
+The keyfile plugin that you also see here supports NetworkManager's native configuration file support.
+When using the plugin, you can see the system's known connections in /etc/NetworkManger/system-connections.
+For the most part, you won't need to change NetworkManager.conf because the more specific configuration option are dfound in other files.
+
+Unamanaged INterfaces
+Although you may want NetworkManager to manage most of your network interfaces, there will be times when you want it to ignore interfaces.
+For example, there's no reason why most users would need any kind of dynamic configuration on the localhost (lo) interface because the configuration never changes.
+You also want to configure this interface early in the boot process because basic system services often depend on it.
+Most distributions keep NetworkManager away from localhost.
+
+You can tell NetworkManager to disregard an interface by using plugins.
+If you're using the ifupdown plugin (for example, in Ubuntu and Debian), add the interface configuration to your /etc/network/interfaces file and then set the value of managed to false in the ifupdown section of the NetworkManager.conf file:
+
+[ifupdown]
+managed=false
+
+For the ifcfg-rh plugin that Fedora and Red Hat use, look for a line like this in the /etc/sysconfig/network-scripts directory that contains the ifcfg-* configuration files:
+
+MN_CONTROLLED=yes
+
+If this line is not present or the value is set to no, NetworkManager ignores the interface.
+For example, you'll find it deactivated in the ifcfg-lo file.
+You can also specify a hardware address to ignore, like this:
+
+HWADDR=10:78;d2:eb:76:97
+
+If you don't use either of these network cnofiguration schemes, you can still use the keyfile plugin to specify the unmanaged device directly inside your NetworkManager.conf file using the MAC address.
+Here's how that might look:
+
+[keyfile]
+unmanaged-devices=mac:10:78:d2:eb:76:97;mac:1c:65:9d:cc:ff:b9
+
+Dispatching
+One final detail of NetworkManager configuration relates to specifying additional system actions for when a netwrok interface goes up or down.
+For example, some network daemons need to know when to start or stop listening on an interface in order to work correctly (such as the secure shell daemon discussed in the next chapter).
+  When the network interface status on a system changes. NetworkManager runs everything in /etc/NetworkManager/dispatcher.d with an argument such as up or down.
+This is relatively straighforward, but many distributions have their own network control scrips so they don't place the individual dispatcher scripts in this directory.
+Ubuntu, for example, has just one script named 01i fupdown that runs everything in an appropriate subdirectory of these scripts are relatively unimportant; all you need to know is how to track down the appropriate location if you need to make an addition or change.
+As ever, don't be shy about looking at scripts  on your system.
