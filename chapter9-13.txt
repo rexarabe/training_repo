@@ -1,0 +1,19 @@
+9.13 Localhost
+When running ifconfig, you'll notice the lo interface:
+
+lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10<host>
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 6503  bytes 582951 (582.9 KB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 6503  bytes 582951 (582.9 KB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+The lo interface is virtual network interface called the loopback because it "loops back" to itself.
+The effect is that connecting to 127.0.0.1 is connecting to the machine that you're currently using.
+When outgoing data to localhost reaches the kernel network interface for lo, the kernel just repackages it as incoming data and sends it back through lo.
+
+The lo loopback interface is often the only place you'll see static network configuration in boot-time scripts.
+For example, Ubuntu's ifup command reads. /etc/network/interfaces and Fedora uses /etc/sysconfig/network-interfaces/ifcfg-lo.
+You can often find the loopback device configuration by digging around in /etc with grep.
