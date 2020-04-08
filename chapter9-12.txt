@@ -1,0 +1,85 @@
+9.12 Resolving Hostnames
+One of the final basic tasks in any network configuration is hostname resolution with DNS.
+You've already seen the host resolution tool that translates a name such as www.example. com to an IP address such as 10.23.2.132.
+DNS differs from the network elements we've looked at so far because it's in the application layer, entirely in user space.
+Technically, it is slightly out of place in this chapter alongside the Internet and physical layer discusion, but without proper DNS configuration, your Internet connection is practically worthless.
+No one in their right mind advertises Ip addresses for websites and email addresses because a host's IP address is subject to change and it's not easy to remember a bunch of numbers.
+Automatic network configuration services such as DHCP nearly always include DNS configuration.
+Nearly all network applications on a Linux system perform DNS look-ups.
+The resolution process typically unfolds like this:
+
+1. The application calls a function to look up the IP address behind a hostname.
+This function is in the system's shared library, so the appication doesn't need to know the details of how it works or whether the implementation will change.
+
+2. When the function in the shared library runs, it acts according to a set of rules (found in /etc/nsswitch.conf) to determine a plan of action on lookups.
+For example, the rules usually say that even before going to DNS, check for a manual override in the /etc/hosts file.
+
+3. When the function decides to use DNS for the name lookup, it consults an additional configuration file to find a DNS name server.
+The name server is given an an IP address.
+
+4. The function sends a DNS lookup request (over the network) to the name server.
+
+5. The name server repoies with the Ip address for the hostname, and the function returns this IP address to the application.
+
+This is the simplified version.
+In a typical modern system, there are more actors attempting to speed up the transaction and/or add flexibility.
+Let's ignore that for now and take a closer look at the basic pieces.
+
+9.12.1 /etc/hosts
+On most systems, you can override hostname lookups with the /etc/hosts file.
+It usually looks like this:
+
+
+see page 207
+
+You'll nearly always see the entry for localhost here (see Section 9.13).
+
+Note:
+In the bad old days, there was one central hosts file that everyone copied to their own machine in order to stay up-to-date (see RFCs 606, 608, 623 and 625), but as the ARPANET/Internet grew, this quickly got out of hand.
+
+9.12.2 resolv.conf
+The traditional configuration file for DNS servers is /etc/resolv.conf.
+When things were simpler, a typical example might have looked like this, where the ISP's name server addresses are 10.32.45.23 and 10.3.2.3:
+
+see page 207
+
+The search line defines rules for incomplete hostnames (just the first part of the hostname; for example, myserver instead of myserver.example.com).
+Here, the resolver library would try to look up host.mydomain.example.com and host.example.com.
+But things are usually no longer this straightforward.
+Many enhancements and modifications have been made to the DNS configuration.
+
+9.12.3 Caching and Zero-Configuration DNS
+There are two main problems with the traditional DNS configuration.
+First, the local machine does not cache name server replies, so frequent repeated network access may be unecessarily slow due to name server requests.
+To solve this problem, many machines (and routers, if acting as name servers) run an intermediate daemon to intercept name server request and return a cached answer to name service requests if possible; otherwise, requests and return to a real name server.
+Two of the most common such daemons for Linux are dnsmasq and nscd.
+You can also set up BIND (the standard Unix name server daemon) as a cache.
+You can often tell if you're running a name server caching daemonwhen you see 127.0.0.1 (localhost) in your /etc/resolv.conf file or when you see 127.0.0.1 show up as the server if you run nslookup -debug host.
+It can be a tricky to track down your configuration if you're running a name server-caching daemon.
+By default, dnsmasq has the configuration file /etc/dnsmasq/conf, but your distribution may override that.
+For example, in Ubuntu, if you've manually set up an interface that's set up by NetworkManager, you'll find it in the appropriate file in /etc/NetworkManager/system-connections because when NetworkManager activates a connection, it also starts dnsmasq with that configuration.
+(You can override all of this by uncommenting the dnsmasq part of your NetworkManager.conf.)
+The other problem with the traditional name server setup is that it can be particularly inflexible if you want to be able to look up names on your local network without messing around with a lot of netwok configuration.
+For example, if you set up a network appliance on your network, you'll want to be able to call it by name immediately.
+This is part of the idea behind zero-configuration name service systems such as Multicast DNS (mDNS) and Simple Service Discovery Protocol (SSDP).
+If you want to find a host by name on the local network, you just broadcast a request over the network; if the host is there, it replies with its address.
+These protocols go beyond host-name resolution by also providing information about available services.
+The most widely used Linux implementation of mDNS is called Avahi.
+You'll often see mdns as a resolver option in /etc/nsswitch.conf, which we'll now look at in more detail.
+
+9.12.4 /etc/nsswitch.conf
+The /etc/nsswitch.conf file controls several name-related precedence settings on your system, such as user and password information, but we'll only talk about the DNS settings in this chapter. The file on your system should have a line like this:
+
+hosts: files dns
+
+Putting files ahead of dns here ensures that your system checks the /etc/hosts file for the hostname o fyour requested IP address before asking the DNS server.
+This is usually a good idea (especially for looking up localhost, as discussed below), but your /etc/hosts file should be as short as possible.
+Don't put anyting in there to boost performance; doing so will burn you later.
+You can put all the hosts within a small private LAN in /etc/hosts, but the general rule of thung is that if a particular host has a DNS entry, it has no place in /etc/hosts.
+(The /etc/hosts file is also useful for resolving hostnames in the early stages of booting, when the network may not be available.)
+
+Note:
+DNS is a broad topic.
+If you have any responsibility for domain names, read DNS and BIND, 5th edition, by Cricket Liu and Paul Albitz (O'Reilly, 2006)
+
+
