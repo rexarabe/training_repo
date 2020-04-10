@@ -1,0 +1,12 @@
+9.15 Revisiting a Simple Local Network
+We're now going to look a additional components of the simple network introduced in Section 9.3.
+Recall that this network consists of one local area network as one subnet and a router that connects the subnet to the rest of the Internet.
+You'll learn the following:
+
+*How a host on the subnet automatically gets its network configuration
+*How to set up routing
+*What a router really is
+*How to know which IP addresses to use for the subnet
+*How to set up firewalls to filter out unwanted traffic from the Internet
+
+Let's start by learning how a host on the subnet automatically gets its network configuration.
