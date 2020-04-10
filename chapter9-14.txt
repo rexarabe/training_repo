@@ -1,0 +1,118 @@
+9.14 The Transport Layer: TCP, UDP, and Services
+
+So far, we've only seen how packets move from host to host on the Internet- in other words, the where question from the beginning of the chapter.
+Now let's start to answer the what question.
+It's important to know how your computer presents the packet data it receives from other hosts to its running processes.
+It's difficult and inconvenient for user-space programs to deal with a bunch of raw packets the way that the kernel can.
+Flexibility is expecially important: More than one application should be able to talk to the network at the same time (for example, you might have email and several web clients running).
+
+Transport layer protocols bridge the gap between the raw packets of the Internet layer and the refined needs of applications.
+The two most popular transport protocols are the Transmission Control Protocol (TCP) and the User Datagram Protocol (UDP).
+We'll concentrate on TCP because it's by far the most common protocol in use, but we'll also take a quick look at UDP.
+
+9.14.1 TCP Ports and Connections:
+TCP provides for multiple network applications on one machine by means of network ports.
+A port is just a number.
+If an IP address is like the postal address of an apartment building, a port is like a mailbox number - it's a further subdivision.
+
+When using TCP, an application opens a connection (not to be confused with NetworkManager connections) between one port on its own machine and a port on a remote host.
+From the application's point of view, port 36406 is the local port and port 80 is the remote port.
+
+You can identify a connection by using the pair of IP addresses and port numbers.
+To view the connections currently open on your machine, use netstat.
+Here's an example that shows TCP connections:
+The -n option disables hostname (DNS) resolution, and -t limit the output to TCP.
+
+see page 210
+
+The Local Address and Foreign Address fields show connections from your machine's point of view, so the machine here has an interface configured at 10.23.2.4, and ports 47626, 41475, and 57132 on the local side are all connected.
+The first connections here shows port 47626 connected to port 5222 of 10.194.79.125.
+
+9.14.2 Establishing TCP Connections
+To establish a transport layer connection, a process on one host initiates the connection from one of its local ports to a port on a second host with a special series of packets.
+In order to recognize the incoming connection and respond, the second host must have a process listening on the correct port.
+Usually, the connecting process is called the client, and the listener is the called the server (more about this Chapter 10).
+
+The important thing to know about the ports is that the client picks a port on its side that isn't currently in use, but it nearly always connects to some well-known port on the server side.
+Recall this output from the netstat command in the preceding section:
+
+See page 210
+
+With a little help, you can see that this connection was probably initiated by a local client to a remote server because the port on the local side (47626) looks like a dynamically assigned number, wheareas the remote port (5222) is a well-known service (the Jabber or XMPP messaging service, to be specific.).
+
+Note:
+ A dynamically assigned port is called an ephemeral port.
+
+However, if the local port in the output is well-known, a remote host probably initiated the connection.
+Inn this example, remote host 172.24.54.234 has connected to port 80 (the default web port) on the local host.
+
+See page 211.
+
+A remote host connecting to your machine on a well-known port implies that a server on your local machine is listening on this port.
+To confirm this, list all TCP ports that your machine is listening on with netstat:
+
+See page 211
+
+The line with 0.0.0.0:80 as the local address shows that the local machine is listening on port 80 for connections from any remote machine.
+(A server can restrict the access to certain interfaces, as shown in the last line, where something is listening for connections only on the localhost interface.)
+To learn even more, use lsof to identify the specific process that's listening (as discussed in Section 10.5.1)
+
+9.14.3 Port Numbers and /etc/services
+How do you know if a port is a well-known port?
+There's no single way to tell, but one good place to start is to look in /etc/services, which translates well-known port numbers into names.
+This is a plaintext file.
+You should see entries like this:
+
+See page 211
+
+The first column is a name and the second column indicates the port number and the specific transport layer protocol (which can be other than TCP).
+
+Note:
+In addition to /etc/services, an online registry for ports at http://www.iana.org/ is governed by the RFC6355 network standards document.
+
+On Linux, only processes running as the superuser can use ports 1 through 1023.
+All user processes may listen on and create connections from ports 1024 and up.
+
+9.14.4 Characteristics of TCP
+TCP is popular as a tranport layer protocol because it requires relatively little from the application side.
+An application process only needs to know how to open (or listen for), read from, write to, and close a connection.
+To the application, it seems as if there are incoming and outgoing steams of data; the process is nearly as simple as working with a file.
+
+However, there's a lot of work to do behind the scenes.
+For one, the TCP implementation needs to know how to break an outgoing data stream from a process into packets.
+However, the hard part is knowing how to convert a series of incoming packets into an input data stream for processes to read, expecially when incoming packets don't necessarily arrive in the correct order.
+In addition, a host using TCP must check for errors:
+Packets can get lost or mangled when sent across the Internet, and a TCP implementation must detect and correct these situations.
+Figure 9-3 shows a simplification of how a host might use TCP implementation must detect and correct these situations.
+Figure 9-3 shows a simplification of how a host might use TCP to send a message.
+
+Luckily, you need to know next to nothing about this mess other than that the Linux TCP implementation is primarlily in the kernel and that utilities that work with the transport layer tend to manipulate kernel data structures.
+One example is the IP Tables packet-filtering system discussed in Section 9.21 Section.
+
+9.14.5 UDP
+UDP is a far simpler transport layer than TCP.
+It defines a transport only for single messages; there is no data stream.
+At the same time, unlike TCP, UDP won't correct for lost or out-of-order packets.
+In fact, although UDP has ports, it doesn't even have connections!
+One host simply sends a message from one of its ports to a port on a server, and the server sends something back if it want to.
+However, UDP does have error detection for data inside a packet; a host can detect if a packet gets mangled, but it doesn't have to do anything about it.
+
+Where TCP is like having a telephone conversation, UDP is like sending a letter, telegram, or instant message (except that instant messages are more reliable).
+Applications that use uDP are often concerned with speed -sending a message as quickly as possible.
+They don't want to overhead of TCp because they assume the network between two hotss in generally reliable.
+They don't need TCP's error correction because they either have their own error detection system or simply don't care about errors.
+
+One example of an application that uses UDP is the Network Time Protocol (NTP).
+A client sends a short and simple request to a server to get the current time, and the response from the server is equally brief.
+Because the client wants the response as quickly as possible, UDP suits the application; if the response from the server gets lost somewhere in the network, the client can just resend a request or give up.
+Another example is video chat-in this case, pictures are sent with UDP -and if some pieces get lost along the way, the cliend on the receiving end compensates the best it can.
+
+
+See Page 213
+
+Note :
+The rest of this chapter deals with more advancecd networking topics, such as network filtering and routers, as they relate to the lower network layers that we've already seen:
+physical, network, and transport.
+If you like, feel free to skip ahead to the next chapter to see the application layer where everything comes together in user space.
+You'll see processes that actually uuse the network rather than just throwing around a bunch of addresses and packets.
+
