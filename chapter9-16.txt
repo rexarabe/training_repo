@@ -1,0 +1,30 @@
+9.16 Understanding DHCP
+When you set a network host to get its configuration automatically from the network, you're telling it to use the Dynamic Host Configuration Protocol (DHCP) to get an IP address, subnet mask, default gateway, and DNS servers.
+Aside from not having to enter these parameters by hand, DHCP has other advantages for a network administrator, such as preventing IP address clashes and minimizing the impact of network changes.
+It's very rare to see a modern network that doesn't use DHCP.
+For a host to get its configuration with DHCP, it must be able to send messages to a DHCP server on its connected network.
+Therefore, ,each physical network should have its own DHCP server, and on a simple network (such as the one in Section 9.3), the router usually acts as the DHCP server.
+
+Note:
+When making an initial DHCP request, a host doesn't even know the address of a DHCP server, so it broadcasts the request to all hosts (usually all hosts on its physical network.)
+
+Note:
+When making an initial DHCP request, a host doesn't even know the address of a DHCP server, so it broadcasts the request to all hosts (usually all hosts on its physical network)
+
+When a machine asks a DHCP server for an IP address, it's really asking for a lease on an address for a certain amount of time.
+When the lease is up, a cliend can ask to renew the lease.
+
+9.16.1 The Linux DHCP Client
+Although there are many different kinds of network manager systems, nearly all use the Internet Software Consortium (ISC) dhclient program to do the actual work.
+You can test dhclient by hand on the command line, but before doing so you must remove any default gateway route.
+To run the test, simply specify the network interface name (here, it's eth0):
+
+See page 215
+
+Upon startup, dhclient stores its process ID in /var/run/dhclient.pid and its lease information in /var/state/dhclient.leases
+
+9.16.2 Linux DHCP Servers
+You can task a Linux machine with running a DHCP server, which provides a good amount of control over the addresses that it gives out.
+However, unless you're administering a large network with many subnets, you're probably better off using specialized router hardware that includes built-in DHCP servers.
+Probably the most important thing to know about DHCP servers is that you want only one running on the same subnet ni order to avoid problems with clashing IP addresses or incorrect configuration.s
+
