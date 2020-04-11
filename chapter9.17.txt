@@ -1,0 +1,33 @@
+9.17 Configurating Linux as a Router
+Routers are essentially just computers with more than one physical network interface.
+You can easily configure a Linux machine as a router.
+For example, say you have two LAN subnets. 10.23.2.0/24 and 192.168.45.0/24.
+To connect them, you have a Linux router machine with three network interfaces: two for the LAN subnets and one for an Internet uplink, as shown in Figure 9-4.
+As you can see, this doesn't look very different from the simple network example that we've used in the rest of this chapter.
+
+See Page 215
+
+The router's IP addresses for the LAN subnets are 10.23.2.1 and 192.168.45.1.
+When those addresses are configured, the routing table looks something like this (the interface names might vary in practice; ignore the Internet uplink for now):
+
+See page 216
+
+Now let's say that the hosts on each sunet have the router as their default gateway (10.23.2.1 for 10.23.2.0/24 and 192.168.45.1 for 192.168.45.0/24).
+If 10.23.2.4 wants to send a packet to anything outside of 10.23.2.0/24, it passes the packet to 10.23.2.1.
+For example, to send a packet from 1-/23/2/1 (the router) via its eth0 interface, then back out through the router's eth1 interface.
+However, by default, the Linux kernel does not automatically move packets from one subnet to another.
+To enable this basic routing function, you need to enable IP forwarding in the router's kernel with this command:
+
+#sysctl -w net.ipv4.ip_forward
+
+As soon as you enter this command, the machine should start routing packets betweehn the two subnets, assuming that the host on those subnets know to send their packets to the router you just created.
+To make this change permanent upon reboot, you can add it to your /etc/sysctl.conf file.
+Depending on your distribution, you may have the option to put it into a file in /etc/sysctl.d so that distribution updates won't overwrite your changes.
+
+9.17.1 Internet Uplinks
+When the router also has the third network interface with an Internet iplink, this same setup allows Internet access for all hosts on hboth subnets because they're configured to use the router as the default gateway.
+But that's where things get more complicated.
+The problem is that certain IP addresses such as 10.23.24 are not actually visible to the whole Internet; they're on so-called private networks.
+To provide for Internet connectivity, you must set up a feeature called Network Address Translation (NAT) on the router.
+The software on nearly all speciallized routers does this, so there's nothing out of the ordinary here, but let's examinie the problem of private networks in a bit more detail.
+
