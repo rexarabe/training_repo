@@ -1,0 +1,34 @@
+9.19  Network Address Translation (IP Masquerading)
+NAT is the most commonly use way to share a single IP address with a private network, and it's nearly universal in home and small office networks.
+In Linux, the variant of NAT that most people use is known as IP masquerading.
+The basic idea behind NAT is that the router doesn't just move packets from one subnet to another; it transforms them as it moves them.
+Hosts on the Internet know how to connect to the router, but they know nothing about the private network behind it.
+The hosts on the private network need no special configuration; the router is their default gateway.
+
+The system works roughly like this:
+1. A host on the internal private nework wants to make a connection to the outside world, so it sends its connection request packets through the router.
+2, The router intercepts the connection request packet rather than passing it out to the Internet (where it would get lost because the public Intenet knows nothing about private networks.)
+3. The router determines the destination of the connection request packet and opens its own connection to the destination.
+4. When the router obtains the connections, it fakes a "connection established" message back to the original internal host.
+5. The router is now the middleman between the internal host and the destination.
+The destination knows nothing about the intenal host; the connection on the remote host looks like it came from the router.
+
+This isn't quite as simple as it sounds.
+Normal IP routing knows only source and destination IP addresses in the Internet layer.
+However, if the router dealt only with the Internet layer, each host on the internal network could establish only one connection to a single destination at one time (among other limitations), because there is no information in the Internet layer part of a packet to distinguish multiple requests from the same host to the same destination.
+Therefore, NAT must go beyond the Internet layer and dissect packets to pull out more idetifying information, particularly the UDP and TCP port numbers from the transport layers.
+UDP is fairly easy because there are ports but no connectinos, but the TCP transport layer is complex.
+In order to set up a Linux machine to perform as a NAT router, you must activate all of the following inside the kernel configuration: network packet filtering ("firewall support"), connection tracking, IP tables support, full NAT, and MASQUERADE target support.
+Most distribution kernels come with this support.
+
+Next you need to run some complex-looking iptables commands to make the router perform NAT for tis private subnet.
+Here's an example that applies to an internal Ethernet network on eth1 sharing an external connection att eh0 (you'll learn more about he iptables syntax in Section 9.21):
+
+See page 218
+
+Note:
+ALthough NAT works well in practice, remember that it's essentially a hack ued to extend the lifetime of the IPv4 address space.
+In a perfect world, we would all be using IPv6 (the next-generation Internet) and using its larger and more sophisticated address space without any pain.
+
+You likely won't ever need to use the commands above unless you're developing your own software, especially with so much special-purpose router hardware available.
+But the role of Linux in a network doesn't end here.
