@@ -1,0 +1,22 @@
+9.18 Private Networks
+
+Say you decide to build your own network.
+You have your machines, router, and network hardware ready.
+Given what you know about a simple network so far, your next question is "What IP subnet shoud I use?"
+If you are want a block of Internet addresses that every host on the Internet can see, you acn buy one from your ISP.
+However, because the range of IPv4 addresses is very limited, this costs a a lot and isn't useful for much more than running a server that the rest of the Internet can see.
+Most people don't really need this kind of service because they access the Intenet as a client.
+
+The conventional, inexpensive alternative is to pick a private subnet from the addresses in the RFC 1818/6761 INternet standards documents, shown in Table 9-2.
+
+Table 9-2: Private Netoworks Defined by RFC 1918 and 6761
+
+See page 217
+
+you can carve up private subnets as you wish.
+Unless you plan to have more than 254 hosts on a single network, pick a small subnet like 10.23.2.0/24, as we've been using throughout this chapter.
+(Networks with this netmask are sometimes called class C subnets.
+Although the term is technically some-what obsolete, it's still useful.)
+
+What's the catch? Hosts on the real Internet know nothing about private subnets cannot talk to the outside world.
+A router connected to the Internet (with a true, nonprivate address) needs to have some way to fill in the gap between that connection and the hosts on a private network.
