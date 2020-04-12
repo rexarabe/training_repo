@@ -1,0 +1,17 @@
+9.20 Router and Linux
+In the early days of broadband, users with less demanding needs simply connected their machine directly to the Internet.
+But it didn't take long for many users to want to share a single broadband connection with their own networks, and Linux users in particular would often set up an extra machine to use as router running NAT.
+Manufacturers responded to this new market by offering specialized router hardware consisting of an efficient processor, some flash memory, and several network ports-with enough power to manage a typical network, run important software such as a DHCP server, and use NAT.
+When it came to software, many manufacturers turned to Linux to power their routers.
+THey added the necessary kernel features, stripped down the user-space software, and created GUI-based administration interfaces.
+Almost as soon as the first of these routers appeared, many people became interested in digging deeper into the hardware.
+One manufacturer, Linksys, was required to release the source code for its software under the terms of the license of one its components, and soon specialized Linux distributions such as OpenWRt appeared for routers.
+(The "WRT" in these name came from the Linksys model number.)
+Aside from the hobbyist aspect, there are good reasons to use these ditributions: They're often omore stable than the manufacturer firmware, especially on older router hardware, and they typically offer additional features.
+FOr example, to bridge a network with a wireless connection, many manufacturers require you to buy matching hardware, but with OpenWRt installed, the manufacturer and age of the hardware don't really matter.
+This is because you're using a truly open operating system on the router that doesn't care what hardware you use as long as your hardware is supported.
+You can use much of the knowledge in this book to examine the internals of custom Linux firmware, though you'll encounter differences, especially when loggin in.
+As with many embedded systems, open firmware tends to use BusyBox to provide many shell features.
+BusyBox is a single executable program that offers limited functionality for many Unix commands such as the shell, ls, grep cat, and more.
+(This saves a significant amount of memory.) In addition, the booti-time init tends to be very simple on embedded systems.
+However, you typically won't find these limitations to be a problem, because custom Linux firmware often includes a web administration interface similar to what you'd see from a manufacturer.
