@@ -1,0 +1,45 @@
+9.22 Ethernet, IP and ARP
+There is one intersting basic detail in the implementation of IP over Ethernet that we have yet to cover.
+Recall that a host must place an IP packet inside an Ethernet frame in order to transmit the packet across the physical layer to another host.
+Recall, too, that frames themselves do not include IP address information; they use MAC (hardware) addresses.
+The question is this: When construction the Ethernet frame for an IP packet, how does the host know which MAC address corresponds to the destination IP address?
+
+We don't normally think about this question much because networking software includes an automatic system of looking up MAC Addresses called Address Resolution Protocol (ARP).
+A host using Ethernet as its physical layer and IP as the network layer maintains a small table called an ARP cache that maps IP addresses to MAC addresses.
+In Linux, the ARP cache is in the kernel.
+To view your machine's ARP cache, use the arp command. (As with many other network commands, the -n option here disables reverse DNS lookups.)
+
+See page 225
+
+When a machine boots, its ARP cache is empty.
+So how do these MAC addresses get in the cache?
+It all starts when the machine wants to send a packet to another host.
+If a target IP address is not in an ARP cache, the following steps occur:
+
+1. The origin host creates a special Ethernet frame containing an ARP request packet for the MAC address that corresponds to the target IP address.
+2. The origin host broadcasts this frame to the entire physical network for the target's subnet.
+3. If one of the other hosts on the subnet knows the correct MAC address, it creates a reply packet and frame containing the address and sends it back to the origin.
+Often, the host that replies is the target host and is simply replying with its own MAC address.
+4. The origin host adds the IP-MAC address pair to the ARP cache and can proceed.
+
+Note:
+Remember that ARP only applies to machines on local subnets (refet to Section 9.4 to see you local subnets)
+To reach destinations outside your subnet, your host sends the packet to the router, and it's someone else's problem after that.
+Of course, your host still needs to know the MAC address for the router, and it can use ARP to find it.
+
+The only real problem you can have with ARP is that your sustem's cache can get out-of-date if you're moving an IP address from one network interface card to another because the cards have different MAC addresses.
+(for example, when testing a machine).
+Unix systems invalidate ARP cache entries if there's no activity after a while, so there shouldn't be any trouble other than a small delay for invalidated data, but you can delete an ARP cache entry immediately with this command:
+#arp -d host
+
+You can also view the ARP cache for a single network interface with
+
+$arp -i interface
+
+The arp(8) manual page explains how to manually set ARP cache entries, but you shouldn't need to do this.
+
+Note:
+Don't confuse ARP with Reverse Address Resolution Protocol (RARP).
+RARP transforms a MAC address back to a hostname or IP address.
+Before DHCP became popular, some diskless workstations and other devicecs use RARP to get their configuration, but RARP is rare today.
+
