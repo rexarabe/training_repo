@@ -1,0 +1,69 @@
+9.23 Wireless Ethernet
+In principle, wireless Ethernet ("WIFI") networks aren't much different from wired networks.
+Much like any wired hardware, they have MAC addresses and use Ethernet frames to transmit and receive data, and as a result the Linux kernel can talk to a wireless network interface much as it would a wired network interface.
+Everything at the network layer and above is the same; the main differences are additional components in the physical layer such as frequencies, network IDs, security, and so on.
+Unlike wired network hardware, which is very good at automatically adjusting to nuances in the physical setip without much fuss, wireless network configuration is much more open-ended.
+To get a wireless interface working properly, Linux needs additional configuration tools.
+
+Let's take a quick look at the additional components of wireless networks.
+Transmission details  These are physical characteristics, such as the radio frequency.
+
+Network identification  Because more than one wireless network can share the same basic medium, you have to be able to distinguish between them. The SSID (Servicec Set Identifier, also known as the "network name") is the wireless network identifier.
+
+Management  Although it's possible to configure wireless networking to have hosts talk directly to each other, most wireless networks are managed by one or more access points that all traffic goes through.
+Access points often bridge a wireless network with a wired network, making both appear as one single network.
+
+Authentication  You may want to restrict access to a wireless network.
+To do so, you can configure access points to require a password or other authentication key before they'll even talk to a client.
+
+Encryption In addtion to restricting the initial access to a wireless network, you normally want to encrypt all traffic that goes out across radio waves.
+
+The Linux configuration and utilities that handle these components are spread out over a number of areas.
+Some are in the kernel: Linux features a set of wireless extensions that standardize user-space access to hardware.
+As far as user space goes, wireless configuration can get complicated, so most people prefer to use GUI Frontends, such as the desktop applet for NetworkManager, to get things working.
+Still, it's worth lookin at a few of the things happening behind the scenes.
+
+9.23.1 iw
+You can view and change kernel space device and network configuration with a utility called iw.
+To use iw.
+To use iw, you normally need to know the network interface name for the device, such as wlan0.
+Here's an example that dumps a scan of available wireless networks.
+(Expect a lot of ouptut if you're in an urban area.)
+
+#iw dev wlan0 scan
+
+Note:
+The network interface must be up for this command to work (if it's not, run ifconfig wlan0 up), but you don't need to configure any network layer parameters, such as an IP address.
+
+If the network interface has joined a wireless network, you can view the network details like this:
+
+#iw dev wlan0 link
+
+The MAC address in the output of this command is from the access point that you're currently talking to.
+
+Note:
+The iw command distinguishes between physical device names such as phy0 and network interface names such as wlan0 and allows you to change various settings for each.
+You can even create more than one network interface for a single physical device.
+However, is nearly all basic cases, you'll just use the network interface name.
+
+Use iw to connect a network interface to an unsecured wireless network as follows:
+
+#iw wlan0 connect network_name
+
+Connecting to secured networks is a different story.
+For the rather insecure Wired Equivalent Privacy (WEP) system, you can use the keys parameter with the iw connect command.
+However, you shouldn't use WEP if you're serious about security.
+
+9.23.2 Wireless Security
+For most wireless security setups, Linux relies on a daemon called wpa_supplicant to manage both authentication and encryption for a wireless network interface.
+This daemon can handle both WPA (WiFi Protected Access) and WPA2 schemes of authentication, as well as nearly any kind of encryption technique used on wireless networks.
+When the daemon first starts, it reads a configuration file (by default, /etc/wpa_supplicant.conf) and attempts to identify itself to an access point and establish communication based on a given netwrok name.
+The system is well documented; in particular, the wpa_supplicant(1) and wpa_supplicant(1) and wpa_supplicant.conf(5) manual pages are very detailed.
+
+Running the Daemon by hand every time you want to establish a connection is a lot of work.
+In fact, just creating the configuration file is tedious due to the number of possible options. To make matters worse, all of the work of runnin iw and wpa_supplicant simply allows your system to join a wireless physical network; it doesn't even set up the network layer.
+And that's where automatic ....
+
+
+
+
