@@ -1,0 +1,11 @@
+9.24 Summary
+You can now see that understanding the positions and roles of the various network layers is critical to understanding how Linux networking operates and how to perform network configuration.
+Although we've covered only the basics, more advanced topics in the physical, network, and transport layers bear similarities to what you've seen.
+Layers themselves are often subdivided, as you just saw with the various pieces of the physical layer in a wireless network.
+A substantial amount of action that you've seen in this chapter happens in the kernel, with some basic user-space control utilities to manipulate the kernel's internal data structures (such as routing tables).
+This is the traditional way of working with the network.
+However, as with many of the topics discussed in this book, some tasks aren't suitable for the kernel due to their complexity and need for flexibility, and that's where user-space utilities take over.
+In particular, NetworkManager monitors and queries the kernel and then manipulates the kernel configuration.
+Another example is support for dynamic routing protocols such as Border Gateway Protocol (BGP), which is used in large Internet routers.
+But you're probably a little bit bored with network configuration by now.
+Let's turn to using the network - the application layer.
