@@ -1,0 +1,22 @@
+10/2 Network Servers
+
+Most network servers are like other server daemons on your system such as cron, except that they interact with network ports.
+In fact, recall syslogf discussed in Chapter 7; it accepts UDP packets on port 514 when started with the -r option.
+These are some other common network servers that you might find running on your system:
+httpd, apache, apache2  Web servers
+sshd Secure shell daemon (see Section 10.3)
+postfix, qmail, sendmail Mail servers
+cupsd Print server
+nfsd, mountd Network filesystem (file-sharing) daemons
+smdb, nmbd  Windows file-sharing daemons (see Chapter 12)
+rpcbind  Remote procedure call (RPC) portmap service daemon
+
+One feature common to most newrok servers is that they usually operate as multiple processes.
+At least one process listens on a network port, and when a new incmoing connnection is received, the listening process uses fork() to create a new child process, which is then responsible for the new connection.
+The child, often called a worker process, terminates when the connection is closed.
+Meanwhile, the original listening process continues to listen on the network port.
+This process allows a server to easily handle many connections without much trouble.
+There are some exceptions to this model, however.
+Calling fork() adds a significant amount of system overhead.
+In comparison, high-performance TCP servers such as the Apache web server can create a number of worker processes upon startup so that they are already there to handle connections as needed.
+Servers that accept UDP packets simply receive data and react to it; they don't have connections to listen for.
