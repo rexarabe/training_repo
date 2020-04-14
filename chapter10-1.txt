@@ -1,0 +1,93 @@
+10.1 The Basics of Services
+
+TCP services are among the easiest to understand because they are built upon simple, uninterrupted two-way data streams.
+Perhaps the best way to see how they work is to talk directly to a web server on TCP port 80 to get an idea of how data moves across the connection.
+For example, run the following command to connect to a web server:
+
+$telnet www.wikipedia.org 80
+
+You should get a responde like this:
+
+Trying some address...
+Connected to www.wikipedia.org.
+Escape character is '^]'.
+
+Now enter
+GET / HTTP/ 1.0
+
+Press Enter twice.
+The server should send a bunch of HTML text as a response and then terminate the connection.
+This exercise tells us that
+
+* the remote host has a web server process listening on TCP oprt 80; and
+* telnet was the client that initiated the connection.
+
+Note:
+telnet is a program originally meant to enable logins to remote hosts.
+Although the non-Kerberos telnet remote login server is completely insecure (as you will learn later), the telnet client can be useful for debugging remote services.
+telnet does not work with UDP or any transport layer other tahn TCP.
+If you're looking for a general-purpose network client, consider netcat, described in Section 10.5.3.
+
+10.1.1 A Closer Look
+
+In the example above, you manually interacted with a web server on the network with telenet, using the Hypertext Transfer Protocol (HTTP) application layer protocol.
+Although you'd normally use a web browser to make this sort of connection, let's take just one step up from telnet and use a command-line program that knows how to speak to the HTTP application layer.
+We'll use the curl utility with a special option to record details about its communication:
+
+$curl --trace-ascii trace-file http://www.wikipedia.org/
+
+Note:
+Your distribution may not have the curl package preinstalled, but you should have no trouble installing it if necessary.
+
+You'll get a lot of HTML output.
+Ignore it (or redirect it to /dev/null) and instead look at the newly created file trace_file.
+Assuming that the connection was successful, the first part of the file should look something like the following, at the point where curl attempts to establish the TCP connection to the server:
+
+== Info: About to connect() to www.wikipedia.org port 80 (#)
+== Info:   Trying 10.80.154.224... = Info: connected
+
+Everything you've seen so far happens in the transport layer or below.
+However, if this connection succeeds, curl tries to send the request (the "header"); this is where the application layer starts:
+
+=> Send header, 167 bytes (0xa7)
+0000: GET / HTTP /1.1
+0010: User-Agent: curl/7.22.0 (i686-pc-linux-gnu) libcurl/7.22.0 OpenS
+0050: SL/1.0.1 zlib/1.2.3.4 libidn/1.23 librtmp/2.3
+007f: Host: www.wikipedia.org
+0098: Accept: */*
+00a5:
+
+The first line here is curl debugging output telling you what it will do next.
+The remaining lines show what curl sends to the server.
+The text in bold is what does to the server; the hexdecimal numbers at the beginning are just debugging offsets from curl to help you keep track of how much data was sent or received.
+
+You can see that curl starts by issuing a GET commmand to the server (as you did with telnet), followed by some extra information for the server and an empty line.
+Next, the server sends a reply, first with its own header, shown here in bold:
+
+<= Recv header, 17 bytes (0x11)
+0000: HTTP/1.1 200 OK
+<= Recv header, 16 bytes (0x10)
+0000: Server: Apache
+<= Recv header, 42 bytes (0x2a)
+0000: X-Powered-By: PHP/5.3.10-1ubuntu3.9+wmf1
+
+Much like the previous output, the ,= lines are debugging output, and 0000: precedes the lines of output to tell you offsets.
+The header in the server's reply can be fairly long, but at some point the server transitions from transmitting headers to sending the actual requested document, like this:
+
+<= Recv header, 55 bytes (0x37)
+0000: X-Cache: cp1055 hit (16), cp1054 frontend hit (22384)
+<= Recv header, 2 bytes (0x2)
+0000:
+<= Recv data, 877 bytes (0x36d)
+0000: 008000
+0008: <!DOCTYPE html
+
+see page 232
+
+This output also illustrates an important property of the application layer.
+Even though the debugging output says Recv header and Recv data, implying that those are two different kinds of messages from the server, there's no difference in the way that curl talked to the operating system to retrieve the two kinds of messages, nor any difference in how the operating system handled them, nor any difference in the way that the network handled the packets underneath.
+The difference is entirely within the user-space curl application itself.
+curl knew that until this point it had been getting headers, but when it received a blank line (the 2-byte chunk in the middle) signifying the end of headers in HTTP, it knew to interpret anything that followed as the requested document.
+The same is true of the server sending this data.
+When sending the reply, the server, didn't differentiate between header and document data sent to the operating system: the distinctios happen inside the user-space server program.
+
