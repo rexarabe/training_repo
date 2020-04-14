@@ -1,0 +1,14 @@
+Chapter 10: NETWORK APPLICATIONS AND SERVICES
+
+This chapter explores basic network applications - the clients and servers running in user space that reside at the appliaction layer.
+Because this layer is at the top of the stack, close to end users, you may find this material more accesible than the material in Chapter 9.
+Indeed, you interact with netwrok client applications such as web browsers and email readers every day.
+
+To do their work, network clients connect to corresponding network servers.
+Unix network servers come in many forms.
+A server program can listen to a port on its own or through a secondary server.
+In addtion, server have no common configuration database and a wide variety of features. Most servers have a configuration file to control their behavior (though with no common format), and most use the operating system's syslog service for message logging.
+We'll look at some common servers as well as some tools that will help you understand and debug server operation.
+
+Network clients use the operating system's transport layer protocols and interfaces, so understanding the basics of the TCP and UDP transport layers is important.
+Let's start looking at network applications by experiementing with a network client that uses TCP.
