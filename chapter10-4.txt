@@ -1,0 +1,31 @@
+10.4 The inetd and xinetd Daemons
+
+Implementing standalone servers for eery service can be somehwat inefficient.
+Each server must be seperately configured to handle port listening, access control, and port configuration.
+These actions are performed in the same way for most services; only when a server accetps a connection is there any difference in the way communication is handled.
+One traditional way to simplify the use of servers is with the inetd daemon, a kind of superserver designed to standardize network port access and interfaces between server programs and network ports.
+After you start inted, it reads its configuration file and then listens on the network ports.
+After you starrt inetd, it reads its configuration file and then listens on the network ports defined in that file.
+As new network connections come in, inetd attaches a newly started process to the connection.
+A newer version of inetd called xinetd offers easier configuration and better access control, but xinetd itself is being phased out in favor of systemd, which can provide the same functionality through socket units, as described in Section 6.4.7.
+Although inetd is no longer commonly used, its configuration shows everything necessary to set up a service.
+As it turns out, sshd can also be invoked by inetd rather than as a standalone server, as shown in this /etc/inetd.conf configuration file:
+
+See 237
+
+
+The seven fields here are, from left to right:
+
+Service name  The service name from /etc/services (see Section 9.14.3).
+Socket type  This is usually stream for TCP and dgram for UDP.
+Protocol The transport protocol, usually tcp or udp.
+Datagram server behavior For UDP, this is wait or nowait. Services using any other transport protocol should use nowait.
+User The username to run the service. Add group to set a group.
+Executable  The program that inetd should connect to the service.
+Arguments the arguments for the executable. The first argument should be the name of the program.
+
+10.4.1 TCP Wrappers: tcpd, /etc/hosts.allow, and /etc/hosts.deny
+Before lower-level firewalls became popular, many administrators used the TCP wrapper library and daemon for host control over network services.
+In these implementations, inetd runs the tcpd program, which first looks at the incoming connection as well as the access control lists in the /etc/hosts.allow and /etc/hosts.deny files.
+The tcpd program logs the connection, and if it decides that the incoming connection is okay, it hands it to the final service program.
+(Although you may find a system that still uses the TCP wrapper system, we won't cover it in detail because it has largely fallen into disuse.)
