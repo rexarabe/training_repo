@@ -1,0 +1,124 @@
+10.3 Secure Shell (SSH)
+
+Every server works a bit differently.
+Let's take a close look at one- the standalone SSH server.
+One of the most common network service applications is the secure shell (SSH). the de facto standard for remote access to a Unix machine.
+When configuraed, SSH allows secure shell logins, remote program execution, simple file sharing, and more -replacing the old, insecure telnet and rlogin remote-access systems with publick-key cryptography for authenticathion and simpler cipher for session data.
+Most ISPs and cloud providers require SSH for shell access to their services, and many Linux-based network appliances (such as NAS devices) allow access via SSH as well.
+OpenSSH (https://www.openssh.com/) is a popular free SSH implementation for Unix, and nearly all Linux distributions come with it preinstalled.
+The OpenSSH client is ssh, and the server is sshd.
+There are two main SSH protocol versions:
+1 and 2. OpenSSH supports both, but version is rarely used.
+Among its many useful capabilities and features, SSH does the following:
+ Encrypts your password and all other session data, protecting you from snoppers.
+
+ Tunnels other network connections, including those from X windows System clients. You'll learn more about x In Chapter 14.
+
+ Offers clients for nearly any operating system.
+
+ Uses keys for host authentication.
+
+Note:
+Tunnelling is the process of packaging and transporting one network connection using another one.
+The advantages of using SSH of tunnel X Window System connections are that SSH sets up the display environment for you and encrypts the X data inside the tunnel.
+
+SSH does have its disadvantages.
+For one, in order to set up an SSH connection, you need the remote host's public key, and you don't necessarily get it in a secure way (Though you can check it manually to make sure you're not being spoofed).
+Foor an overview of how several methods of cryptography works, get your hands on the book applied Cryptography : Protocols, Algorithms, and Source COde in C, 2nd edition, by Bruce Schneier (Wiley, 1996).
+
+Two in-depth books on SSH are SSH Mastery: OpenSSH, Putty, Tunnels and Keys by Michael W. Lucas (Tilted Windmill Press, 2012) and SSH, The Secure Shell, 2nd edition, by Daniel J. Barrett, Richard E. Silverman, and Robert G. Byrnes (O'Reilly, 2005).
+
+10.3.1 The SSHD Server
+
+Running sshd requires a configuration file and host keys.
+Most distributions keep configurations in the /etc/ssh configuration directory and try to configure everything  properly for you if you install their sshd package.
+(The configuration filename sshd_config is easy to confuse with the client's ssh_config setup file, so be careful.)
+You shouldn't need to change anything in sshd_config, but it never hurts to check.
+The file consists of keyword-value pairs, as shown in this fragment:
+
+see page 234
+
+Line beginning with # are comments, and many comments in your sshd_config might indicate defautl values.
+The sshd_config (5) manual page contains descriptions of all possible values, but these are the most important ones:
+
+HostKey file  Uses file as a host key. (Host keys are described shortly.)
+LogLevel level   Logs messages with syslog level level.
+PermitRootLogin value  Permits the superuser to log in with SSH if value is set to yes. Set value to no to prevent this.
+SyslogFacility name  Logs messages with syslog facility name.
+X11Forwarding value  Enables X Window System client tunneling if value is set to yes.
+XAuthLocation path  Provides a path for xauth. X11 tunneling witl not work without this path. If xauth isn't in /usr/bin, set path to the full pathname for xauth.
+
+Host Keys
+OpenSSH has three host key sets: one for protocol version 1 and two for protocol 2.
+Each set has a public key (with a .pub file extension) and a private key (with no extension). Do not let anyone see your private key, even on your own system, because if someone obtains it, you're at risk from intruders.
+SSH version 1 has RSA keys only, and SSH version 2 has RSA and DSA keys.
+RSA and DSA are public key cryptography algorithms.
+The key file-names are given in table 10-1.
+
+
+See table in page 235
+
+Normally you won't need to build the keys because the OpenSSH installation program or your distribution's installation script will do it for you, but you do need to know how to create keys if you plan to use programs like ssh-agent.
+To create SSH protocol version 2 keys, use the ssh-keygen program that comes with OpenSSH:
+
+
+see page 235
+For version 1 keys, use
+
+Page 235
+
+The SSH server and clients also use a key file called ssh_known_hosts, which contains public keys from other hosts.
+If you intend to use hosts-based authentication, the server's ssh_known_hosts file must contain the public host keys of all trusted clients.
+When installing a new machine from scratch, you can import the key fiels from the old machine to ensure that uses don't get key mismatches when connecting to the new one.
+
+Stating the SSH Server
+
+Although most distributions ship with SSH, they usually don't start the sshd server by default.
+On Ubuntu and Debian, installing the SSH server package creates the keys, starts the server. andf adds the startup to the bootup configuration.
+On Fedora, sshd is installed by default but turned off.
+To start sshd at boot, use chkconfig like this (this won't start the server immediately; use service sshd start for that):
+
+see page 235
+
+Fedora normally creates any  missing host key files upon the first sshd startup.
+If you don't have any init support installed yet, running sshd as root start, sshd write its PID to /var/run/sshd.pid.
+You can also start sshd as a socket unit in systemd or with inetd, but it's usually not a good idea to do so because the server occasionally needs to generate key files, a process that can take a long time.
+
+10.3.2 The SSH Client
+
+To log in to remote host, run
+
+$ssh remote_username@host
+
+You may mit remote_username@ if your local username is the same as on host.
+You can also run pipelines to and from an ssh command as shown in the following example, which copies a directory dir to another hosts:
+
+$tar zcvf - dir | ssh remote_host tar zxvf -
+
+The global SSH client configuration file ssh_config should be in /etc/ssh with your sshd_config file.
+As with the server configuration file, the client configuration file has key-value pairs, but you shouldn't need to change them.
+The most frequent problem with using SSH clients occurs when an SSH key in your local ssh_known_hosts or .ssh/known_hosts file does not match the key on the remote host.
+Bad keys cause erros or warnings like this:
+
+....
+
+This usually just means that the remote host's administrator changed the keys (this often happens when replacing hardware), but it never hurts to check with the administrator if you're not sure.
+In any case, the preceding message tells you that the bad key is in line 12 of a user's known_hosts file, as shown at 1.
+
+If you don't suspect foul play, just remove the offeding line or replace it with the correct public key.
+
+SSH File Transfer Clients
+OpenSSH includes the file transfer programs scp and sftp, which are intended as replacements for the older, insecure programs rcp and ftp.
+You can use scp to transfer files to or from a remote machine to your machine or from one host to another.
+it works like the cp command.
+Here are a few examples:
+
+$scp user@host:file .
+$scp file user@host:dir
+$scp user1@host1:file user@host2:dir
+
+The sftp program works like the command-line ftp client, using get and put commands.
+The remote host must have an sftp-server program installed, which you can expect if the remote host also uses OpenSSH.
+
+Note:
+If you need more feature and flexibility than the offerings of scp and sftp (for example, if you're transferring large numbers of files often), have a look at rsync, described in CHapter 12.
