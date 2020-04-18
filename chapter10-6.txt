@@ -1,0 +1,13 @@
+10.6 Remote Procedure Call (RPC)
+What about the rpcbind service that you just saw in the scan in the preceding section?
+RPC stands for remote precedure call, a system residing in the lower parts of the application layer.
+It's designed to make it easier for programmers to access network applications by leveraging the fact that porgrams call functions on remote programs (identified by program numbers) and the remote programs return a result code or message.
+RPC implmenetations use tranport protocols such as TCP and UDP, and they require a special intermediary service to map program numbers to TCP and IDP ports.
+The server is called rpcbind, and it must be running on any machine that wants to use RPC services.
+To see what RPC services your computer has, run
+
+$rpcinfo -p localhost
+
+RPC is one of those protocols that just doesn't want to die.
+The Network File System (NFS) and Network information Service (NIS) system use RPC, but they are completely unnecessary on standalone machines.
+But whenever you think that you've eliminated all need for rpcbind, something else comes up, such as File Access Monitor (FAM) support in GNOME.
