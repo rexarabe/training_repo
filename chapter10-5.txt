@@ -1,0 +1,123 @@
+10.5 Diagnostic Tools
+Let's look at a few diagnostic tools that are useful for poking aorund the application layer.
+Some dig into the transport and network layer, because everything in the application layer eventually maps down to something in those lower layers.
+As discussed in Chapter 9, netstat is a basic network service debugging tool that can display a number of transport and network layer statistics.
+Table 10-2 reviews a few usefult options for view connections.
+
+See page 238
+
+10.5.1 lsof
+In Chapter 8, you learned that lsof can track open files, but it can also list the programs currently using or listening to ports.
+For a complete list of programs using or listening to ports, run
+#lsof -i
+When run as a regular user, this command only shows that user's processes.
+When run as root, the output should look something like this, displaying a variety of processes and users:
+
+See page 239
+
+This example output shows users and process IDs for server and client programs, from the old-style RPC services at the top, to the multicast DNS service provided by avahi, and even an IPv6-ready printer service(supsd).
+The last two entries show client connections: an SSH connection and a secure web connection from the Chromium web browser.
+Because the output can be extensive, it's usually best to apply a filter (as discussed in the following section).
+The lsof program is like netstat in that it tries to reverse-resolve every IP address that it finds into a hostname, which slows down the output.
+Use the -n option to disable name resoltion:
+#lsof -n -i
+
+You can also specify -P to disable /etc/services port name lookups.
+
+Filtering by Protocol and Port
+If you're looking for a particular port (say, you know that a process is using a particular port and you want to know what that process is), use this command:
+
+#lsof -i:port
+
+The full syntax is as follows:
+
+#lsof -iprotocol@host:port
+
+The protocol, @host, and :port parameters are all optional and will filter the lsof output accordingly.
+As with most network utilities, host and port can be either names or numbers.
+For example, if you only want to see connections on TCP port 80 (the HTTP port), use
+#lsof -iTCP:50
+
+Filtering by connection status
+One particularly handy lsof filter is connection status.
+For example, to show only the processes listening on TCP ports, enter
+
+#lsof -iTCP -sTCP:LISTEN
+
+This command gives you a good overview of the network server processes currently running on your system.
+However, because UDP servers don't listen and don't have connections, you'll have to use -iUDP to view running clients as wells as well as servers .
+This usually isn't a problem, because you probably won't have many UDP servers on your system.
+
+10.5.2 tcpdump
+If you need to see exactly what's crossing your network, tcpdump puts your network interface acard into promiscuous mode and reports on every packet that crosses the wire.
+Entering tcpdump with no arguments produces output like the following, which includes an ARP request and web connection:
+
+see page 249
+
+You can tell tcpdump to be more specific by adding filters.
+You can filter absed on source and destinatino hosts, networks, Ethernet addresses, protocols att many different layers in the network model, and much more.
+Among the many packet protocols that tcpdump recognizes are ARP, RARP, ICMP, TCP, IDP, IP, IPv6, AppletTAlk, and IPx packets.
+For example, to tell tcpdump to output only TCP packets, run
+
+#tcpdump tcp
+
+To see web packets and UDP packets, enter
+
+#tcpdump udp or port 80
+
+Note:
+If you need to do a lot of packet sniffing, consider using a GUI alternative to tcpdump such as Wireshark.
+
+Primitive
+In the preceding examples, tcp, udp, and port 80 are called primitives.
+The most important primitives are in Table 10-3:
+
+See page 241
+
+Operators
+The or used in the previous example is an operator. tcpdump can use multiple operators (such as and and !), and you can group operators in parentheses.
+If you plan to do any serious work with tcpdump, make sure to read the manual page, especially the section that describes the primitives.
+
+When Not to Use tcpdump
+Be very careful whn using tcpdump.
+The tcpdump output shown earlier in this sections includes only packet TCP (transport layer) and IP (internet layer) header information, but you can also make tcpdump print the entire packet contents.
+Even though many network operators make it far too easy to look at their network packets, you shouldn't snoop around on networks unless you own them.
+
+10.5.3 netcat
+If you need more flexibility in connecting to a remote host than a command like telnet host port allows, use netcat (or nc).
+nectat can connect to remote TCP/UDP ports, specify a local port, listen on ports, scan ports, redirect standard I/Oh to and from network connections, and more.
+To open a TCP connection to a port with netcat, run
+
+$netcat host port
+
+netcat only terminates when the other side of the connection ends the connection, which can confuse things if you redirect standard input to netcat.
+You can end the connections at any time by pressing CTRl-C.
+(If you'd like the program and network connection to terminate based on the standard input stream, try the sock program instead.)
+To listen on a particular port, run
+
+$netcat -l -p post_number
+
+10.5.4 Port Scanning
+
+Something you don't even know what services the machines on your networks are offering or even which IP addresses are in use.
+The Network Mapper (Nmap) program scans all ports on a machine or network of machines looking for open ports, or you can get it at http://www.insecure.org/
+(See the Nmap manual page and online resoruces for all that Nmap can do.)
+When listing ports on your own machine, it often helps to run the Nmap scan from at least two points: from your own machine and from another one (possibly outside your local network).
+Doing so will give you an overview of what your firewall is blocking.
+
+Warning:
+If someone else controls the network that you want to scan with Nmap, ask for permission.
+Network administrators watch for port scans and usually disable access to machines that run them.
+
+
+Run nmap host to run a generic scan on a host. For example:
+
+
+
+See page 242
+
+
+As you can see, a number of services are open here, many of which are not enabled by default on most distributions.
+in fact, the only one here that's usually on by default is port 111, the rpcbind port.
+As you can see, a number of serices are open here, many of which are not enabled by default on most distributions.
+In fact, the only one here that's usually on by default is port 111, the rpcbind port.
