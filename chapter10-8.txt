@@ -1,0 +1,9 @@
+10.8 Looking Forward
+If you're interested in getting your hands dirty with some complicated network servers, two very common ones are the Apache web server and the Postfix email server.
+In particular, Apache is easy to install and most distributions supply a package.
+If your machine is behind a firewall or NAT-enabled router, you can experiment with the configuration as much as you'd like without worrying aboutu security.
+
+Throughout the last few chapters, we've been gradually moving from kernel space into user space.
+Only a few utilities discussed in this chapter, such as tcpdump, interact with the kernel.
+The remainder of this chapter describes how sockets bridge the gap between the kernel's transport layer and the user-space application layer.
+It's more advanced material, or particular interest to programmers, so feel free to skip to the next chapter if you like.
