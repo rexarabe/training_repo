@@ -1,0 +1,25 @@
+10.9 Sockets: How Processes Communicate with the Network
+We're now going to shift gears a little and look at how processes do the work of reading data from and writing data to the network.
+It's easy enough for processes to read from and write to network connections that are already set up: All you need are some system calls, which you can read about in the recv(2) and send(2) manual pages.
+Form the point of view of a process, perhaps the most important thing to know is how to refer to the network when using these system calls.
+On Unix systems, a process uses a socket to identify when and how it's talking to the network.
+Sockets are the interface that processes use to access the network through the kernel; they represent the boundary between user space and kernel space.
+They're often also used for interprocess communication (IPC).
+
+There are different types of sockets because processes need to access the network in different ways.
+For example, TCP connections are represented by stream sockets (SOCK_STREAM, from a programmer's point of view), and UDP connections are represented by datagram sockets (SOCK_DGRAM).
+Setting up a network socket can be somewhat complicated because you need to account for socket type, IP addresses, ports, and transport protocol at particular times.
+However, after all of the initial details are sorted out, servers use certain standard methods to deal with incoming traffic from the network.
+The flwochart in Figure 10-1 shows how many servers handle connections for incoming stream sockets.
+Notice that this type of server involves two kinds of sockets: a listening socket and a socket for reading and writing.
+The master process uses the listening socket to look for connections from the network.
+When a new connection comes in, the master process ues the accept() system call to accept the connection, which creas the read/write socket dedicated to that one connections.
+Next, the master process uses fork() to create a new child process to deal with the connection.
+Finally, the original socket remains the listener and continues to look for more connections on behalf of the master process.
+After a process has set up a socket of a particular type, it can interact with it in a way that fits the socket type.
+This is what makes sockets flexible: If you need to change the underlying transport layer, you mostly need to modify the initialization code.
+
+
+See page 247
+
+
