@@ -1,0 +1,43 @@
+11.1 Shell Script Basics
+Bourne shell scripts generally start with the following line, which indicates that the /bin/sh prgram should execute the commands in the script file.
+(Make sure that no whitespace appears at the beginning of the script file.)
+
+#!/bin/sh
+
+The #! part called a shebang; you'll see it in other scripts in this book.
+You can list any commands that you want the shell to execute following the
+#!/bin/sh line.
+For example:
+
+#!/bin/sh
+#
+# Print something, then run ls
+
+echo About to run the ls command.
+ls
+
+Note:
+A # character at the beginning of a line indicates that the line is a comment; that is, the shell ignores anything on a line after a #.
+Use comments to explain parts of your scripts that are difficult to understand.
+
+After creating a shell script and setting its permissions, you can run it by placing the script file in one of the directories in your command path and then running the script name on the command line.
+You can also run ./script if he script if the script is located in your current working directory, or you can use the full pathname.
+As with any program on Unix systems, you need to set the executable bit for a shell script file, but you must also set the read bit in order for the shell to read the file.
+The easiest way to do this is as follows:
+
+$chmod +rx script
+
+This chmod command allows other users to read and execute script.
+If you don't want that, use the absolute mode 700 instead (and refer to Section 2.17 for a refresher on permissions.)
+With the basic behind us, let's look at some of the limitions of shell scripts.
+
+11.1.1 Limitations of Shell Scripts
+
+The Bourne shell manipulates commands and files with relative ease.
+In Section 2.14, you saw the way the shell can redirect output, one of the important elements of shell script programming.
+However, the shell script is only one tool for Unix programming, and although scripts have considerable power, they also have limitations.
+One of the main strenghs of shell scripts is that they can simplify and automate tasks that you can otherwise perform at the shell prompt, like manipulating batches of files.
+But if you're truing to pick apart strings, perform repeated arithmetic computations, or access complex databases, or if you want functions and complex control structures, you're better off using a scripting language like Python, Perl, or awk, or perhaps even a compiled languaged like C. (This is important, so we'll repeat it throughout the chapter.)
+Finally, be aware of your shell script sizes.
+Keep your shell scripts short script short.
+Bourne shell script aren't meant to be big (though you will undoubtedly encounter some monstrosities).
