@@ -1,0 +1,4 @@
+11 Introduction to Shell Scripts
+
+If you can enter commands into the shell, you can write shell scripts (also Bourne shell scripts).
+A shell script is a series of commands written in a file; the shell reads the commands from the file just as it would if you typed them into a terminal.
