@@ -1,0 +1,65 @@
+10.7 Network Security
+
+Because Linux is a very popular Unix flavor on the PC platform, and especially because it is widely used for web servers, it attracts many unpleasant characters who try to break into computer systems.
+Section 9.21 discussed firewalls, but that's not really the whole story on security.
+Network security attracts extremists -those whos really like to break into systems (whether for fun or money) and those who come up with elaborate protection schemes who really like to swat away people trying to break into their systems.
+(This, too, can be very profitable.)
+Fortunetly, you don't need to know very much to keep your system safe.
+Here are a few basic rules of thumb:
+
+Run as few services as possible   Intruders can't break into services that don't exist on your system. If you know what a service is and you're not using it, don't turn it on for the sole reason that you might want to use it "at some later point."
+
+Block as much as possible with a firewall Unix system have a number of internal services thatt you may not know about (such as TCP port 111 for the RPC port-mapping server), and no other system in the world should know about them.
+It can be very difficult to track and regulate the services on your system because many different kinds of programs listen on various ports.
+To keep intruders from discovering internal services on your system, use effective firewall rules, and install a firewall at your router.
+Track the services that you offer to the Internet  If you run an SSH server, Postfix, or similar services keep your software up-to-date and get appropriate security alerts.
+(See Section 10.7.2 for some online resources.)
+Use "long-term support" distribution releases for servers Security teams normally concentrate their work on stable, supported distribution releases. Development and testing releases such Debian Unstable and Fedora Rawhide receive much less attention.
+Don't give an account on your system to anyone who doesn't need one it's much easier to gain superuser access from a local account than it is to break in remotely.
+In fact, given the huge base of software (and the resulting bugs and design flaws) available on most systems, it can be easy to gain superuser access to a system after you get to a shell prompt.
+Don't assume that your friends know how to protect their passwords (or choose good passwords in the first place)/
+Avoid installing dubious binary packages   They can contain Trojan horses.
+
+That's the practical end of protecting yourself.
+But why is it important to do so?
+There are three basic kinds of network attacks:
+
+Full compromise This means getting superuser access (full control) of a machine.  An intruder can accomplish this by trying a service attack, such as a buffer overflow explit, or by talking over a poorly protected user accound and then trying to exploit a poorly written setuid program
+
+Denial-of-service (DoS) attack  This prevents a machine from carrying out its network services or forces a computer to malfunction in some other way without the use of any special access.
+These attacks are harder to prevent, but they are easier to respond to.
+
+Malware Linux users are mostly immune to malware such as email worms and viruses, simply because their email clients aren't stupid enough to actually run programs that they get in message attachments.
+But Linux malware does exists. Avoid downloading and installing binary software from places that you've never heard of.
+
+10.7.1 Typical Vulnerabilities
+There are two important kinds of vulnerabilities to worry about: direct attacks and clear-text password sniffing.
+Direct attacks try to take over a machine without being terribly subtle.
+The most common is a buffer overflow exploit, where a careless programmer doesn't chekc the bounds of a buffer array.
+The attacker fabricates a stack frame inside a huge chunk of data, dumps it to the remote server, and then hopes that the server overwrites its program data and eventually executes the new stack frame.
+Although a somewhat complicated attack, it's easy to replicate.
+A second attack to worry about is one that captures passwords sent accross the wire as clear text.
+As soon as an attacker gets your passwords, it's game over.
+From there, the assailant will inevitably try to gain superuser access locally (which is much easier than making a remote attack), try to use the machine as an intermediary for attacking other hosts, or both.
+
+Note:
+If you have a service that offers no native support for encryption, try Stunnel
+(http://www.stunnel.org/), an encryption wrapper package much like TCP wrappers.
+Like tcpd, Stunnet is especially good at wrappiong inetd services.
+
+Some services are chronic attack targets due to poor implementation and design.
+You should always deactivate the following services (they're rarely activated by default on most systems):
+
+ftpd For whatever reason, all FTP servers seem plagued with vulnerabilities.
+In addition, most FTP servers use clear-text passwords.
+If you have to move files from one machine to another, consider an SSH-based solution or an rsync server.
+
+telnetd, rlogind, rexecd  All of these pass remote session data (including passwords) in clear-text form. Avoid them unless you happen to have a Kerberos-enabled version.
+fingerd Intruders can get user lists and other information with the finger service.
+
+10.7.2  Security Resources
+
+See page 245
+
+
+
