@@ -1,0 +1,32 @@
+10.10 Unix Domain Sockets
+Applications that use network facilities don't have to involve two separte hosts.
+Many applications are built as client-server or peer-to-peer mechanisms, where processes running the same machine use interprocess communication (IPC) to negotiate what work needs to be done and who does it.
+For example, recall that daemons such as systemd and NetworkManager use D-Bus to monitor and react to system events.
+Processes can use regualar IP networking over localhost (127.0.0.1) to communicate, but instead, typically use a special kind of socket, which we briefly touched upon in Chapter 3, called a Unix domain socket.
+When a process connects to a Unix domain socket, it behaves almost exactly like a network socket: It can listen for and accept connections on the socket, and you can even choose between different kinds of socket types to make it behave like TCP or UDP.
+
+Note:
+It's important to remember that a Unix domain socket is not a network socket, and there's no network behind one.
+You don't even need networking to be configured to use one.
+And Unix domain sockets don't have to be bound to socket files.
+A process can create an unnamed Unix domain socket and share the address with another process.
+
+10.10.1 Advantages for Developers
+Developers like Unix domain sockets for IPC for two reasons. First, they allow developers the option to use special socket files in the filesystem to control access, so any process that doesn't have access to a socket file can't use it.
+And because there's no interaction with the network, it's simpler and less prone to conventional network intrusion.
+For example, you'll usually find the socket file for D-Bus in /var/run/dbus:
+
+$ls -l /var/run/dbus/system_bus_socket
+
+Second, because the Linux kernel does not have to go through the many layers of its networking sybsystem when working with Unix domain sockets, performance tends to be much better.
+Writing code for Unix domain sockets is not much different from supporting normal network sockets.
+Because the benefits can be significant, some network severs offer communication through both network and Unix domain sockets.
+For example, the MySQL database server mysqld can accept client connections from remote hosts, but it usually also offers a Unix domain socket at /var/run/mysqld.sock.
+
+10.10.2  Listing Unix Domain Sockets
+You can view a list of Unix domain sockets currently in use on your system with lsof -U:
+
+#lsof -U
+
+The listing will be quite long because many modern applications make extensive use of unnamed sockets.
+You can idenfify the unnamed ons because you'll see socket in the NAME output column.
