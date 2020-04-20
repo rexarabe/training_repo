@@ -1,0 +1,85 @@
+11.3 Special Variables
+
+Most shell scripts understand command-line parameters and interact with the commands that they run.
+To take your scripts from being just a simple list of commands to becoming more flexible shell script programs, you need to know how to use the special Bourne shell variables.
+These special variables are like any other shell variable as described in Section 2.8, except that you cannot change the values of certain ones.
+
+Note:
+After reading the next few sections, you'll understand why shell scripts accumulate many special characters as they are written.
+If you're trying to understand a shell script and you come across a line that looks completly incomprehensible, pick it apart piece by piece.
+
+11.3.1 Individual Arguments: $1, $2, ....
+$1, $2, and all variables named as positive nonzero integers contain the values of the script parameters, or arguments.
+For example, say the name of the following script is pshow:
+
+#!/bin/sh
+echo First argument: $1
+echo Third argument: $3
+
+$ ./pshow one two three
+
+First argument: one
+Third argument: three
+
+The built-in shell command shift can be used with argument variables to remove the first argument ($1) and advance the rest of the arguments forward.
+Specifically, $2 becomes $1, $3 becomes $2, and so on.
+For example, assume that the name of the following script is shiftex:
+
+#!/bin/sh
+echo Argument: $1
+shift
+echo Argument: $1
+shift
+echo Argument: $1
+
+
+Run it like this to see it work:
+
+$./shiftex one two three
+Argument: one
+Argument: two
+Argument: three
+
+As you can see, shiftex prints all three arguments by printing the first, shifting the remaining arguments, and repeating.
+
+11.3.2 Number of Arguments: $#
+The $# variable holds the number of arguments passed to a script and is especially important when running shift in a loop to pick through arguments.
+When $# is 0, no arguments remain, so $1 is empty.
+(See Section 11.6 for a description of loops.)
+
+11.3.3 All Arguments: $@
+The $@ variable represents all of a scipt's arguments, and it is very useful for passing them to a command inside the script.
+For example, Ghostscript commands (gs) are usually long and complicated.
+Suppose you want a shortcut for rasterizing a PostScript file at 150 dpi, using the standard output stream, while also leaving the door open for passing other options to gs.
+You could write a script like this to allow for additional command-line options:
+
+#!/bin/sh
+gs -q -dBatch -dNOPAUSE -dSAFER -sOutputFile=- -sDEVICE=pnmraw $@
+
+Note:
+If a line in your shell script gets too long for your text editor, you can split it up with a backslash (\).
+For example, you can alter the preceding script as follows:
+
+#!/bin/sh
+gs -q -dBATCH -dNOPAUSE -dSAFER \
+   -sOutputFile=- -sDEVICE=pnraw $@
+
+11.3.4 Script Name: $0
+The $0 variable holds the name of the script, and it is useful for generating diagnostic messages.
+For example, say your script needs to report an invalid argument that is stored in the $BADPARM variable.
+You can print the diagnostic message with the following line so that the script name appears in the error message:
+
+echo $0: bad option $BARPARAM
+
+All diagnostic error messages should go to the standard error.
+Recall from Section 2.14.1 that 2>&1 redirects the standard error to the standard output.
+For writing to the standard error, you can reverse the process with 1>&2.
+To do this for the preceding example, use this:
+echo $0: bad option $BADPARAM 1>&2
+
+11.3.5 Process ID: $$
+The $$ variable holds the process ID of the shell.
+
+11.3.6 Exit Code: $?
+The $? variable holds the exit code of the last command that the shell executed.
+Exit codes, which are critical to mastering shell scripts, are discussed next.
