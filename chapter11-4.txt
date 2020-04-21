@@ -1,0 +1,25 @@
+11.4 Exit Codes
+When a Unix program finishes, it leaves an exit code for the parent process that started the program.
+The exit code is a number and is sometimes called an error code or exit value.
+When the exit code is zero (0), it typically means that the program ran without a program ran without a problem.
+However, if the program has an error, it usually exits with a number other than 0 (but not always, as you'll see next).
+The shell holds the exit code of the last command in the $? special variable, so you can check it out at your shell prompt:
+
+$ls / > /dev/null
+$ echo $?
+0
+$ls /asdfasdf > /dev/null
+ls: /asdfasdf: No Such file or directory
+$ echo $?
+1
+
+You can see that the successful command returned 0 and the unsuccessful command returned 1 (assuming, or course, that you don't have a directory name /asdfasdf on your system).
+If you intend to use the exit code of a command, you must use or store the code immediately after running the command.
+For example, if you run echo $? twice in a row, the output of the second command is always 0 because the first echo command completes successfully.
+When writing shell code that aborts a script abnormally, use something like exit 1 to pass an exit code of 1 back to whatever parent process ran the script.
+(you may want to use different numbers for different conditions.)
+One thing to note is that some programs like diff and grep use nonzero exit codes to indicate normal conditions.
+For example, grep returns 0 if it finds something matching a pattern and 1 if it doens't.
+For these programs, an exit code of 1 is not an error; grep and diff use the exit code 2 for real problems.
+If you think a program is using a nonzero exit code to indicate success, read its manual page.
+The exit codes are usually explained in the EXIT VALUE or DIAGNOSTIC section.
