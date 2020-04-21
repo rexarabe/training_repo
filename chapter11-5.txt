@@ -1,0 +1,212 @@
+11.5 Conditionals
+The Bourne shell has special construct for conditionals, such as if /then/ else and case statements.
+For example, this simple script with an if condional checks to see whether the script's first argument is hi:
+
+#!/bin/sh
+if [ $1 = hi ]; then
+    echo 'The first argument was "hi"'
+else
+    echo -n 'The first argument was "hi"'
+    echo It was '"'$1'"'
+fi
+
+The words if, then, else and fi in the preceding script are shell keywords; everything else is a command. This distinctino is extremely important because one of the commands is [ $1 = "hi" ] and the [ character is an actual program on a Unix system, not special shell sysntax.
+(This is acutally not quite true, as you'll soon learn, but treat it as a separate command in your head for now.)
+All Unix systems have a command called [ that performs tests for shell script conditionals.
+This program is also known as test and careful examination of [ and test should reveal that they share an inode, or that one is a symbolic link to the other.
+
+Understanding the exit codes in Section 11.4 is vital, because this is how the whole process works:
+
+1. The shell runs the command after the if keyword and collects the exit code of that command.
+2. If the exit code is 0, the shell executes the commands that follow the then keyword, stopping when it reaches an else or fi keyword.
+3. If the exit code is not 0 and there is an else clause, the shell runs the commands after the else keyword.
+4. The conditonal ends at fi.
+
+11.5.1 Getting Around Empty Parameter Lists
+There is slight problem with the condional in the preceding example due to a very common mistake:$1 could be empty, because the use might not enter a parameter.
+Without a parameter, the test reads  [ = hi ], and the [ command abort with an error.
+You can fix this by enclosing the parameter in quotes in one of two ways (both of which are common):
+
+if [ "$1" = hi ]; then
+if [ x"$1" = x "hi" ]; then
+
+11.5.2 Using Other Commands for Tests
+The stuff following if is always a command.
+Therefore, if you want to put the then keyword on the same line, you need a semicolon (;) after the test command.
+If you skip the semicolon, the shell passes then as a parameter to the test command.
+(If you don't like the semicolon, you can put the then keyword on a separate line.)
+There are many possibilities for using other commands instead of the [ command.
+Here's an example that uses grep:
+
+#!/bin/sh
+if grep -q daemon /etc/passwd; then
+    echo The daemon use is in the passwd file.
+else
+    echo There is a big problem. daemon is not in the passwd file.
+fi
+
+11.5.3 elif
+
+There is also keyword that lets you string if conditionals togethers, as shown below.
+But don't get too carried away with elif, because the case construct that you'll see in Section 11.5.6 is often more appopriate.
+
+#!/bin/sh
+if [ "$1" = "hi" ]; then
+    echo 'The first argument was "hi"'
+elif [ "$2" = "bye" ]; then
+     echo 'The second argument was "bye"'
+else
+    echo -n 'The first argument was not "hi" and the second was not "bye"-- '
+    echo They were '"'$1'"' and '"'$2'"'
+fi
+
+11.5.4 && and || logical Constructs
+There are two quick one-line conditional constructs that yuo may see from time to time: && ("and") and || ("or").
+The && construct works like this:
+command1 && command2
+Here, the shell runs commands1, and if the exit code is 0, the shell also runs command2.
+The || contruct is similar; if the command before a || returns a nonzero exit code, the shell runs the second command.
+The construct && and || often find their way into use in if tests, and in both cases, the exit code of the last command run determines how the shell processes the conditonal.
+In the case of the && construct, if the first command fails, the shell uses its exit code for the if statement, but if the first command succeeds, the shell uses the exit code of the second command for the conditonal.
+In the case of the || construct, the shell uses the exit code of the first command if succesful, or the exit code of the second if the first is unsuccessful.
+For example:
+
+#!/bin/sh
+if [ "$1" = hi ] || [ "$1" = bye ]; then
+    echo 'The first argument was "'$1'"
+fi
+
+If your conditionals include the test ([) command, as shown here, you can use -a and -o instead of && and ||, as described in the next section.
+
+
+11.5.5 Testing Conditions
+You've seen how [ works:
+The exit code is 0 if the test is true and nonzero when the test fails.
+You also know how to test string equality with [ str1 = str2 ].
+However, rememeber that shell script are well suited to operation on entire files because the most useful [ tests involves file properties.
+For exmaple, the following line checks whether file is a regular file (not a directory or special file:)
+[ -f file ]
+
+In a script, you might see the -f test in a loop similar to this next one, which test all of the items in the current working directory (you'll learn more about loops in general shortly):
+
+for filename in *; do
+    if [-f $filename ]; then
+        ls -l $filename
+        file $filename
+    else
+        echo $filename is not a regular file.
+    fi
+done
+
+You can invert a test by placing the ! operator before the test arguments.
+For example, [ ! -f file ] return true if file is not a regular file.
+Furthermore, the -a and -o flags are the logical "and" and "or" operators (for example, [-f file1 -a file2]).
+
+Note:
+Because the test command is so widely used in scripts, many versions of the the Bourne shell (includnig bash) incorporate the test command as a built-in.
+This can speed up scripts because the shell doesn't have to run a separate command for each test.
+
+There are dozens of test operaions, all of which fall inot three general categories: file tests, string tests, and arithmetic tests.
+The info manual contains complete online documentation, but the test(1) manual page is a fast reference.
+The following sections outline the main tests.
+(I've omitted some of the less common ones.)
+
+File Tests.
+
+Most file test, like -f are called unary operations because they require only one argument: the file to test.
+For example, there are two importnat file tests:
+
+ -e Return true if a file exits
+ -s Return tures if a file is not empty.
+
+Several operations inspect a file's type, meaning that they can determine whether something is a regular file, a directory, or some kind of special device, as listed in Table 11-1.
+There are also a number of unary operations that chek a file's permissions, as listed in table 11-2. (See Section 2.17 for an overview of permissions.)
+
+Table 11-1: File Type Operations
+
+Operator     Test for
+-f           Regular file
+-d           Directory
+-h           Symbolic lin
+-b           Block device
+-c           Character device
+-p           Named pipe
+-S           Socket
+
+Note:
+The test command follows symbolic links (except for the -h test).
+That is, if link is a symbolic link to a regular file, [ -f link ] returns an exit code of true (0).
+
+Table 11-2: File Permission Operators
+
+Operator     Operator
+-r           Readable
+-w           Writable
+-x           Executable
+-u           Setuid
+-g           Setgid
+-k           "Sticky"
+
+Finally, three binary operators (tests that need two files as arguments) are used in file tests, but they're not terribly common.
+Consider this command that includes -nt (newer than):
+[ file1 -nt file2 ]
+
+This exists true if file1 has a newer modification data than file2.
+The -ot (older than) operator does the opposite.
+and if you need to detect indentical hard links, -ef compares two files and returns true if they share inode numbers and devices.
+
+String Test
+You've seen the binary string operator = that retuns true if its operands are equal. The != operator returns true if its operands are not equal.
+And there are two unary string operations:
+
+-z Returns true if it's argument is empty ([ -z "" ] return 0)
+-n Returns true if it's argument is not empty ([ -n "" ] return 1)
+
+Arithmetic tests
+It's importnat to recognize that the equal sign (=) looks for string equality, not numeric equality.
+Therefore, [ 1 = 1 ] returns 0 (true), but [ 01 = 1 ] returns false.
+When working with numbers, use -eq instead of the equal sing: [ 01 -eq 1 ] returns true.
+Table 11-3 provides the full list of numeric comparison operators.
+
+Table 11-3: Arithmetic Comparison Operators
+
+Operator     Returns True When the First Argument ls ... the Second
+-eq          Equal to
+-ne          Not equal to
+-lt          Less than
+-gt          Greater than
+-le          Less than or equal to
+-ge          Greater than or equal to
+
+11.5.6 Matching Strings with case
+The case keyword forms another conditional construct that is exceptionally useful for matching strings.
+The case conditional does not execute any test commands and therefore does not evaluate exit codes.
+However, it can do pattern matching.
+This example should tell most of the story:
+
+#!/bin/sh
+case $1 in
+    bye)
+       echo Fine, bye.
+       ;;
+    hi|hello)
+       echo Nice to see you.
+       ;;
+    what*)
+        echo Whatever.
+        ;;
+    *)
+       echo 'Huh?'
+       ;;
+esac
+
+The shell executes this as follows:
+1. The script matches $1 against each case value demarcated with the ) character.
+2. If a case value matches $1, the shell executes the commands below the case until it encounters ;;, at which point it skips to the esac keyword.
+3. The conditional ends with esac.
+
+For each case, value, you can match a single string (like by in the preceding example) or multiple strings with | (hi|hello retuns true if $1 equals hi or hello), or you can use the * or ? patterns (what*).
+To make a default case that catches all possible values other than the case values specified, use a single * as shown by the final case in the preceding example.
+
+Note:
+Each case must end with a double semicolon (;;) or you risk a suntax error.
