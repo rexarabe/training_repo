@@ -1,0 +1,46 @@
+11.6 Loops
+There are two kinds of loops in the Bourne shell: for and while loops.
+
+11.6.1 for Loops
+The for loop (which is a "for each" loop) is the most common.
+Here's an example:
+
+#!/bin/sh
+for str in one two three four; do
+    echo $str
+done
+
+In this listing, for, in, do, and done are all shell keywords.
+The shell does the following:
+1. Sets the variable str to the first of the four space-delimited values following the in keyword (one).
+2. Runs the echo command between the do and done.
+3. Goes back to the for line, setting str to the next value (two), runs the commands between do and done, and repeats the process until it's through with the values following the in keyword.
+
+The output of this script looks like this:
+one
+two
+three
+four
+
+11.6.2 while Loops
+The Bourne shell's while loop uses exit codes, like the if conditional.
+For example, this script does 10 iterations:
+
+#!/bin/sh
+FILE=/tmp/whiletest.$$;
+echo firstline > $FILE
+while tail -10 $FILE | GREP -q firstline; do
+#add lines to $FILE until tail -10 $FILE no longer prints "firstline"
+    echo -n Number of lines in $FILE: ' '
+    wc -l $FILE | awk ' {print $1}'
+    echo newline >> $FILE
+done
+
+rm -f $FILE
+
+Here, the exit code of grep -q firstline is the test.
+As soon as the exit code is nonzero (in this case, when the string firstline no longer appears in the last 10 lines in $FILE), the loop exits.
+You can break out of a while loop with the break statement.
+The Bourne shell also has an until loop that works just like while, except that it breaks the loop when it encouters a zero exit code rather than a nonzero exit code.
+This said, you shouldn't need to use the while and until loops very often.
+In fact, if you find that you need to use while, you should probably be using a language like awk or Python instead.
