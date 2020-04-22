@@ -1,0 +1,32 @@
+11.7 Command Substitution
+The Bourne shell can redirect a command's standard output back to the shell's own command line.
+That is, you can use a command's output as an argument to another command, or you can store the command output in a shell variable by enclosing a command in $().
+This example stores a command inside the FLAGS variable.
+The bold in the second line shows the command subtstitution.
+
+#!/bin/sh
+FLAGS=$(grep ^flags /proc/cpuinfo | sed 's/.*://' | head -1)
+echo Your processor supports:
+for f in $FLAGS; do
+    case $f in
+    fpu)    MSG="floating point unit"
+    ;;
+    3dnow) MSG="3DNOW graphic extensions"
+    ;;
+    mttr)  MSG="memory type range register"
+    ;;
+    *)     MSG="unknow"
+    ;;
+    esac
+    echo $f: $MSG
+done
+
+This example is somewhat complicated because it demonstrates that you can use both single quotes and pipelines inside the command substitution.
+The result of the grep is sent to the sed command (more about sed in Section 11.10.3), which removes anything matching the expression.*:, and the result of sed is passed to head.
+It's easy to go overboard with command substitution.
+For example don't use $(ls) in a script because using the shell to expand * is faster.
+Also, if you want to invoke a command on several filesnames that you get as a result of a find command, consider using a pipeline to xargs rather than command substitution, or use the -exec option (see Section 11.10.4).
+
+Note:
+The traditional syntax for command substitution is to ecnlose the command in backticks (''), and you'll see this in many shell scripts.
+The $() syntax is a newer form, but it is a POSIX standard and is generally easier to read and write.
