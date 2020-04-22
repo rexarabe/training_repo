@@ -1,0 +1,35 @@
+11.8 Temporary File Management
+It's sometimes necessary to create a temporary file to collect output for use by a later command.
+When making such a file, make sure that the filename is distinct enough that no other programs will accidentally write to it.
+Here's how to use the mktemp command to create temporary filenames.
+This script shows you the device interrupts that have occured in the last two seconds:
+
+#!/bin/sh
+TMPFILE1=$(mktemp /tmp/im1.XXXXXX)
+TMPFILE2=$(mktemp /tmp/im2.XXXXXX)
+
+cat /proc/interrupts > $TMPFILE1
+sleep 2
+cat /proc/interrupts > $TMPFILE2
+diff $TMPFILE1 $TMPFILE2
+rm -f $TMPFILE1 $TMPFILE2
+
+The argument to mktemp is a template.
+The mktemp command converts the XXXXXX to a unique set of characters and creates an empty file with that name.
+Notice that this script uses variable names to store the filenames so that you only have to change one line if you want to change a filename.
+
+Note:
+Not all Unix flavors come with mktemp.
+If you're having portability problems, it's best to install the GNU coreutils package for your operating system.
+
+Another problem with scripts that employ temporary files is that if the script is aborted, the temporary files could be left behind.
+In the preceding example, pressing CTRL-C before the second cat command leaves a temporary file in /tmp.
+Avoid this if possible.
+Instead, use the trap command to create a signal handler to catch the signal that CTRL-C genrates and remove the temporary files, as in this handler:
+
+See page page 264
+
+You must use exit in the handler to explicity end script execution, or the shell will continue running as usual after running the singal handler.
+
+Note:
+You don't need to supply an argument to mktemp; if you don't, the template will bein with a /tmp/tmp. prefix.
