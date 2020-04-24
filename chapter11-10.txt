@@ -1,0 +1,100 @@
+Several programs are particular useful in shell scripts.
+Certain utilities such as basename are really only practical when used with other programs, and therefore don't often find a place outside shell scripts.
+However, others such as awk can be quite useful on the command line, too.
+
+11.10.1 basename
+If you need to strip the extension from a filename or get rid of the directories in a full pathname, use the basename command.
+Try these examples on the command line to see how the command works:
+
+$ basename example.html .html
+$ basename /usr/local/bin/example
+
+In both cases, basename returns example.
+The first command strips the .html suffix from example.html, and the second removes the directories form the full pathname.
+This example shows how you can use basename in a script to convert GIF image to the PNG format:
+
+#!/bin/sh
+for file in *.gif; do
+# exist if there are no files
+    if [ ! -f $file ]; thne
+        exit
+    fi
+    b=$(basename $file .gif)
+    echo Converting $b.gif to $b.png...
+    giftopnm $b.gif | pnmtopng > $b.png
+
+11.10.2 awk
+The awk command is not a simple single-purpose command; it's actually a powerful programming language.
+Unfortunetly, awk usage is now something of a lost art, having been replaced by larger languages such as Python.
+The are entire books on the subject of awk, including the AWK programming Language by Alfred V. Aho, Brian W. Kernigan, and Peter J. Weinberger (Addison-Wesley, 1988).
+This said, many, many people use awk to do one thing-to pick a single field out of an input stream like this:
+
+$ ls -l | awk '{print $5}'
+
+This command prints the fifth field of the ls ouput (the file siz).
+The result is a list of file size.
+
+11.10.3 sed
+The sed program (sed stands for stream editor) is an automatic text editor that takes an input stream (a file or the standard input), alters it according to some expression, and prints the results to standard output.
+In many respects, sed is like ed, the original Unix text editor.
+It has dozens of operations, matching tools, and addressing capabilites.
+As with awk, entire books have been written about sed including a quick reference covering both, sed & awk Pocket Reference, 2nd edition, by Arnold Robbins (O'Reilly, 2002).
+Although sed is a big program, and an in-depth analysis is beyond the scope of this book, it's easy to see how it works.
+In general, sed takes an address and an operation as one argument.
+The address is a set of lines, and the command determines what to do with the lines.
+A very common task for sed is to substitue some text for a regular expression (see Section 2.5.1), like this:
+$ sed 's/exp/text/
+So if you wanted to replace the first colon in /etc/passwd with a % and send the result to the strandard output, you'd do it like this:
+$ sed 's/:/%/' /etc/passwd
+To substitute all colons in /etc/passwd, add a g modifier to the end of the operation, like this:
+$ sed 's/:/%/' /etc/passwd
+
+Here's a command that operates on a per-line basis; it reads /etc/passwd and deletes lines three through six and sends the result to the standard output:
+$ sed 2/6d /etc/passwd
+
+In this example, 3.6 is the address (a range of lines), and d is the operation (delete).
+If you omit the address, sed operates on all lines in its input stream.
+The two most common sed operations are probably s (search and replace) and d.
+You can also use a regular expression as the address.
+This command deletes any line that matches the regular expression exp:
+$sed '/exp/d'
+
+11.10.4 xargs
+When you have to run one command on a huge number of files, the command or shell may respond that it can't fit all of the arguments in its buffer.
+Use xargs to get around this problem by running a command on each file-name in its standard input stream.
+Many people use xargs with the find command.
+For example, the script below can help you verify that every file in the current directory tree that ends with .gif is actually a GIF (Graphic Interchange Format) image:
+
+$find . - name '*.gif -print | xargs file
+
+In the example above, xargs runs the file command .
+However, this invocation can cause erros or leave your system open to security problems, because filenames can include spaces and newlines.
+When writing a script, use the following from instead, which changes the find output separator and the xargs argument delimiter from a newline to a NULL character:
+
+$find . -name '*.gif' -print | xargs -0 file
+
+xargs starts a lot of processes, so don't expect great perfromance if you have a large list of files.
+You may need to add two dashes (--) to the end of your xargs command if there is a change that any of the targety file start with a single dash (-).
+The double dash (--) can be used to tell a program that any arguments that follow the doubel dash are filenames, not options.
+However, keep in mind that not all programs support the use of a double dash.
+There's an alternative to xargs when using find:
+The -exec option.
+However, the syntax is somewhat tricky because you need to suppy a {} tp subtitute the filename and a literal; to indicate the end of the command.
+Here's how to perform the preceding task using only find:
+
+$find . -name '*.gif' -exec file {} \;
+
+11.10.5. expr
+If you need to use arithmetic opertions in your shell scripts, the expr command can help (and even do some string operations).
+For example, the command expr 1 _ 2 prints 3.
+(Run expr --help for a full list of operations.)
+The expr command is a clumbsy, slow way of doing math.
+If you find yourself using it frequently, you should probably be using a language like Python instead of a shell script.
+
+11.106 exec
+The exec command is a built-in shell feature that replaces the current shell process with the program you name after exec.
+It carries out the exec() system call that you learned about in Chatper 1.
+This feature is deisigned for saving system resources, but remember thatt there's no return; when you run exec in a shell script, the script, the script and shell running the script are gone, replace by the new command.
+To test this in a shell window, try running exec cat.
+AFter you press CTRL-D or CTRL-C to terminate the cat program, your window should disappear because its child process no longer exits.
+
