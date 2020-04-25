@@ -1,0 +1,7 @@
+11.12 Including Other Files in Scripts
+If you need to include another file in your shell script, use the dot (.) operator.
+For example, this runs the commands in the file config.sh:
+
+. config.sh
+
+This "include" file syntax does not start a subshell, and it can be useful for a group of scripts that need to use a single configuration file.
