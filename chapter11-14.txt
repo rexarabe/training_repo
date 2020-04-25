@@ -1,0 +1,8 @@
+11.14 When (Not) to Use Shell Scripts
+The shell is so feature-rich that it's difficult to condense its important elements into a single chapter.
+If you're interested in what else the shell can do, have a look at some of the books on shell programming, such as Unix Shell Programming, 3rd edition, by Stephen G. Kochan and Patrick Wood (SAMS Publishing, 2003),
+or the shell script discussion in The Unix Programming Environement by Bran W. Kernighan and Rob Pike (Prentice Hall, 1984).
+However, at a certain point (especially when you start using the read built-in), you have to ask yourself if you're still using the right tool for the job.
+Remember what shell scripts do best:
+manipulate smiple files and commands.
+As stated earlier, if you find yourself writing something that looks convoluated, especially if it involves complicated string or arithmetic operatoins, you should probably book to a scripting language like Python, Perl, or awk.
