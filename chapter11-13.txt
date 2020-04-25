@@ -1,0 +1,5 @@
+11.13 Reading User Input
+The read command reads a line of text from the standard input and stores the text in a variable.
+For example, the following command stores the input in $var:
+$read var
+This is a built-in shell command that can be useful ion conjuction with other shell features not mentioned in this book.
