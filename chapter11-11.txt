@@ -1,0 +1,24 @@
+11.11 Subshells
+Say you need to alter the environment in a shell slightly but don't want a permanent change.
+You can change and restore a part of the environment (such as the parth r working directory) using shell variable, but that's a clumbsy waty to go about things.
+The easy way around these kinds problems is to use a subshell, an entirely new shell process that you can create just to run a command or two.
+The new shell has a copy of the original shell's environment, and when the new shell exits, any changes you made to its shell environment disappear, leaving the initial shell to run as normal.
+To use a subshell, put the commands to be executed by the subshell in parentheses.
+For example, the following line executes the command uglyprogram in uglydir and leaves the original shell intact:
+$ (cd uglydir; uglyprogram)
+
+This example shows how to add a component to the path that might cause problems as a permanent change:
+
+$(PATH=/usr/confusing:$PATH; uglyprogram)
+
+Using a subshell to make single-use alteration to an environment variable is such a common task that there is even a built-in syntax that avoids the subshell:
+
+$PATH=/usr/confusing:$PATH uglyprogram
+
+Pipes and background processes work with subshells, too.
+The following example uses tar to archive the entire directory tree within orig and then unpacks the archive into the new directory target, which effetively duplicates the files and folders in orig (this is useful because it preserves owenership and permissions, and it's generally faster than using a command such as cp -r):
+
+$tar cf - orig | (cd target;  tar xvf -)
+
+Warning
+Double-check this sort of command before you run it to make sure that the target directory exits and is comoletely separte from the orig directory.
