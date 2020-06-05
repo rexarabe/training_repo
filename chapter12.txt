@@ -1,0 +1,8 @@
+12 MOVING FILES ACROSS THE NETWORK
+
+This chapter surveys options for moving and sharing files between machines on a network.
+We'll start by looking at some ways to copy files other than the scp and sftp utilities that you've already seen.
+Then we'll briefly look at true file sharing, where you attach a directory on one machine to another machine.
+
+This chapter describes some alternative ways to transfer files because not every file transfer problem in the same.
+Sometimes you need to provide quick, temporary access to machines that you don't know much about, sometimes you need to efficiently maintain copies of large directory structures, and sometimes you need more constant access.
