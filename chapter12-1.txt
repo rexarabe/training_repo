@@ -1,0 +1,9 @@
+12.1 Quick copy
+Let's say you want to copy a file (or files) from your machine to another one on your network, and you don't care about copying it back or need to do anything fancy.
+Y^ou just want to do it quickly.
+There's a convenient way to do this with Python.
+Just go to the directory containing the file(s) and run
+$ python -m SimpleHTTPServer
+
+This starts a basic web server that makes the directory available to any browser on the network.
+It usually runs on port 8000, so if the machine you run this on is at 10.1.2.4, go to http://10.1.2.4:8000 on on the destination and you'll be able to grab what you need.
