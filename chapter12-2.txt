@@ -1,0 +1,148 @@
+12.2 rsync
+If you want to move an entire directory structure around, you can do so with scp -r or if you need a little more performance, tar in a pipleline:
+
+$tar cBvf - directory | ssh remote_host tar xBvpf -
+
+These methods get the job done but are not very flexible.
+In particular, after the transfer completes, the remote host may bot have an exact copy of the directory.
+If directory already exists on the remote machine and contains some extraneous files, thoese files persist after the transfer.
+If you need to do this sort of thing regularly (and especially if you plan to automate the process), use a dedicated synchronizer system.
+On Linux, rsync is the standard synchronizer, offering good performance and many useful ways to perform transfers.
+We'll cover some of the essential rsync operation modes and look at some of its peculiarities.
+
+12.2.1 rsync Basics
+To get rsync between two hosts, the rsync program must be installed on both the source and destination, and you'll need a way to access one machine from the other.
+The easiest way to transfer files is to use a remote shell account, and we'll assume that you want to transfer files is to use a remote shell account, and we'll assume that you want to transfer files using SSH access.
+However, remember that rsync can be handy even for copying files and directories between locations on a single machine, such as from one filesystem to another.
+On the surface, the rsync command is not much different from scp.
+In fact, you can run rsync with the same arguments.
+For example, to copy a group of files to your home directory on host, enter
+
+$rsync file1 file2 ... host:
+
+On any modern system, rsync assumes that you're using SSH to connect to the remote host.
+
+Beware of this error message:
+
+See page 273
+
+This notice says that your remote shell can't find rsync on its system.
+If rsync isn't in the remote path but is on the system, use --rsync-path=path to manually specify its location.
+If your username is different on the remote host, add user@ to the host-name, where user is your username on host:
+
+$rsync file1 file2 ... user@host:
+
+Unless you supply extra options, rsync copies only files.
+In fact, if you specify just the options described so far and you supply a directory dir as an argumetn, you'll see this message:
+
+skipping directory dir
+
+To transfer entire directory hierachies - complete with symbolic links, permissions, modes, and devices - use the -a option.
+Furthermore, if you want to copy to some place other than your home directory on the remote host, place this destination after the remote host, like this:
+
+$rsync -a dire host:destination_dir
+
+Copying directories can be tricky, so if you're not exactly sure what will happen when you transfer the files, use the -nv option combination.
+The -n option tells rsync to operate in "dry run" mode - that is, to run a trial without actually copying any files.
+The -v option is for verbose mode, which shows details about the transfer and the files involved:
+
+$rsync -nva dir host:destination_dir
+
+The output looks like:
+
+Building file list ... done
+ml/nftrans/nftrans.html
+[more files]
+wrote 2183 bytes read 24 bytes 401.27 bytes/sex
+
+12.2.2 Making Exact Copies of a Directory Structure
+By default, rsync copies files and directories without considering the previous contents of the destination directory.
+For example, if you transferred the directory d containing the files a and b to a machine that already had a file named d/c, the destination would contain d/a, d.b, and d/c after the rsync.
+
+To make an exact replica of the source directory, you must delete fiels in the destination directory that do not exist in the source directory, such as d/c in this example.
+Use the --delete option to do that:
+
+$rsync -a --delete dir host:destinatino_dir
+
+
+Warning:
+This can be dangerous, because you should typically inspet the destination directory to see if there's anything that you'll inadvertenly delete.
+Remember, if you're not certain about your transfer, use the -n option to perform a dry run so that you'll know exactly when rsync wants to delete a file.
+
+12.2.3  Using the Trailing Slash
+
+Be particularly careful when specifying a directory as the source in an rsync command line.
+Consider the basic command that we've been working with so far:
+
+$rsync -a dir host:dest_dir
+
+Upon completion, you'll have a directory dir inside dest_dir on host.
+Figure 12-1 shows an example of how rsync normally handles a directory with files named a and b.
+However, adding a slash (/) significantly changes the behavior:
+$rsync -a dir/ host:dest_dir
+
+Here, rsync copies everything inside dir to dest_dir on host without actually creating dir on the destination host.
+Therefore, you can think of a transfer or dir/ as an operation similar to cp dir/* dest_dir on the local filesystem.
+For example, say you have a directory dir containing the files a and b (dir/a and dir/b).
+You run the trailing-slash version of the command to transfer them to the dest_dir directory on host:
+
+$rsync -a dir/ host:desti_dir
+
+When the transfer completes, dest_dir contains copies of a and b but not dir.
+If, however, you had omitted the trailling / on dir, dest_dir would have gotten a copy of dir with a and b inside.
+Then, as a result of the transfer, you'd have files and directories named dest_dir/dir/a and dest_dir/dir/b on the remote host.
+Figure 12-2 illustrates how rsync handles the directory structure from Figure 12-1 when using a trailing slash.
+
+When transferring files and directories to a remote host, accidentally adding a /after a path would normally be nothing more than a nuissance; you could go to the remote host, add the dir directory, and put all of the transferred items back in dir.
+Unfortunately, you must be careful to avoid disaster when combining the trailing / with the -delete option, because you can easily remove unrelated files this way.
+
+Note: Be wary of your shell's automatic filename completion feature.
+GNU readline and many other completion libraries tack trailing slashes onto completed directory names.
+
+12.2.4 Excluding Files and Directories
+One very important features of rsync is its ability to exclude files and directories from a transfer operation.
+For example, say you'd like to transfer a local directory called src to host, but you want to exclude anything named .git.
+You can do it like this:
+
+$rsync -a --exclude=.git src host:
+
+Note that this command excludes all files and directories named .git because --exclude takes a pattern, not an absolute filename.
+To exclude one specific item, specify and absolute path that starts with /, as shown here:
+
+$rsync -a --exclude=/src/.git src host:
+
+Note: The first / in /src/.git in this command is not the root directory of your system but rather the base directory of the transfer.
+
+
+Here are a few more tips on how to exclude patterns:
+
+* You can have as many --exclude parameters as you like
+* If you use the same patterns repeateddly, place them in a plaintext file (one pattern per line) and use --exclude-from=file.
+* To exclude directories named item but include files with this name, use a trailing slash: --exclude=item/.
+* The exclude pattern is based on a full file or directory name component and may contain simple globs (wildcards). For example, t*s matches this, but it does not match ethers.
+* If you exclude a directory or filename but find that your pattern is too restrictive, use --include to specifically included another file or directory.
+
+12.2.5  Transfer Integrity, Safeguards, and Verbose Modes.
+To speed operation, rsync uses a quick check to determine whether any files on the transfer source are already on the destination.
+The quick check uses a combination of the file size and its last-modified date. The first time you transfer an entire directory hierachy to a remote host, rsync sees that none of the files already exist at the destination, and it transders everything.
+Testomg upir transfer with rsync -n verifie this for you.
+After running rsync once, run it again using rsync -v.
+This time you should see that no files show up in the transfer list because the file set exists on both ends, with the same modification dates.
+
+When the files on the source side are not identical to the files on the destination side, rsync transfers the source files and overwrites any files that exist on the remote side.
+The fedault behavior may be inadequate, though, because you may need additional reassurance that files are indeed the same before skipping over them in transfers, or you may want to put in some extra safeguasrds.
+Here are some options that come in handy:
+
+
+--checksum (abbreviation: -c) Compute checksums (mostly unique signatures) of the files to see if they're the same. This consumes additional I/0 and CPU resources during transfers, but if you're dealing with sensitive data or files that often have uniform sizes, this option in a must.
+
+-ignore-existing Doesn't clobber files already on the target but rather renames these existsing files by adding a ~ suffix to their names before transferring the new files.
+
+--sufix=s Changes the suffix used with --backup from ~ to s.
+
+--update (abbreviation: -u) Doesn't clobber any file on the target that has a later date than the corresponding file on the source.
+
+With no special options, rsync operates quietly, only producting output when there is a problem.
+However, you can use rsync -v for verbose mode or rsync -vv for even more details.
+(You can tack on as many v options as you like, but two is probably more than you need.)
+For a comprehensive summary after the transfer, use rsync --stats.
