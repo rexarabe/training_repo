@@ -1,0 +1,6 @@
+12.3 Introduction to File Sharing
+
+Your Linux machine probably doesn't live alone on your network, and when you have multiple machines on a network, there's nearly always a reason to share files between them.
+For the remainder of this chapter, we'll primarily be concerned with file sharing between Windows and Mac OS X machines, because it's interesting to see how Linux adapts to completely foreign environments.
+For the purpose of sharing files between Linux adapts to completely foreign environement.
+For the purpose of sharing files between Linux machines, or for accesing files from a Network Area Storage(NAS) device, we'll briefly talk about using Network File System (NFS) as a client.
