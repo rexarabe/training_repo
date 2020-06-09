@@ -145,4 +145,41 @@ Here are some options that come in handy:
 With no special options, rsync operates quietly, only producting output when there is a problem.
 However, you can use rsync -v for verbose mode or rsync -vv for even more details.
 (You can tack on as many v options as you like, but two is probably more than you need.)
-For a comprehensive summary after the transfer, use rsync --stats.
+For a comprehensive summary after the transfer, use rsync --stats
+
+12.2.6 Compression
+Many users like the -z option in conjunction with -a to compress the data before transmission:
+
+$rsync -az dir host:destination_dir
+
+Compression can improve performance in cetain situations, such as when uploading a large amount of data across a slow connection (like the slow upstream link on many DSL connections) or when the latency between the two hosts in high.
+However, across a fast local area network, the two end-point machines can be constrained by the CPU time that it takes to compress and decompress data, so uncompressed transfer may be faster.
+
+12.2.7 Limiting Bandwidth
+
+It's easy the uplink of Internet connections when uploading a large amount of data to a remote host.
+Even though you won't be using your (normally large) downlink capacity during such a transfer, your connection will still seem quite slow if you let rsync go as fast as it can, because outgoing TCP packets such as HTTP requests will have to compete with you transfers for bandwidth on yuo uplink.
+To get around this, use --bwlimit to give your uplink a little breathing room.
+For example, to limit the bandwidth to 10000 Kpbs you might do something like this:
+
+$rsync --bwlimit=10000 -a dir host:destination_dir
+
+12.2.8 Transfering Files to Your Computer
+The rsync command isn't just for copying files from yuor local machine to a re mote host.
+You can also transsfer files from a remote machine to your local host by placing the remote host and remote source path as the first argument on the command line.
+Therefore, to transfer src_dir on the host to dest_dir on the local host, run this command:
+
+$rsync -a host:src_dir dest_dir
+
+Note: As mentioned before, you can use rsync to duplicate directories on your local machines if you omit host: entirely.
+
+
+12.2.9  Further rsync Topics
+Whenever you need to copy numerous files, rsync should be one of the first utilities that comes to mind.
+Running rsync in batch mode is particularly useful, and you'll find a number of options to employ auxiliary files related to command options, logging, and transfer state.
+In particular, the state files make long transfers faster and easier to resume when interrupted.
+You'll also find rsync useful for making backups.
+For example, you can attach Internet storage, such as Amazon's S3, to your Linux system and then use rsync --delete to periodically synchronize a filesystem with the network storage to create a very effective backup system.
+There are many more command-line options than those described here.
+For a rough overview, run rsync --help.
+You'll find more detailed information in the rsync(1) manual page as well as at the rsync home page: http://rsync.samba.org/.
