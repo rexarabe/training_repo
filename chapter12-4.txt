@@ -1,0 +1,64 @@
+12.4 Sharing Files with Samba
+If you have machines running Windows, you'll probably want to permit access to your Linux system's files and printers from those Windows machines using the standard Windows network protocol, Server Message Block(SMB).
+Mac OS X also supports SMB file sharing.
+The standard file-sharing software suite for Unix is called Samba.
+Not only does Sambda allow your network's Windows computers to get to your Linux system, but it works the other way around:
+You can print and access files on Windows servers from your Linux machines with the Samba client software.
+To set up a Samba server, perform these steps:
+
+1. Create an smb.conf file.
+2. Add file-sharing sections to smb.conf.
+3. Add printer-sharing sections to smb.conf.
+4. Start the Samba daemons nmbd and smbd.
+
+When you install Samba from a distinction package, your system should perform the steps listed above using some reasonable defaults for the server.
+However, it probably won't be able to determine which particular shares (resources) on your Linux machine you offer to clients.
+
+Note:
+The discussion of Samba in this chapter is brief and limited to getting Windows machines on a single subnet to see a standalone Linux machine through the Windows Network Places browser.
+There are countless ways to configure Samba, because there are many possibilities for access control and network topology.
+For the gorydetail on how to configure a large-scale server, see Using Samba, 3rd edition (O'Reilly, 2007) a much more extensive guide, and visit the Samba website http://www.samba.org/.
+
+12.4.1 Configure the Server
+The central Samba configuration file is smb.conf, which most distributions place in an etc directory such as /etc/samba.
+However, you may have to hunt around to find this file, as it may also be in a lib directory such as /usr/local/samba/lib.
+The smb.conf file is similar to the XDG style that you've seen elsewhere (such as the systemd configuration format) and breaks down into several sections denoted with square brackets (such as [global] and [printers]).
+The [global] section in smb.conf contains general options that apply to the entire server and all shares.
+These options  primarily pertain to network configuration and access control.
+The sample [global] section below shows how to set the server name, description, and workgroup.
+
+[global]
+#server name
+netbios name = name
+#server description
+server string - My server via Samba
+# workgroup
+workgrou = MYNETWORK
+
+
+These parameters work like this:
+
+netbios name The server name. I you omit this parameter, Samba uses the Unix hostname.
+server string A short description of the server. The default is the Samba version number.
+workgroup THe SMB workgrou name. if you're on a Windows domain, set this parameter to the name of your domain.
+
+12.4.2 Server Access Control
+You can add options to your smb.conf file to limit the machines and users that can access your Samba server.
+The following list includes many options that you can set in your [global] section and in the sections that control individual shares (as described later in the chapter):
+
+interfaces Set this to have Samba listen on the given networks on interfaces. For example:
+
+interface = 10.23.2.0/255.255.255.0
+interface = eth0
+
+bind interface only  Set this to yes when using the interfaces parameter in order to limit access to machines that you can reach on those interfaces.
+valid users Set this to allow the given users acces. for example:
+valid users = jruser, bill
+
+guest ok  Set this parameter to true to make a share available to anonymous users on the network.
+
+guest only Set this parameter to true to allow anonymous access only.
+
+browseable Set this to make shares viewable by network browsers. If you set this parameters to no for any shares, you'll still be able to access the shares on the Samba server, but you'll need to know their exact names in order to be able to access them.
+
+12.4.3 Passwords
