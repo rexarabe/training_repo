@@ -61,4 +61,34 @@ guest only Set this parameter to true to allow anonymous access only.
 
 browseable Set this to make shares viewable by network browsers. If you set this parameters to no for any shares, you'll still be able to access the shares on the Samba server, but you'll need to know their exact names in order to be able to access them.
 
-12.4.3 Passwords
+12.4.3 Password
+In general, you should only allow access to your Samba server with password authentication.
+Unfortunetely, the basic password system on Unix is different than that on Windows, so unless you specify clear-text network passwords or authenticate passwords with a Windows server, you must set up an alternative password system.
+This section shows you how to set up an alternative password system using Samba's Trivial Database (TDB) backend, which is appropriate for small networks.
+First, use these entries in your smb.conf [global] section to define the Samba password database characteristics:
+
+#use the tdb for Samba to enable encrypted passwords
+security = user
+passdb backend = tdbsam
+obey pam restrictions = yes
+smb passwd file = /etc/samba/passwd_smb
+
+These lines allow you to manipulate the Samba password database with the smbpasswd command.
+The obey pam restrictions parameter ensure that any user changing their password with the smbpasswd command must obey any rules that PAM enforces for normal password changes.
+For the passdb backend parameter, you can add an optional pathname for the TDB file after a colon; for example, tdbsam: /etc/samba/private/passwd.tdb.
+
+Note:
+If you have access to a Windows domain, you can set security = domain to make Samba use the domain's usernames and eliminate the need for a password database.
+However, in order for domain users to access the machine running Samba, each domain user must have a local account with the same username on the machine running Samba.
+
+Adding and Deleting Users
+The first thing you need to do in order to give a Windows user accecs to your Samab server is to add the user to the password database with the smbpasswd -a command:
+
+#smbpass -a username
+
+The username parameter to the smbpasswd command must be a valid username on your Linux system.
+Like the regular system's passwd program, smbpasswd any necessary security checks, smbpasswd confirms that it has created the new user.
+
+To remove a user, use the -x option to smbpasswd:
+
+#
