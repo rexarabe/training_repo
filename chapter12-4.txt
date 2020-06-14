@@ -91,4 +91,140 @@ Like the regular system's passwd program, smbpasswd any necessary security check
 
 To remove a user, use the -x option to smbpasswd:
 
-#
+#smbpasswd -x username
+
+To temporarily deactivate a user instead, use the -d option; the -e option will reenable the user:
+#smbpasswd -d username
+#smbpasswd -e username
+
+Changing password
+You can change a Samba password as the superuser by using smbpasswd with no options or keywords other than the username:
+#smbpasswd username
+
+However, if the Samba server is running, any user can change their own Samba password by entering smbpasswd by itself on the command line.
+Finally, here's One place is your configuration to beware of.
+If you see a line like this in your smb.conf file, be careful:
+
+unix password sync  = yes
+
+This line causes smbpasswd to change a user's normal password in addition to the Samba password.
+The result can be very confusing, especially when a user changes their Samba password to something that's not their Linux Password and discovers that they can no longer log in.
+Some disrtibutions set this parameter by default in their Samba server packages!
+
+12.4.4 Starting the Server
+You may need to start your server if you didn't install Samba from a distributino package.
+To do so, run nmbd and smbd with the following arguments, where smb_config_file is the full path of your smb.conf file:
+
+#nmbd -D -s smb_config_file
+#smbd -D -s smb_config_file
+
+The nmbd daemon is a NetBIOS name server, and smbd does the actual work of handling share requests.
+The -D option specieifes daemon mode.
+If you alter the smb.conf file while smbd is running, yiou can notify the daemon of the changes with a HUP signal or use your distribution's service restart command (such as systemctl or initctl).
+
+12.4.5 Diagnostics and Log Files
+If something goes wrong when starting one of the Samba servers, an error message appears on the command line.
+However, runtime diagnostic messages go to the log.nmbd and log.smbd log files, which are usually in a /var/log directory, such as /var/log/samba.
+You'll also find other log fiels there, such as individual logs for each individual client.
+
+12.4.6 Configuring a File Share
+To export a directory to SMB clients (that is, to share a directory with a client), add a section like this to your smb.conf file, where label is what you would like to call the share and path is the full directory path:
+
+[label]
+path = path
+comment = share description
+guest ok = no
+writable = yes
+printable = no
+
+These parameters are useful in directory shares:
+guest ok Allow guest access to the share. The public parameters is a synonym.
+writable A yes or true setting here marks the share as read-write. Do not allow guest access to a read-write share.
+
+printable Specifies a printing share. This parameter must be set to no or false for a directory share.
+
+veto files  Prevents the export of any files that match the given patterns.
+You must enclose each pattern between forward slashes (so that it looks like /pattern/).
+This example bars object files, as well as any file or directory named bin:
+
+veto files = /*.o/bin/
+
+12.4.7 Home Directories
+You can add a section called [homes] to your smb.conf file if you want to export home directories to users.
+The section should look like this:
+
+[home]
+comment = home directories
+browseable = no
+writable = yes
+
+By default, Samba reads the logged-in user's /etc/passwd entry to determine their home directory for [homes].
+However, if you don't want Samba to follow this behavior (thatis , you want to keep the Windows home directories in a different place than the regular Linux home directories), you can use the %S substituation in a path parameter.
+For example, here's how you would switch a user's [homes] directory to /u/user:
+
+path = /u/%S
+
+Samba substitutes the current username for the %S.
+
+12.4.8 Sharing Printers
+
+You can export all of your printers to Windows clients by adding a [printers] section to your smb.conf file.
+Here's how the section looks when you're using CUPS, the standard Unix printing system:
+
+[printers]
+comment = Printers
+browseable = yes
+printing = CUPS
+path = cups
+printable = yes
+writable = no
+
+To use the printing =  CUPS parameter, your Samba installation must be configured and linked against the CUPS library.
+
+Note: Depending on your configuration, you may also want to allow guest access to your printers with the guest ok = yes option rather than give a Samba password or account to everyone who needs to access the printers.
+For example, it's easy to limit printer access to a single subnet with firewall rules.
+
+12.4.9 Using the Samba Client.
+The Samba client program smbclient can print to and access remote Windows shares.
+This program comes in handy when you are in an environment where you must interact with Windows servers that don't offer a Unix-friendly means of communication.
+To get started with smbclient use the -L option to get a list of shares from a remote server named SERVER:
+
+$smbclient -L -U username SERVER
+
+You do not need -U username if your Linux username is the same as your username on SERVER.
+After running this command, smbclient asks for a password. To try to access a share as a guest, press ENTER; otherwise, enter your password on SERVER.
+Upon success, you should get a share list like this:
+
+See page 284
+
+Use the Type field to help you make sense of each share and pay attention only to the Disk and Printer shares (the IPC shares are for remote management).
+This list has two disk shares and two printer shares.
+Use the name in the Sharename column to access each share.
+
+12.4.10 Accessing files as a Client
+If you need only casual access to files in a disk share, use the following command. (Again, you can omit the -U username if your Linux username matches your username on the server.)
+
+$smbclient -U username '\\SERVER\sharename'
+
+Upon success, you will get a prompt like this, indicating that you can now transfer files:
+smb: \>
+In this file transfer mode, smbclient is similar to the Unix ftp, and you can run these commands:
+
+get file Copies from the remote server to the current local directory.
+put file  Copies files from the local machine to the remote server.
+cd dir  Changes the directory on the remote server to dir.
+lcd localdir  Changes the current local directory to localdir.
+
+pwd Prints the current directory on the remote server, including the server and share names.
+!command Runs command on the local host. Two particular handy commands are !pwd and !ls to dtermine directory and files starus on the local side.
+help shows a full list of commands.
+
+Using the CIFS Filesystem
+If you need frequent, regular access to files on Windows server, you can attach a share directly to your system with mount.
+The command syntax is shown below.
+Notice the use of SERVER:sharename rather than the normal \\SERVER\sharename format.
+
+#mount -t cifs SERVER:sharename moutpoint -o user-username,pass=password
+
+In order to use mount like this, you must have the Common Internet File System (CIFS) utilities available for Samba.
+Most distributions offer these as a separate package.
