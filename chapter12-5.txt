@@ -1,0 +1,14 @@
+12.5 NFS Clients
+The standard system for file sharing among Unix systems is NFS; there are many different versions of NFS for different scenarios.
+You can serve NFS over TCP and UDP, with a large number of authentication and encyption techniques.
+Because there are so many options, NFS can be a big topic, so we'll just stick to the basics of NFS clients.
+To mount a remote directory on a server with NFS, use the same basic syntax as for mountaing a CIFS directory:
+
+#mount -t nfs server:directory mountpoint
+
+Technically, you don't need the -t nfs option because mount should figure this out for you, but you may want to investigate the options in the nfs(5) manual page.
+(You'll find several different options for security using the sec option. Many administrators on small, closed networks use host-based access control. However, more sophisticated methods, such as Kerberos based authentication, require additional configuration on other parts of you system.)
+
+WHen you find that you're making greater use of filesystems over a network, set up the automounter so that your system will mount the file-systems only when you actually try to use them in order to prevent problems with dependencies on boot.
+The traditional automounting tool is called automount, with a new version called amd, but much of this is now being supplanted by the automount unit type in systemd.
+
