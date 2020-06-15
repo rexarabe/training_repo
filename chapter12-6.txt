@@ -1,0 +1,16 @@
+12.6 Further Network File Service Options and Limitations
+Setting up an NFS server to share files to other Linux machines is more complicated than using a simple NFS client.
+You need to run the server daemons (mountd and nfsd) and set up the /etc/exports files to reflect the directories that you're sharing.
+However, we won't cover NFS servers primarily because shared storage over a network is often made much more convenient by simply purchasing an NAS device to handle it for you.
+Many of these devices are Linux based, so they'll naturally have NFS server support.
+Vendors add value to their NAS devices by offering their own administration tools to take the pain out of tedious tasks such as setting up RAID configurations and cloud backups.
+Speaking of cloud backups, another network file service option is cloud storage.
+This can be handy when you need the extra storage.
+This can be handy when you need the extra storage that comes with automatic backups and you don't mind an exrta his on performance.
+It's especially useful when you don't need the service for a long time or don't need to acces it very much.
+You can usually mount Internet storage much as you would NFS.
+Although NFS and other file-sharing systems work well for casual use, don't expect great performance.
+Read-only access to larger files should work well, such as when you're streaming audio or video, because you're reading data in large, predictable chunks that don't require much back-and-forth communication between the file server and its client.
+As long as the network is fast enough and the client has enough memory, a server can supply data as needed.
+Local storage is much faster for tasks involving many small files, such as compiling software packages, and starting desktop enviroments.
+The pictures becomes more complicated when you have a larger network with many users accessing many different machines, because there are tradeoffs between convenience, performance, and ease of administration.
