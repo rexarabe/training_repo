@@ -1,0 +1,11 @@
+13.1 Guidelines for Creating Startup files
+When designing startup files, keep the user in mind.
+If you're the only user on a machine, you don't have much to worry about because error only affect you and they're easy enough to fix.
+However, if you're creating startup files meant to be the defaults for all new users on a machine or network, or if you think that someone might copy your files for use on a different machine, your task becomes considerably more difficult.
+If you make an error in a startup file for 10 users, you might end up fixing this error 10 times.
+Keep two essential goals in mind when creating startup files for other users:
+
+Simplicity Keep the number of startup files small, and keep the fiels as small and simple as possible so that they are easy to modify but hard to break.
+Each item in a startup file is just one more thing that can break.
+
+Readability   Use extensive comments in files so that they users get a good picture of what each part of a file does.
