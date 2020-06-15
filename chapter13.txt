@@ -1,0 +1,14 @@
+13 User environments
+
+This book's primary focus is on the Linux systems that normally lies underneath server processes and interactive user sessions.
+But eventually, the system and the user have to meet somewhere.
+Startup files play an important role at this point, because they set defaults for the shell and other interactive programs.
+They determine how the system behaves when a user logs in.
+
+Most user don't pay close attention to their startup files, only touching them when they want to add something for convenience, such as an alias.
+Over time, the files become cluttered with unnecessary environment variables and test that can lead annoying (or quite serious) problems.
+If you've had your Linux machine for a while, you may notice that your home directory accumalates a bafflingly large array of startup files over time.
+These are sometimes called dot files because they nearly always start with a dot (.).
+Many of these are automatically created when you first run a program, and you'll never need to change them.
+This chapter primarily covers shell startup files, which are the ones you're most likely to modify or rewrite from scratch.
+Let's first look at how much care you need to take when working on these files.
