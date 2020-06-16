@@ -1,0 +1,33 @@
+13.5 Default User Settings
+The best way to write startup files and choose defaults for new users is to experiment with a new test user on the system.
+Create the test user with an empty home directory and refrain from copying your own startup files to the test user's directory.
+Write the new startup files from scratch.
+When you think you have a working setup, log in as the new test user in all possible ways (on the console, remotely, and so on).
+Make sure that you test as many things as possible, including the windowing system operation and manual pages.
+When you're happy with the test user, create a second test users, copying the startup files from the first test user.
+If everything still works, you now have a new set of startup files that you can distribute to new users.
+The following sections outline reasonable defaults for new users.
+
+13.5.1 Shell Defaults
+the default shell for any new user on a Linux system should be bash because:
+
+*Users interact with the same shell taht they use to write shell scripts (for example, csh is a notoriously bad scripting tool-don't even think about it).
+Bash is standard on Linus systems.
+bash uses GNU readline, and therefore its interface is identical to that of many other tools.
+bash gives you fine, easy-to-understand control over I/O redirections and file handles.
+
+However, many seasoned Unix wizards use shells such as csh and tcsh simply because they can't bear to switch.
+Of course, you can choose any shell you like, but choose bash if you don't have any preference, and use bash as the default shell for any new user on the system.(A user acan change his or her shell with the chsh command to suit individual preferneces.)
+
+Note:
+There are plenty of other shells out there (rc, ksh, zsh, es, and so on).
+Some are not appropriate as beginner shells, but zsh and fish are sometimes popular with new users looking for an alternative shell.
+
+13.5.2 Editor
+On a traditional system, the default editor should be vi or emacs.
+However, Linux distributions often confifure nano to be the default editor, because it's easier for beginners to use.
+As with shell startup files, avoid large default editor startup files.
+A little set showmatch in the .exrc startup file never hurt anyone nit steer clear of anything that significantly chanfges the editor's behavior or appearance, such as the showmode feature, auto-indentation, and wrap margins.
+
+13.5.3 Pager
+It's perfectly reasonable to set the default Pager environment variable to less.
