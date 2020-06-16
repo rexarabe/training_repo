@@ -1,0 +1,11 @@
+13.2 When to Alter Startup Files
+Before making a change to a startup file, ask yourself whether you really should be making that change.
+Here are some good reasons for changing startup files:
+
+1) You want to cahge the default prompt.
+2) You need to accommodate some critical locally installed software. (Consider using wrapper script first, though.)
+3)Your existing startup files are broken.
+
+If everything in your Linux distribution works, be careful.
+Sometimes the default startup files interact with other files in /etc.
+That said, you probably wouldn't be reading this chapter if you weren't interested in changing the defaults, so let's examine what's important.
