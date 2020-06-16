@@ -1,0 +1,103 @@
+13.3 Shell Startup File Elements
+What goes into a shell startup file?
+Some things might seem obvious, such as the path and a prompt setting.
+But what exactly should be in the path, and what does a reasonable prompt look like?
+and how much is too much to put in a startup file?
+The next few sections discuss the essentials of a shell startup file - from the command path, prompt, and aliases through the permissions mask.
+
+13.3.1 The Command Path
+The most important part of any shell startup file is the command path.
+The path should cover the directories that contain every application of interest to a regular user.
+At the very least, the path should contain these components, in order:
+
+/usr/local/bin
+/usr/bin
+/bin
+
+THis order ensure that you can override standard default programs with site-specific variants located in /usr/local.
+Most Linux distributions install executables for nearly all packaged software in /usr/bin.
+There are occasional differences, such as putting games in /user/games and graphical applications in a separate location, so check your system's defaults first.
+And make sure that every general use program on the system is available through one of the directories listed above.
+If not, your system is probably getting out of control.
+Don't change the default path in your user environment to accommodate a nwe software installation directory.
+A cheap way to accomodate separate installation directories is to use symbolic links in /usr/local/bin.
+Many users use a bin directory of their own to store shell scripts and programs, so you may want to add this to the front tof the path:
+
+$HOME /bin
+
+NOTE: A newer convention is to place binaries in $HOME/.local/bin.
+
+If you're interested in systems utilities (such as traceroute, ping, and lsmod). add the sbin directories to your path:
+
+/usr/local/sbin
+/usr/sbin
+/sbin
+
+Adding Dot (.) to the Path
+There is one small but controversial command path component to discuss:
+the dot.
+Placing a dot (.) in your path allows you to run programs in the current directory without using ./ in front of the program name.
+This may seem convenient when writing scripts or compiling programs, but it's bad idea for two reasons:
+
+1) It can be a security problem. You should never put a dot at the front of the path.
+Here's an exmaple of what can happen: An attacker could put a Trojan horse named ls in an archive distributed on the Internet.
+Even if a dot were at the end of the path, you'd still be vulnerable to typos such as sl or ks.
+2) It is inconsistent and can be confusing.
+A dot in a path can mean that a command's behavior will change according to the current directory.
+
+13.3.2 The manual Page path
+The traditional manual page path was determined by the MANPTH environment variable, but you shouldn't set it because doing so overrides the system defaults in /etc/manpath.config.
+
+13.3.3 The prompt
+Experienced users tend to avoid long, complicated, useless prompts.
+In comparison, many administrators and distributions drag everything into a default prompt.
+You choice should reflect your users' needs; place the current working directory, hostname, and username in the prompt if it really helps.
+Above all, avoid characters that mean something significant to the shell, such as these:
+
+{  } = & < >
+
+Note:
+Take extra care to avoid the > character, which can cause erratic, empty files to appear in your current directory if you accidentally copy and paste a section of your shell window (recall that > redirects output to a file).
+
+Even a shell's default prompt isn't ideal.
+For example, the default bash prompt contains the shell name and version number.
+This simple prompt setting for bash ends with the custorary $ (the traditional csh promt ends with %):
+
+PS1='\u\$ '
+
+The \u is a substitution for the current username (see the PROMPTING section of the bash(1) manual page).
+Other popular substitutions include the following:
+\h The hostname (the short form, without domain names)
+\! The history number
+\w The current directory. Because this can become long, you can limit the display to just the final compnent with \W
+\$ $ if running as a user account, # if root
+
+
+13.3.4 Aliases
+Among the sticker points of modern user environments is the role of aliases, a shell feature that substitutes one string for another before executin command.
+These can be efficient shortcuts that save some typing.
+However, aliases also have these drawbacks:
+* It can be tricky to manipulate arguments.
+* They are confusing; a shell's built-in which command can tell you if something is an alias, but it won't tell you where it was defined.
+* They are frowned upon in subshells and noninteractive shells; they do not work in other shells.
+
+Given these disadvantaegs, you should probably avoid aliases whenever possible because it's easier to write a shell function or an entirely new shell script.
+Modern computers can start and execute shells so quickly that the difference between an alias and an entirely new command should mean nothing to you.
+That said, aliases do come in handy when you wish to alter a part of the shell's environment.
+You can't change an environment variable with a shell script, because scripts run as subshells.
+(You can also define shell functions to perform this task.)
+
+13.3.5 The Permissions Mask
+As described in Chapter 2, a shell's built-in umask (permission mask) facility sets your default permissions.
+You should run umask in one of your startup files to make certain that any program you run creates files with your desired permissions.
+The two reasonable choices are these:
+
+077 This Mask is the most restrictive permissions mask because it doesn't give any other users access to new files and directories.
+This is often appropriate on a multi-user system where you don't want other users to look at any of your files.
+However, when set as the default, it can sometimes lead to problems when your users want to share files but don't understand how to set permissions correctly.
+(Inexperienced users have a tendency to set files to a world-writable mode.)
+
+022 This mask gives other users read access to new files and directories.
+This can be important on a single-user system because many daemons that run as pseudo-users are not be able to see files and directories created with the more restrictive 077 umask.
+
+Note: Certain appliactions (especially mail programs) override the umask, changing it to 077 because they feel that their files are the business of no one but the file owner.
