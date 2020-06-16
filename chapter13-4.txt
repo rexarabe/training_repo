@@ -1,0 +1,128 @@
+13.4 Startup File Order and Examples
+Now that you know what to put into shell startup files, it's time to see some specific examples.
+Suprisingly, one of the most difficult and confusing parts of creating startup files is determining which of several startup files to use.
+The next sections cover the two most popular Unix shells: bash and tcsh.
+
+13.4.1 The bash Shell.
+In bash, you can choose from the startup filenames .bash_profile, .profile, .bash_login, and .bashrc.
+Which one is appropriate for your commmand path, manual page path, prompt, aliases, and permissions mask?
+The answer is that you should have a .bashrc file accompanied by a .bash_profile symbolic link pointing to .bashrc because there are a few different kinds of bash shell instance types.
+The two main shell instance types are interactive and noninteractive, but of those, only interactive shells are of interest because noninteractive shells (such as those that run shell scripts) usually dont' read any startup files.
+Interactive shells are the ones that you use to run commands from a terminal, such as the ones you've seen in this book, and they can be classified as login or non-login.
+
+Login Shells
+Traditionally, a login shell is what you get when you first log in to a system with the terminal using a program such as /bin/login.
+Logging in remotely with SSH also gives you a login shell.
+The basic idea is that the login shell is an initial shell.
+You can tell if a shell is a login by runing echo $0; if the first character is -, the shell's a login shell.
+When bash runs as a login shell, it runs /etc/profile.
+Then it looks for a user's .bash_profile, .bash_login, and .profile files, running only the first one that it sees.
+As strange as it sounds, it's possible to run a noninteractive shell as a login shell to force it to run startup files.
+To do so, start the shell with the -l or --login option.
+
+Non-Login Shells
+A non-login shell is additional shell that you run after you log in.
+It's simply any interactive shell that's not a login shell.
+Windowing system terminal program (xterm, GNOME Terminal, and so on) start non-login shells unless you specifically ask for a login shell.
+Upon starting up as a non-login shell, bash runs /etc/bash.bashrc and then runs the user's bashrc.
+
+The Consequences of Two Kinds of Shells
+The reasoning behind the two different startup filesystems is that in the old days, users logged in through a traditional terminal with a login shell, then started non-login subshells with windowing systems or the screen program.
+
+For the non-login subshells, it was deemed waste to repeatedly set the user environment and run a bunch of programs that had already been run.
+With login shells, you could run fancy startup commands in a file such as .bash_profile, leaving only aliases and other "lightweight" things to your .bashrc.
+Nowdays, most desktop users log in through a graphical display manager (you'll learn more about these in the next chapter).
+Most of these start with one noninteractive login shell in order to preserve the login versus non-login model described above.
+When they do not, you need to set up your entire environment (path, manual path, and so on) in your .bashrc, or you'll never see any of your environment in your terminal windows shells.
+However, you also need a .bash_profile if you ever want to log in on the console or remotely, because those login shells don't ever bother with .bashrc.
+
+Example .bashrc
+In order to safify both non-login and login shells, how would you create a .bashrc that can also be used as your .bash_profile?
+Here's one very elementary (yet perfectly sufficient) example:
+
+
+#Command path.
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/games
+PATH=$HOME/bin:$PATH
+
+# PS1 is the regular prompt.
+# Substitutions includes:
+# \u username \h hostname \w current directory
+# \! history number \s shell name \$ $ if regular user
+PS1='\u\$ '
+
+# EDITOR and VISUAL determine the editor that programs such as less
+# and mail clients invoke when asked to edit a file.
+EDITOR=vi
+VISUAL=vi
+
+# PAGER is the default text file viewer for programs such as man.
+PAGER=less
+
+# These are some handy options for less.
+# A different style is LESS=FRX
+# (F=quit at end, R=show raw characters, X=don't use alt screen)
+LESS=meiX
+
+# You must export enviroment variables .
+export PATH EDITOR VISUAL PAGER LESS
+
+#By default, give other users read-only access to most new files.
+umask 022
+
+
+
+As described earlier, you can share this .bashrc file with .bash_profile via a symbolic link, or you can make the relationship even clearer by creating .bash_profile as this one-liner:
+
+. $HOME/.bashrc
+
+Checking for Login and Interactive Shells
+With a .bashrc matching your .bash_profile, you don't normally run extra commands for login shells.
+However, if you want to define different actions for login and non-login shells, you can add the following test to your .bashrc, which checks the shell's $- variable for an i character:
+
+
+case $- in
+*i*) # interactive commands go here
+
+
+
+
+
+
+
+
+
+
+13.4.2 The tcsh shell
+The standard csh on virually all Linux systems is tcsh, an enhanced C shell that popularized feature such as command-line editing and multimode filename and command completion.
+Even if you don't use tcsh as the default new user shell (we suggest using bash), you should still provide tcsh startup files in case your users happen to come across tcsh.
+
+You don't have to worry about the difference between login shells and non-login shells in tcsh.
+Upon startup, tcsh tcsh looks for a .tcsh file.
+Failing this, it looks for the csh shell's cshrc startup file.
+The reason for this order is that you can use the .tchshrc file for tcsh extensions that don't work in csh.
+You should probably stick to using the traditional .cshrc instead of .tcshrc; it's highly unlikely that anyone will ever your startup files with csh.
+And if a user actually does come across csh on some other system, your .cshrc will work.
+
+Example .cshrc
+
+Here is sample .cshrc file:
+
+#Command path.
+setenv PATH /usr/local/bin:/usr/bin:bin:/bin:$HOME/bin
+
+#EDITOR and visual determine the editor that programs such as less
+# and mail clients invoke when asked to edit a file.
+sentenv EDITOR vi
+sentenv VISUAL vi
+
+# PAGER is the default text file viewer for programs such as man.
+sentv LESS meiX
+# By default, give other users read-only access to most new files.
+umask 022
+
+#Customize the prompt.
+#Substitutions include:
+# %n username %m hostname %/ current directory
+#%h history number %l current terminal %% %
+set prompt="%m%% "
