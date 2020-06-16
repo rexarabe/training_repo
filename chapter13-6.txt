@@ -1,0 +1,11 @@
+13.6 Startup File Pitfalls
+
+Avoid these in startup files:
+Don't put any kind of graphical command in a shell startup file.
+
+Don't set the DISPLAY environment variable in a shell startup file.
+Don't set the terminal type in a shell startup file.
+Don't skimp on descriptive comments in default startup file.
+Don't run commands in a startup file that print to the standard output.
+Never set LD_LIBRARY_PATH in a shell startup file
+
