@@ -1,0 +1,43 @@
+14.1 Desktop Components
+Linux desktop configurations offer a great deal of flexibility.
+Most of what the Linux user experiences (the "look and feel" of the desktop) come from applications or building blocks of applications.
+If you don't like a particular application, you can usually find and alternative.
+And if what you're looking for doesn't exist, you can write it yourself.
+Linux developers tend to have a wide variety of preferences for how a desktop should act, which makes for a lot of choices.
+In order to work together, all applications need to have something in common, and at the core of nearly everything on most Linux desktops is the X (X Window System) server.
+Think of X as sort of the "kernel" of the desktop that manages everything from rendering windows to configuring displays to handling input from devices such as keyboards and mice.
+The X server is also the one component that you won't easily find a replacement a replacement for.
+The X server is just a server and does not dictate the way anything should act or appear.
+Instead, X client programs handle the user interface.
+Basic X client applications, such as terminal windows and web browsers, make connectiosn to the X server and ask to draw windows.
+In response, the X server figures out where to place the windows and renders them.
+The X server also channels input back to the client when appropriate.
+
+14.1.1 Window Manager
+X clients don't have to act like windowed user applications; they can act as services for other clients or provide other interface functions.
+A window manager is perhaps the most importnat client service appilcation because it figures out how to arrange windows on screen and provides interactive decorations like title bars that llow the user to move and minimize windows.
+These elements are central to the user experience.
+There are many window manager implementations.
+Examples such as Mutter/GNOME Shell and Compiz are meant to be more or less stand-alone, while others are built into environments such as Xfce.
+Most window managers included in the standard Linux distributions strive for maximum user comfort, but others provide specific visual effects or take a minimalist approach.
+There's not likely to ever be a standard Linux window manager because user tastes and requirements are diverse and constantly changing; as a result, new windows managers appear all the time.
+
+14.1.2 Toolkits
+Desktop applications include certain common elements, such as buttons and menus, called widgets.
+To speed up developement and provide a common look, programmers use graphical toolkits to provide these elements.
+On operating system such as Windows or Mac OS x the vendor provides a common toolkit is one of the most common, but you'll also frequently see widgets built on the Qt framework and others.
+Toolkits usually consist of shared libraries and support files such as images and theme informations.
+
+14.1.3 Desktop Enviroments.
+Although toolkits provide the user with a uniform outward appeareance, some details of a desktop reuqire a degree of cooperation between different applicaions.
+For example, one application may wish to share data with another or update a common notificaion bar on a desktop.
+To provide for these needs, toolkits and other libraries are bundled into larger packages called dekstop environments.
+GNOME, KDE, Unity, and Xfce are some common Linux desktop environments.
+Toolkits are at the core of most desktop environments, but to create a unified desktop, environments must also include numerous support files, such as icons and configurations, that make uop themes.
+All of this is bound together with documetns that describe design conventions, such as how application menus and titles should appear and how applications should react to certain system events.
+
+14.1.4 Applications
+At the top of the desktop are applications, such as web browsers and the terminal window.
+X applications can range from crude (such as the ancient xclock program) to complex (such as the Chrome web browser and LibreOffice Suite).
+These applications normally stand alone, but they often use interprocess communication to become aware of pertinent events. For example, an application can express interest when you attach a nwe storage device or when you receive new email or an instant message.
+This communication usually occurs over D-Bus, described in Section 14-5.
