@@ -1,0 +1,42 @@
+14.2 A Closer Look at the X Window System
+The X Window System (http://www.x.org/) has histoircally been very large, with the base distribution including the X server, client support libraries, and clients.
+But to the emergence of desktop environments such as GNOME and KDE, the role of the X distribution has changed over time, with the focus now more on the core server that manages rendering and input devices, as well as a simplified client library.
+
+The X server is easy to identify on your system.
+It's called x.
+Check for it in a process listing: You'll usually see it running with a number of options like this:
+
+/usr/bin/X :0 -auth /var/run/lightdm/root/:0 -nolisten tcp vt7 -novtswitch
+
+The :0 shown here is called the display, aan identifier representing one or more monitors that you access with a common keyboard and/or mouse.
+Usually, the display just corresponds to the single monitor your attach to your computer, but you can put multiple monitors under the same display.
+When using an X session, the DISPLAY environment variable is set to the display identifier.
+
+Note:
+Display can be further subdivided into screens, such as :0.0 and :0.1, but this has become increasingly rare because X extensions, such as RandR, can combine multiple monitors inot one larger virutal screen.
+
+On Linux, an X server runs on a virtual terminal.
+In this example, the vt7 argument tells us that it's been told to run on /dev/tty7 (normally, the server starts on the first virtual terminal available).
+You can run more than one X server at a time on Linux by running them on separate virtual terminals, but if you do, each server needs a unique display identifier.
+you can switch between the servers with the CTRL-ALT-FN keys
+
+14.2.1 Display Manager
+You normally don't start the X server with a command line because starting the server doesn't define any clients that are supposed to run tn the server.
+If you start the server by itself, you'll just get a blank screen.
+Instead, the most common way to start an X server is with a display manager, a program that start the server and puts a login box on the screen.
+When you log in, the display mananger starts a set of clients, such as a window manager and file manager, so that you can start to use the machine.
+There are many different display managers, such as gdm (for GNOME) and kdm (for KDE).
+The lightdm in the argument list fo the X server invocation above is a cross-platform display manager meant to be able to start GNOME or KDE sessions.
+To start an X session from a virtual console instead of using a display manager, you acn run the startx or xinit commmand.
+However, the session you get will likely be a very simple one that looks completely unlike that of a display manager, because the mechanics and startup files are differen.
+The lightdm in the argument list fo the X server invocation above is a cross-platform display manager meant to be able to start GNOME or KDE sessions.
+To start an X session from a virtual console instead of using a display manager, you acn run the startx or xinit commmand.
+However, the session you get will likely be a very simple one that looks completely unlike that of a display manager, because the mechanics and startup files are different.
+
+14.2.2 Network Transparency
+One feature of X is network transparency.
+Because clients talk to the server using a protocol, it's possible to run clients across a network to a server running on a different machine directly over the network, with the X server listening for TCP connections on port 6000.
+Clients connectins to that port could authenticate, then send windows to the server.
+Unfortuantely, this method does not normally offer any encryption and is insecure as a resutl.
+To close this hole, most distribuitons now disable the X servers's network listener (with the -nolisten tcp option to the server, as seen on page 300).
+However, you can still run X clients from a remote machine with SSH tunneling, as described in Chapter 10, by connecting the X server's Unix domain socket to a socket on the remote machine.
