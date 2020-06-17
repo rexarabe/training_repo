@@ -1,0 +1,14 @@
+14 A BRIEF SURVEY OF THE LINUX DESKTOP
+
+This chapter is a quick introduction to the compnents found in a typical Linux desktop system.
+Of all of the different kinds of software that you can find on Linux systems, the desktop areana is one of the wildest and most colorful because there are so many environments and applications to choose from, and most distributions make it relatively easy for you to try them out.
+
+Unlike other parts of a Linux system, such as storage and networking, there isn't much of a hierarchy of layers involved in creating a desktop structure.
+Instead, each component perfoms a specific task, communicating with other components as necessary.
+Some components do share common building blocks (in particular, libraries for graphical toolkits), and these can be thought of as simple abstraction layes, but that's about as dep ass it goes.
+This chapter offers a high-level discussion of desktop components in general, but wel'll look at two pieces in a little more detail:
+the X Windows System, which is the core infrastructure behind most desktops, and D-bus, an interprocess communication service used in many parts of the system.
+We'll limit the hands-on discussion and examples to a few diagnostic utilities that, while not terribly useful day-to-day (most GUIs don't require you to enter shell commands in order to interact with them),
+will help you understand the underlying mechanics of the sytem and perhaps provide some entertainment along the way.
+We'll also take a quick look at printing.
+
