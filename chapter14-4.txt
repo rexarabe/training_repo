@@ -1,0 +1,19 @@
+14.4 The Future of X
+As you were reading the preceding discussion, you may have gotten the feeling that X is a really old system that's been poked at a lot in order to get it to do new tricks.
+You wouldn't be far off.
+The X Window System was first developed in the 1980's.
+Although its evolution over the years has been significant (flexibility was an important part of its original design), you can push the original architecture only so far.
+One sign of the age of the X Window System is that the server itself supports and extremely large number of libraries, many for backward compatibility.
+But perhapsmore significantly, the idea of having a server manage clients, their windows, and act as an intermediary for the window memory has become a burden on perfomance.
+It's much faster to allow applications to render the contents of their windows directly in the display memroy, with a ligher-weight window manager, called a compositing window manager, to arrange the windows and do minimal management of the display memory.
+A new standard based on this idea, Wayland, has started to gain traction.
+The most significant piece of Wayland is a protocol that defines how clients talk to the compositing window manager.
+Other pieces include input device management and an X-compatibility system.
+As a protocol, Wayland also maintains the idea of network transparency.
+Many pieces of the Linux desktop now support Wayland, such as GNOME and KDE.
+But Wayland isn't the only alternative to X.
+As of this writing, another project, Mir, has similar goals, though its architecture takes a somewhat different approach.
+at some point, there will be widespread adoption of at least one system, which may or may not be one of these.
+These new developments are significant because they won't be limited to the Linux desktop.
+Due to its poor performance and gigantic footprint, the X Window System is not suitable for environment such as tablets and smarphones, so manufacturerers have so far used alternative system to drive embedded Linux displays.
+However, standardized direct rendering can make for more cost-effective way to support these displays.
