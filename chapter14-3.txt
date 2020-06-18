@@ -1,0 +1,96 @@
+14.3 Exploring X clients
+Although one doesn't normally think of working with a graphical user interface from the command line, there are several utilities that allow you to explore the the parts of the X window System.
+In particular, you can inspect clients as they run.
+One of the simplest tools is xwininfo.
+When run without any arguments, it asks you to click on a windows:
+
+$xwininfo
+
+
+Notice the windows ID there - the X server and window managers use this indentifier to keep track of windows.
+To get a list of all window IDs and clients, use the xlsclients -l command.
+
+Note:
+There is a special window called the root windows; it's the background on the display.
+However, you may never see this window (see "Desktop Backgound" on page 304).
+
+14.3.1 X Events
+X clients get their input and other information about the state of the server through a system of events.
+X events work like other asynchronous interprocess communication events such as udev events and D-Bus events: The X server receives information from a source such as an input device, then redistributes that input as an event to any interested X client.
+You can experiement with event with the xec command. Runnint it opens a new window that you can mouse into, click, and type.
+As you do so, xev generates output describing the X events that it receives from the server.
+For example, here's sample output for mouse movement:
+$ xev
+
+Notice the coordinates in parentheses.
+The first pair represents the x-and y-coordinates of the mouse pointer inside the window, and the second (root: ) is the location of the pointer on the entire display.
+Other low-level events include key presses and button clicks, but a few more advanced ones indicate whether the mouse has entered or exited the window, or if the window has gained or lost focus from the window manager.
+For example, here are corresponding exit and unfocus events:
+
+
+One common use of xec is to exrtact keycodes and key symbols for different keyboards when rempaping the keyboard.
+Here's the output from pressing the L key; the keycode her is 46:
+
+You can also attach xev to an existing window ID with -id id option.
+
+14.3.2 Understanding X input and preference Settings
+
+One of the most potentially baffling characteristics of X is that there's often more than one way to set preferences, and some methods may not work.
+For example, one common keyboard preference on Linux systems is to remap the Caps Lock key to a Control key.
+There are number of ways to do this, from making small adjustments with the old xmodmap command to providing an entirely new keyboard map with the setxkbmap utility.
+How do you know which one (if any) to use?
+It's a matter of knowing which pieces of the system have responsibility, but determining this can be difficult.
+Keep in Mind that  a desktop environment may provide its own settings and overrides.
+With this said, here are a few pointers on the underlying infrastructure.
+
+Input Devices (General)
+The X server uses the X Input Extension to manage input from many different devices.
+There are two basic types of input device-keyboard and pointer (mouse)- and you can attack as many devices as you like.
+In order to use more than one of the same type of device simultaneously, the X Input Extension creates a "virtual core" device that funnels device input to the X server.
+The core device is called the master; the physical devicecs that you plug in to the machine become slaves.
+To see the device configuration on your machine, tr running the xinput --list command:
+
+$xinput --list
+
+Each device has an associated ID that you can use with xinput and other commands.
+In this output, IDs 2 and 3 are the core devices, and IDs 8 and 9 are the real devices.
+Notice that the power buttons on the machine are also treaed as X input devices.
+
+Most X clients listen for input from the core devices, because ther eis no reason for them to be concerned about which particular device originates an event .
+In fact, most clietns know nothing about the X input Extension.
+However, a client can use the extension to single out a particular device.
+Each device has a set of associated properties.
+To view the properties, use xinput with the device number, as in this example:
+
+$xinput --list-props 8
+
+As you can see, there are a number of very intersting properties that you can change with the --set-pro option (See the xinput(1) manual page for more information.)
+
+Mouse
+You can manipulate device-related settings with the xinput command, and many of the most useful pertain to the mouse (pointer).
+You can change many settings directly as properties, but it's usually easier with the specialized --set-ptr-feedback and --set-button-map otpins to xinput.
+For example, if you have a three-button mouse at dev on which you'd like to reverse the order of button mouse at dev on which you'd like to reverse the order of buttons (this is handy for left-handded users), try this:
+
+$ xinput --set-button-map dev 3 2 1
+
+Keyboard
+The many different keyboard layouts available internationally present particular difficulties for integration into any windowing system.
+X has always had an internal keyboard-mapping capability in its core protocol that yo ucan manipulate with the xmodmap command, but any reasonably modern system uses the Xkb (the X keyboard extension) to gain finer control.
+
+XKB is complicated, so musch so that many people still use xmodmap when they need to mmake quick changes .
+The basic idea behind XKb is that you can define a keyboard map and compile it with the xbkcomp command, then load and activate that map in the X server with the setxkbmap command.
+Two especially interesting features of the system are these:
+
+1) You can define partial maps to supplement existing maps.
+This is especially handy for tasks such as changing your Caps Lock key into a Control key, and it is used by many graphical keyboard preference utilities in desktop environments.
+2) You can define individual maps for each attached keyboard.
+
+Desktop Backgroud
+The old X command xstroot allows you to set the background color and other characteristics of the root window, but it produces no effect on most machines because the root windows is never visible.
+Instead, most desktop environments place a big window in the back of all of your other windows in order to enable featuers such as "active wallpaper" and desktop file browsing.
+There are ways to change the background from the command line (for example, with the gsettings command in some GNOME installations), but if you actually want to do this, you probably have too much time on your hands.
+
+xset
+Probably the oldest preference command is xset.
+It's not used much anymore, but you can run a quick xset q to get the status of a few features.
+Perhaps the most useful are the screensaver and Display Power Management Signaling (DPMS) settings.
