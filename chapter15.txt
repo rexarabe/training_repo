@@ -1,0 +1,8 @@
+15. Development Tools
+
+Linux and Unix are very popular with programmers, not just due to the overwhelming array of tools and envrionments available but also because the system is exceptionally well documented and transparent.
+On a Linux machine, you don't have to be a programmer to take advantage of development tools, but when working with the system, you should know something about programming tools because they play a larger role in marnagin Unix systems than in other operating systems. At the very least, you should be able to identify development utilities and have some idea of how to run them.
+This chapter packs a lot of information into a small spasce, but you don't need to master everything here.
+You can easily skim the material and come back later.
+The discussion of shared libraries is likely the most important thing that you need to know.
+But to understand where shared libraries come form , you first need some background on how to build programs.
