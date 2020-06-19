@@ -1,0 +1,6 @@
+14.7 Other Desktop Topics
+One interesting characteristic of the Linux desktop envrionment is that you can genreally choose which pieces you want to use and stop using the ones that you dislike.
+For a survey of many of the dektop projects, have a look at the mailing lists and project links for the various projects at http://www.freedesktop.org/. Elsewhere, you'll find other desktop projects, such as Ayatana, Unity and Mir.
+Another major development in the Linux desktop is the Chomium OS open source porject and its Google Chrome OS counterpart found on Chromebook PCs.
+This is a Linux system that use much of the desktop techonology described in this chapter but is centered around the Chromium/Chrome web browsers.
+Much of what's found on a traditonal desktop has been stripped away in Chrome OS.
