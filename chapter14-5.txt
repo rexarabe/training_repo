@@ -1,0 +1,34 @@
+14.5 D-Bus
+One of the most important developments to come out of the Linux desktop is the deskto bus (D-bus), a message-passing system.
+D-Bus is important because it serves as an interprocess communication mechanism that allow desktop applications to talk to each oterh, and because most Linux systems use it to notify processes of system event, such as inserting a USB drive.
+D-Bus itself consists of a library that standardizes interprocess communication with a protocol and supporting functions for any two processes to talk to each other.
+By itself, this library doesn't offer much more than a fancy version of normal IPC facilities such as Unix domain sockets.
+What makes D-Bus useful is a central "hub" called dbus-daemon.
+Processes that need to react to events can connect to dbus-daemon and register to receive certain kinds of events.
+Porcesses also create the events.
+For example, the process udisks-daemon listens to ubus for disk events and sends them to dbus-daemon, which then retransmists the events to applications interested in disk events.
+
+14.5.1 System and Session Instances
+D-Bus has become a more integral part of the Linux system, and it now goes beyond the dektop.
+For example, both systemd and Upstart have D-Bus channels of communication.
+However, adding dependencies to desktop tools inside the core system goes against a core design rule of Linux.
+To address this problem, there are acutally two knids of dbus-daemon instaces (processes) that can run.
+The first is the system instance, which is started by init at boot time with the --system option.
+The system instance usually runs as a D-Bus user, and its configuration file is /etc/dbus-1/system.conf (though you probably shouldn't change the configuration).
+Processes can connect to the system instance through the /var/run/dbus/system_bus_socket Unix domain socket.
+Independent of the system D-Bus instance, there is an optional session instance that runs only when you start a desktop session.
+Desktop applications that you run connect to this instance.
+
+14.5.2 Monitoring D-Bus Messages
+One of the best ways to see the difference between the system and session dbus-daemon instances is to monitor the events that g o over the bus.
+Try using the dbus-monitor utility in system mode like this:
+$ dbus-monitor --system
+
+The startup message here indicates that the monitor connected and acquired a name.
+You shouldn't see much activity when you run it like this, because the system instance usually isn't very busy.
+To see something happen, try plugging in a USB storage device.
+By comparison, session instances have much more to do.
+Assuming you've logged in to a desktop session, try this:
+$dbus-monitor --session
+
+Now move your mouse around to different windows; if your desktop is D-Bus aware, you should get a flurry of messages indicating activated windows.
