@@ -1,0 +1,36 @@
+14.6 Printing
+Printing a document on Linux is a multistage process.
+It goes like this:
+1. The program doing the printing usually converts the document into PostScript form. This step is optional.
+2. The program sends the document to a print server.
+3. The print server receives the document and places it on a print queue.
+4. When the document's turn in the queue arrives, the print server sends the document to a print filter.
+5. If the document is not in PostScript form, a print filer might perform a conversion.
+6. If the destinatino printer does not understand PostScript, a printer driver converts the document to a printer-compatible format.
+7. The printer driver adds optional instructions to the document, such as paper tray and duplexing options.
+8. The print server uses a backend to send the document to the printer.
+
+The most confusing part of this process is why so much revolves around PostScript.
+PostScript is  actually a programming language, so when you print a file using it, you're sending a program to the printer.
+PostScript serves as a standard for printing in Unix-like systems, much as the .tar format serves as an archiving standard.
+(Some applications now use PDF output, but this is relatively easy to convert.)
+We'll talk more about the print format later; first, let's look at the queuing system.
+
+14.6.1 CUPS
+The standard priting system in Linux is CUPS (http://www.cups.org/), which is the same system used on Mac OS X.
+The CUPS server daemon is called cupsd, and you can use the lpr command as a simple client to send files to the daemon.
+One significant feature of CUPS is that it implements Internet Print Protocol (IPP), a system that allows for HTTP-like transactions among clients and servers on TCP port 631.
+In fact, if you have CUPS running on your system, you can probably connect to http://localhost:631/ to see your current configuration and check on any printer jobs.
+Most network printers and print servers support IPP, as does Windows, which can make setting up remote printers a relatively simple task.
+You probably won't be able to administer the system from the web interface, because the default setup isn't very secure.
+Instead, your distributions likely has a graphical settings interface to add and modify printers.
+These tools manipulate the configuration files, normally found in /etc/cups.
+It's usually best to let these tools do the work for you, because configuration can be complicated.
+And even if you do run into a problem and need to configure manually, it's usually best to create a printer using the graphical tools so that you have somewhere to start.
+
+14.6.2 Format Conversion and Print Filters
+Many printers, including nearly all low-end models, do not understand PostScript or PDF.
+In order for Linux to support one of these printers, it must convert documetns to a format specific to the printer.
+CUPS sends the document to a Raster Image Processor (RIP) to produce a bitmap.
+The RIP almost always uses the Ghostscript(gs) program to do most of the real work, but it's somewhat complicaetd because the bitmap must fit the format of the printer.
+Therefore, the printer drivers that CUPS uses consult the PostScript Printer Definition (PPD) file for the specific printer to figure out settings such as resolution and paper sizes.
