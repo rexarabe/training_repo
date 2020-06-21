@@ -1,0 +1,282 @@
+15.1 The C Compiler
+Knowing how to run the C programming language compiler can give you a great deal of insight into the origin of the programs that you see on your Linux system.
+The source code for most Linux utilities, and for many appilcations on Linux systems, is written in C or C++.
+We'll primarily use examples in C for this chapter, but you'll be able to carry the information over to C++.
+C programs follow a traditional development process:
+You write programs, you compile them, and they run.
+That is, when you write a C program and want to run it, you must compile the source code tht you wrote into a binary low-level form that the computer understands.
+You can compare this to the scripting languages that we'll discuss later, where you don't need to compile anything.
+
+Note:
+By default, most distrubutions do not include the tools necessary to compile C code because these tools occupy a faily large amount of space.
+If you can't find some of the tools described here, you can install the build essential package for Debian/Ubuntu or the "Development Tools" yum groupintall for Fedora/CentOS.
+Failing that, try a package search for "C compmiler".
+
+The C compiler executable on most Unix systems is the GNU C compiler, gcc, though the newer clang compiler from the LLVM project is gaining popularity.
+C source code files end with .c.
+Take a look at the single, self-contained C source code file called hello.c, which you can find in the C Programming Language, 2nd edition, By Brian W. Kernighan and Dennis V. Ritchie
+
+#include <studio.h>
+
+int main() {
+     printf("Hello, World.\n");
+}
+
+Put this source code in a file called hello.c and then run this command:
+
+$cc hello.c
+
+The result is an executable name a.out, whihc can run like any other executable on the system.
+However, you should probably give the executable another name (such as hello).
+To do this, use the compiler's -o option:
+
+
+$cc -o hello hello.c
+
+For small programs, here isn't much more to compiling that that.
+You might need to add an extra include directory or library (see Section 15.1.2 and 15.1.3), but let's look at slightly larger programs before getting into those topics.
+
+15.1.1 Multiple Source Files
+Most C programs are too large to reasonably fit inside a single source code file.
+Mammoth files become too disorganized for the programmer, and compilers sometimes even have trouble parsing large files.
+Therefore, developers group components of the source code together, gifving each piece its own file.
+When compiling most .c files, you don't create an executable right away.
+Instead, use the commpiler's -c option on each file to create object files.
+To see how this works, let's say you have two files, main.c and aux.c.
+The following two compiler commands do most of the work of building the program:
+
+$cc -c main.c
+$cc -c aux.c
+
+The preceding two commands compile the two source files into the two object files main.o and aux.o.
+An object file is a binary file that a processor can almost understand, except that there are still a few loose ends.
+First, the operating system doesn't know how to run an object file, and second, you likely need to combine several object files and some system libraries to make a complete program.
+To build a fully functioning executable from one or more object files, you must run the linker, the ld command in Unix.
+Programmers rarely use ld on the command line, because the C compiler knows how to run the linker program.
+So to create an executable called myprog from the two object files above, run this command to link them:
+
+$cc - o myprog main.o aux.o
+
+Although you can compile multiple source files by hand, as the preceding example shows, it can be hard to keep track of them all during the compiling process when the number of source files multiplies.
+The make system described in Section 15.2 is the traditional Unix standard for managing compiles.
+This system is especially important in managing the files described in the next two sections.
+
+15.1.2 Header (Include) Files and Directories
+C header files are additional source code files that usually contain type and library function declartions.
+For example, stdio.h is a header file (see the simple program in Section 15.1)
+Unfortunately, a great number of compiler problems crop up with header files.
+Most glitches occur when the compiler can't find header files and libraries.
+There are even some cases where a programmer forgets to include a required header file, causing some of the source code to not compile.
+
+Fixing Include File Problems
+Tracking down the correct include files isn't always easy.
+Sometimes there are several include files with the same names in different directories, and it's not clear which is the correct one.
+When the compiler can't find an include file, the error message looks like this:
+
+badinclude.c:1:22: fatal error: notfound.h: No such file or directory
+
+This message reports that the comiler can't find the notfound.h header file that the badinclude.c file references.
+This specific error is a direct result of this directive on line 1 of badinclude.c:
+
+#include <notfound.h>
+
+The default include directory in Unix is ?usr/include; the compiler always looks there unless you explicity tell it not to.
+However, you can make the compiler look in other include directories (most paths that contain header files have include somewhere in the name.)
+
+Note: You'll learn more about how to find missing include files in Chapter 16.
+
+For example, let's say that you find notfound.h in /usr/junk/include.
+You can make the compiler see this directory with the -I option:
+
+$cc -c  -I/usr/junk/include badinclude.c
+
+Now the compiler should no longer stumble on the line of code in badinclude.c that references the header file.
+You should also beware of includes that use double quotes (" ") instead of angle brackets(<>), like this:
+
+#include "myheader.h"
+
+Double quotes mean that the header file is not in a system include directory but that the compiler should otherwise search its include path.
+It often means that the include file is in the same directory as the soruce file.
+If you encuotnter a problem with double quote, you're probably trying to compile incomplete source code.
+
+What Is the C Preprocessor (cpp)?
+
+It turns out that the C compiler does not actually do the work of looking for all of these include files.
+That task falls to the C preprocessor, a program that the compiler runs on your source code before parsing the actual program.
+The preprocessor rewrites source code into a form that thte compiler understands; it's tool for making soruce code easier to read ( and for providing shortcuts).
+
+Preprocessor commands in the source code are acalled directives, and they start with the # character.
+There are three basic types of directives:
+
+Include files  An #include directive instructs the preprocessor to include an entire file.
+Note that the compiler's -I flag is actually an option that cause the preprocessor to search a specified directory for include files, as you saw in the previous section.
+
+Macro definitions  A line such as #define BLAH something talls the preprocessor to substitute something for all occurences of BLAH in the source code.
+Convention dictates that macros appear in all uppercase, but it should come as no shock that programmers sometimes use macros whose names look like functions and variables.
+(Every now and then, this cause a world of headaches.
+Many programmers make a sport out of abusing the preprocessor.)
+
+
+Note:
+Instead of defining macros within your source code, you can also define macros by passing parameters to the compiler: -DBLAH=something  works like the directive above.
+
+Conditionals You can mark out cetain pieces of code with #if def, #if, and #endif.
+The #ifdef Macro directive checks to see whether the preprocessor macro Macro is defined, and #if condition tests to see whether condition is nonzero.
+For both directives, if the condition following the "if statement" is false, the preprocessor does not pass any of the program text between the #if and the next #endif to the compiler.
+If you plan to look at any C code, you'd better get used to this.
+
+An example of a conditional directive follows.
+When the preprocessor sees the following code, it checks to see whether the macro DEBUG is defined and, if so, passes the line containing fprintf() on to the compiler.
+Otherwise, the preprocessor skips this line and continues to process the file after the #endif:
+
+#ifdef DEBUG
+  fprintf(stderr, "This is a debugging message.\n");
+#endif
+
+Note
+The C preprocessor doesn't know anything about C syntax, variables, functions, and other elements.
+It understands only its own macros and directives.
+
+On Unix, the C preprocessor's name is cpp, but you can also run it with gcc -E.
+However, you'll rarely need to run the preprocessor by itself.
+
+15.1.3 Linking with Libraries.
+
+The C compiler doesn't know enough about your system to create a useful program all by itself.
+you need libaries to build complete programs.
+A C library is a collection of common precompiled functions that you can build into your program.
+For example, many executables use the math library because it provides trigonometric functions and the like.
+
+Libraries come into play primarily at link time, when the linker program creates an executable from object files. For example, if you have a program that uses the object library but you forget to tell the compiler to link against that library, you'll see linker errors like this:
+
+badobject.o(.text+0x28): undefined reference to 'g_object_new'
+
+The most important parts of these error messages are in bold.
+When the linker program examined the badobkect.o object file, it couldn't find the function that appears in bold, and as a consequence, it couldn't create the executable.
+In this particular case, you might suspect that you forgot the gobkect libarry because the missing function is g_object_new().
+
+Note:
+Undefined references do not always mean that you're missing a library.
+One of the program's obkect files could be missing in the linkn command.
+it's usually easy to differentiate between library functions and functions in your object files. though.
+
+To fix this problem, you must first find the gobject library and then use the compiler's -l option to link against the library. As with include files, libaries are scattered throughout the system
+(/usr/lib is the system defaul location), though most libarries reside in a subdirectory named lib.
+For the preceding example, the basic gobject library library file is libgobject.a, so the library name is gobject.
+Putting it all together, you would link the program like this:
+
+$ cc -o badobject badobkect.o -lgobject
+
+You must tell the linker about nonstandard library locations; the parameter for this is -L.
+Let's say the badobject program requires libcrud.a in /usr/junk/lib.
+To compile and create the executable, use command like this:
+
+$ cc -o badobject badobkect.o -lgobject -L/usr/junk/lib -lcrud
+
+Note:
+If you want to search a library for a particular function, use the nm command. Be prepared for a lot of output.
+For example, try this: nm libgobkect.a
+(You might need to use the locate command to find libgobkect.a; many distributions now put libraries in architecture-specific subdirectories in /usr/lib.)
+
+15.1.4 Shared Libraries
+A library file ending with .a (such as libgobject.a) is called a static library.
+When you link a program against a static library, the linker copies machine code from the library file into your executable.
+Therefore, the final executable does not need the original library file to run, and furthermore, the executable's behavior never changes.
+However, library sizes are always increasing, as is the number of libraries in use, and this makes static libraries wasteful in terms of disk space and memory.
+In addition, if a static libarry is later found to be inadequate or insecure, there's no way to change any executable linked against it, short of recompiling the executable.
+Shared libarries counter these problems.
+When you run a program linked against one, the system loads the library's code into the process memory space only when necessary.
+Many processes can share the same shared library code in memory.
+And if you need to slightly modify the library code, you can generally do so without recompiling any programs.
+Shared Libraries have their own costs: difficult management and a somewhat complicated linking procedure.
+However, you acn bring shared libraries under control if you know four things:
+
+How to list shared libraries that an execitbale needs
+How an execitable looks for shared libraries
+How to link a program against a shared library
+The common shared library pitfalls
+
+The following sections tell yo uhow to use and maintain your system's shared libraries.
+
+
+Listing Shared Library Dependencies
+
+Shared library files usually reside in the same places as static libraries.
+The two statndard library directories on a Linux system are /lib and /usr/lib.
+The /lib directory should not contain static libraries.
+
+A shared library has a suffix that contains .so (shared object), as in libc-2.15.so and libc.so.6.
+
+
+$ ldd /bin/bash
+
+In the interest of optimal performance and flexibility, executbales alone don't usually know the locations of their shared libraries; they know only the names of the biraries, and perhaps a little hint about where to find them.
+A small program named ld.so (the runtime dynamic linker/loader) finds and loads shared libaries for a programs at runtime.
+The preceding ldd output show the library names on the left - that's what the executable.
+The right side show where ld.so finds thte  library.
+
+The final line of output here show the actual location of ld.so ld-linux.so2.
+
+How ld.so Finds Shared Libraries
+One of the common trouble points for shared libraries is that the dynamic linker cannot find a library.
+The first place the dynamic linker should normally look for shared libraries is an executable's preconfigured runtime library search path (rpath), if it exists.
+You'll see how to create this path shortly.
+Next, the dynamic linker looks in a system cache, /etc/ld.so.cache, to see if the library is in a standard location.
+This is a fast cache of the names of library files found in directories listed in the cache configuration file /etc/ld.so.conf.
+
+Note:
+As is typical of many of the Linux configuration files that you've seen, ld.so.conf may include a number of files in a directory such as /etc/ld.so.conf.d.
+
+/lib/i686-linux-gnu
+/usr/lib/i686-linux-gnu
+
+The standard library directories /lib and /usr/lib are implicit, which means that you don't need to include them in /etc/ld.so.conf.
+If you alter ld.so.conf or make a change to one of the shared library directories, you must rebuild the /etc/ld.so.cache file by hand with the following command:
+
+# ldconfig -v
+
+The -v option provides detailed information on libraries that ldconfig adds to the cache and any changes that it detects.
+There is one more place that ld.so looks for shared libraries: the environment variable LD_LIBRARY_PATH.
+We'll talk about this soon.
+Don't get into the habit of adding stuff to /etc/ld.so.conf.
+You should know what shared libraries are in the system cache, and if you put every bizarre little shared libraries directory into the cache, you risk conflict and an extremely disorganized system.
+When you compile software that needs an obscure library path, give your executable a built in runtime library search path.
+Let's see how to do that.
+
+Linking Programs Against Shared Libraries.
+Let's say you have a shared library named libweird.so.1 in /opt/obscure/lib that you need to link myprog against.
+Link the program as follows:
+
+$cc -o myprog myprog.o -Wl, -rpath=/opt/obscure/lib -L/opt/obscure/lib -lweird
+
+The -Wl, -rpath option tells the linker to include a following directory into the executable's runtime library search path.
+However, even if you use -Wl, -rpath, you still need the -L flag.
+If you have a pre-existing binary, you can also use the patchelf program to insert a different runtime library search path, but it's generally better to do this at compile time.
+
+Problems with Shared Libraries
+Shared libraries provide remarkable flexibility, not to mention some really increadible hacks, but it's also possible to abuse them to the point where your system becomes an utter and complete mess.
+Three particularly bad things can happen:
+
+Missing libraries
+Terrible performance
+Mismatched libraries
+
+The number one cause of all shared library problems is the environment variable named LD_LIBRARY_PATH.
+Setting this variable to a colon-delimited set of directory names makes ld.so search the given directories before anything else when looking for a shared library.
+This is a cheap way to make programs work when you move a library around, if you don't have the program's source code and can't use parchelf, or if you're just too lazy to recompile the executables.
+Unfortunetly, you get what you pay for.
+Never set LD_LIBRARY_PATH in shell startup files or when compiling software.
+When the dynamic runtime linker encounters this this variable, it must often search through the entire contents of each specified directory more times than you'd care to know.
+This causes a big performance hit, but more importantly, you can get conflicts and mismatched libraries because the runtime linker looks in these directories for every program.
+If you must use LD_LIBRARY_PATH to run some crymmy program for which you don't have the source (or an application that you'd rather not compile, like Mozilla or some other beast), use a wrapper script.
+Let's say your executable is /opt/crummy/bin/crummy.bin and needs some shared libraries in /opt/crummy/lib.
+Write a wrapper script called crummy that looks like this:
+
+#!/bin/sh
+LD_LIBRARY_PATH=/opt/crummy/lib
+export LD_LIBRARY_PATH
+exec /opt/crummy/bin/crummy.bin $@
+
+Avoiding LD_LIBRARY_PATH prevents most shared library problems.
+But one other significant problem that occasionally comes up with developers is that a libraray's application programming interface (API) nay change slightly from one minor version to another, breaking installed software.
+The best solution here are preventive: Either use a consistent methodology to install shared libraries with -Wl, -rpath to create a runtime link path or simply use the static versions of obscure libraries.
