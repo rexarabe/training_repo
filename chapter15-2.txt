@@ -1,0 +1,224 @@
+15.2 make
+A program with more than one source code file or that requires strange compiler options is too cumbersome to compile by hand.
+This problem has been around for years, and the traditional Unix compile management utility that eases these pains is called make.
+You should know a little about make if you're running a Unix system, because system utilities sometimes rely on make to operate.
+However, this chapter is only the tip of the iceberg.
+There are entire books on make, such as Managing Projects with GNU Make by Robert Mecklenburg (O'Reilly, 2004).
+In addition, most Linux packages are built using an additional layer around make or a similar tool.
+There are many build systems out there; we'll look at one named autotools in Chapter 16.
+make is a big system, but it's not very difficult to get an idea of how it works.
+When you see a file named Makefile or makefile, you know that you're dealing with make.
+(Try running make to see if you can biild anything.)
+The basic idea behind make is the target, a goal that you want to achieve.
+A target can be a file (a .o file, an executable, and so on) or label.
+In addition, some targets depend on other targets; for instance, you need a complete set of .o files before you can link your executable.
+These requirements are called dependencies.
+To build a target, make follows a rule, such as a rule for how to go from a .c source file to a .o object file.
+make already knows several rules, but you can customize these existing rules and create your own.
+
+15.2.1 A Sample Makefile
+
+The following very simple Makefile builds a program called myprog from aux.c and main.c:
+
+#object files
+OBJS=aux.o main.o
+
+all: myprog
+
+myprog: $(OBJ)
+        $(CC) -o myprog $(OBJS)
+
+The # in the first line of this Makefile denotes a comment.
+The next line is just a macro definition; it sets the OBJS variable to two object filenames.
+This will be important later.
+For now, take note of how you define the macro and also how you reference it later ($ (OBJS)).
+The next item in the Makefile contains its first target, all.
+The first target is always the default, the target that make wants to build when you run make by itself on  the command line.
+The rule for building a traget comes after the colon.
+For all, this Makefile says that you need to satisfy something called myprog.
+This is the first dependency in the file; all depends on myprog.
+Note that myprog can be an actual files or the target of another rule.
+In this case, it's both (the rule for all and the target of OBJS)
+
+To build myprog, this Makefile uses the macro $(OBJS) in the dependencies.
+The macro expands to aux.o and main.o, so myprog depends on these two files (they must be actual files, because there aren't any targets with those names anywhere in the Makefile).
+This Makefile assumes that you have two C source files named aux.c and main.c in the same directory.
+Running make on the Makefile yields the following output, whosing the commands that make is running:
+
+$make
+
+See figure 15-1
+
+
+15.2.2 Buil-in Rules
+So how does make know how to go from aux.c to aux.o?
+After all, aux.c is not in the Makefile.
+The answer is that make follows its built-in rules.
+It knows to look for a .c file when you a .o file, and furthermore, it knows how to run cc -c on that .c file to get to its goal of ccreating a .o file.
+
+15.2.3 Final Program Build
+The final step in getting to myprog is a little tricky, but the idea is clear enough.
+After you have the two object files in $(OBJS), you can run the C compiler according to the following line (where $(CC)) expands to the compiler name):
+
+$(CC) - o myprog $(OBJS)
+
+The whitespace before $(CC) is a tab.
+You must insert a tab before any real command, on its own line.
+
+Watch out for this:
+
+Makefile:7:  *** missing separator.   Stop.
+
+An error like this means that the Makefile is broken.
+The tab is the seperator, and if there is no separator or there's some other interference, you'll see this error.
+
+15.2.4  Staying Up-to-Date
+One last make fundamental is that targets should be up-to-date with their dependencies.
+If you type makle twice in a row for the preceding example, the first command builds myprog, but the second yields this output:
+
+make: Nothing to done for 'all'.
+
+This second time throught, make looked at tis rules and noticed that myprog already exists, so it didn't build myprog aagin because none of the dependencies had changed since it was last built.
+To experiment with this, do the following:
+
+1. Run touch aux.c.
+2. Run make again. This, make determines that aux.c is newer than the aux.o already in the directory, so it compiles aux.o again.
+3. myprog depends on aux.o, and now aux.o is newer than the preexisting myprog, so make must create myprog again.
+
+This type of chain reaction is very typical.
+
+15.2.5 Command-Line Arguments and Options
+You can get a great deal of mileage out of make if you know how its command-line arguments and optinos work.
+One of the most useful options is to specify a single target on the command line.
+For the preceding Makefile, you can run make aux.o if you want only the aux.o file.
+You can also define a macro on the command line.
+For example, to use the clang compiler, tryu
+
+$make CC=lang
+
+Here, make uses your definition of CC instead of its default compiler, cc.
+Command-line macros come  in handy when testing preprocessor definitions and libraries, especially with the CFLAGS and LDFLAGS macros that we'll discuss shortly.
+In fact, you don't even need a Makefile to run make.
+If built-in make rules match a target, you can just ask make to try to create the target.
+For example, if you have the source to a very simple program called blah.c, try make blah.
+The make run proceeds like this:
+
+$make blah
+
+
+This use of make works only for the most elementary C programs; if your program needs a library or special include directory, you should probably write a Makefile.
+Running make without a Makefile is actually most useful when you're dealing wit hsomething like Fortran, Lex, or Yacc and don't know how the compiler or utilit mworks.
+Why not let make try to figure it out for you?
+Even if make fails to create the target, it will probably still give you pretty good hint as to how to use the tool.
+Two make options stand out from the rest:
+
+-n Prints the commands necessary for a build but prevents make from actually runnning any commands
+-f file tells make to read from file instead of Makefile or makefile.
+
+15.2.6  Standard Macros and Variables
+
+make has many special macros and variables.
+It's use the term macro to mean something that usually doens't change after make starts building targets.
+As you saw earlier, you can set macros at the start of your Makefile.
+These are the most common macros:
+
+CFLAGS    C compiler options.  When creating object code from a .c file, make passes this as an argument to the compiler.
+LDFLAGS   Like CFLAGS, but they're for the linker when creating an executable from object code.
+LDLIBS    If you use LDFLAGS but do not want to combine the library name options with the search path, put the library name options in this file.
+CC        The C compiler. The default is cc.
+CPPFLAGS  C preprocessor options. When make runs the C preprocessor in some way, it passes this macro's expansion on as an argument.
+CXXFLAGS  GNU make uses this for C++ compiler flags.
+
+A make variable changes as you build targets. Because you never set make variables by hand, the following list includes the $.
+
+$@ When inside a rule, this expands to the current target.
+$* Epands to the basename of the current target. For example, if you're building blah.o, this expands to blah.
+
+The most comprehensive list of make variables on Linux is the make info manual.
+
+Note
+Keep in mind that GNU make has many extensions, built in rules, and features that other variants do not have.
+This is fine as long as you're running Linux, but if you step off onto a Solaris or BSD machine and expect the same stuff to work, you might be in for a surprise.
+However, that's the problem that multi-platfom build systems such as GNU autotools solve.
+
+15.2.7 Conventional Targets.
+Most Makefiles conatain several standard targets that perfom auxiliary tasks related to compiles.
+
+
+Clean the clean target is ubiquitous; a make clean usually instructs make to remove all fo the object files and executables so that you can make a fresh start or pack up the software.
+Here's an exaample rule for the myprog Makefile:
+
+clean:
+           rm -f $(OBJS) myprog
+
+
+distclean   A Makefile created by way of the GNU autotools system always has a ditclena target to remove everything that wasn't part of the original distribution, including the Makefile.
+You'll see more of this in Chapter 16.
+On very rare occasions, you might find that a developer opts not to remove the executable with this target, preferring something like realclean instead.
+
+install  COpies files and compiled programs to what the Makefile thinks is the proper place on the system.
+This can be dangerous, so alwasy run a make -n install first to see what will happen without actually running any commands.
+test or check  Some developers provide test or check target because it often changes the makefile itself.
+This is not longer common practice , but if you come across soe instruction telling you to use this rule, make sure to do so.
+
+All often the first target in the Makefile, You'l.l often see references to this traget instead of an actual executable.
+
+15.2.8 Organizing a Makefile
+Even though there are many different Makefile styles, most programmers adhere to some general rules of thumb.
+For one, in the first part of the Makefile (innside the macro definitions), you should see libraries and includes grouped according to package:
+
+MYPACKAGE_INCLUDES=-I/usr/local/include/mypackage
+MYPACKAGE_LIB=-L/usr/local/lib/mypackage -lmypackage
+
+PNG_INCLUDES=-I/usr/local/include
+PNG_LIB=-L/usr/local/lib p-lpng
+
+Each type of compiler and linker flag often gets a macro like this:
+
+CFLAGS=$(FLAGS) $(MYPACKAGE_INCLUDES) $(PNG_INCLUDES)
+LDFLAGS=$(LDFLAGS) $(MYPACKAGE_LIB) $(PNG_LIB)
+
+Object files are usually grouped according to executables.
+For example, say you have a package that creates executables called boring and trite.
+Eack has its own .c source file and requires the code in util.c
+You might see something like this:
+
+UTIL_OBJS=util.o
+
+BORING_OBJS=$(UTIL_OBJS) boring.o
+TRITE_OBJS=$(UTIL_OBJS) trite.o
+
+PROGS=boring trite
+
+The rest of the Makefile might look like this:
+CFLAGS=$(CFLAGS) $(MYPACKAGE_INCLUDES) $(PNG_INCLUDES)
+LDFLAGS=$(LDFLAGS) $(MYPACKAGE_LIB) $(PNG_LIB)
+
+Object files are usually grouped according to executables.
+For example, say you have a package that creates executables called boring and trite.
+Each has its own .c source file and requires the code in util.c.
+You mighjt see something like this:
+
+UTIL_OBJS=util.o
+
+BORING_OBJS=$(UTIL_OBJS) boring.o
+TRITE_OBJS=$(UTIL_OBJS) trite.o
+
+PROGS=boring trite
+
+The rest of the Makefile might look like this:
+
+all: $(PROG)
+
+boring: $(BORING_OBJS)
+        $(CC) -o  $@ $(BORING_OBJS) $(LDFFLAGS)
+
+trite:  $(TRITE_OBJS)
+        $(CC) -o $@ $(TRITE_OBJS) $(LDFLAGS)
+
+You could combine the two executable targets into one ruile, but it's usually not a good idea to do so because you would not easily be able to move a rule to another Makefile, delete an executable, or group executables differently.
+Furthermore, the dependencies would be incorrect: if you had just one furle for boring and trite, trite would depend on boring.c, boring would depend on trite.c, and make would always try to rebuild both programs whenever you changed one of the two source files.
+
+Note:
+If you need to define a special rule for an object file, put the rule for the object file just above the rule that builds the executable.
+If several executables use the same object file, put the object rule above all of the executable rules.
