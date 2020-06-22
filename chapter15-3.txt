@@ -1,0 +1,31 @@
+15.3 Debuggers
+The standard debugger on Linux systems is gbf; user-friendly frontends such as the Eclipse IDE and Ecmacs systems are also available.
+To enable full debugging in your programs, run the compiler with -g to write a symbol table and other debugging information into the executable.
+To start gdb on an executable named program, run
+
+$gdb program
+
+You should get a (gdb) prompt. To run program with the command-line argumetn options, enter this at the (gdb) prompt:
+
+(gdb) run options
+
+If the program works, it should start, run, and exit as normal.
+However, if there's a problem, gdb stops, prints the failed source code, and throws you back to the (gdb) prompt.
+BEcause the source code fragment often hints at the problem, you'll probably want to print the value of a particular variable that the trouble may be related to. (The print command also works for arrays and C structures.)
+
+(gdb) print variable
+
+To make gdb stop the program at any point in the original source code, use the breakpoint feature.
+In the following command, file is a source code file, and line_num is the line number in that file where gdb should stop:
+(gdb) break file:line_num
+To tell gdb continue executing the program, use
+
+gdb continue
+
+To clear a break point, enter.
+(gdb) clear file:line_nmum
+
+This section has provided only the briefest introduciion to gdb, which includes an extensive manual that you read online in print, or buy as Debugging with gDB
+
+
+Note if you are interested in rooting out memroy problems and running profiling tests, try Valgrind (hhtp://valgrind.org/).
