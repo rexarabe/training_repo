@@ -1,0 +1,9 @@
+15.7 Looking Forward: Compiling Packages
+
+The world of compilers and scripting languages is vast and constantly expanding.
+As of this writing, new compiled languages such as Go (golang) and Swift are gaining popularity.
+The LLVM compiler infrastructure set (http://llvm.org/) has significantly eased compiler development.
+If you're interested in how to design and implement a compiler, two good books are Compiler:
+For Scripting language development, it's usually best to look for online resources, as the implementations vary widely.
+Now that you know the basics of the programming tools on the system, you're ready to see what they can do.
+The next chapter is all about how you can build packages on Linux from source code.
