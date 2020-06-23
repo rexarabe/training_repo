@@ -1,0 +1,10 @@
+15.4 Lex and Yacc
+You might encounter Lex and Yacc when compiling programs that read configuration files or commands.
+These tools are building blocks for programming languages.
+
+Lex is tokenizer that transforms text into numbered tags with labels.
+The GNU/Linux Version is named flex. You may need a -ll or -lfl linker flag in conjunction with Lex.
+
+Yacc is a parser that attempts to read tokens according to a grammar.
+The GNU parser is bison; to get Yacc compatibility, run bison -y.
+You may need the -ly linker flag.
