@@ -1,0 +1,73 @@
+15.5 Scripting Languages
+A long time ago, the average Unix systems manager didn't have to worry much about scripting languages other than the Bourne shell and awk.
+Shell scripts (disscussed in chapter 11) continue to be an important part of Unix, but awk has faded somewhat from the scripting arena.
+However, many powerful successors have arrived, and many systems programs have actually switched from C to scripting languages (such as the sensible version of the whois program).
+Let's look at some scripting basics.
+The first thing you need to know aboyut any scripting language is that the first line of a script looks like the shebang of a Bourne shell script.
+For example, a Python script starts out like this:
+
+#!/user/bin/python
+
+Or this:
+
+#!/usr/bin/env Python
+
+In Unix, any executable text file that starts with #! is a script.
+The pathname following this prefix is the scripting language interpreter executable.
+When Unix tries to run an executable file that starts with a @! shebang,  it runs the program following the #! with the rest of the file as the standard input.
+Therefore, even this is a script:
+
+#!/usr/bin/tail -2
+This program won't wprint this, line,
+but it will print this line ..
+and this, line, too.
+
+The first line of a shell script often contains one the most common basic script problem: an invalid path to the scripting language interpreter.
+For example, say you named the previous script myscript. What if tail were actually in /bin instead of /usr/bin on your system? IN that case, running myscript would produce this error:
+
+bash: ./myscript: /usr/bin/tail:  bad interpreter: No such file or directory
+
+Don't except more than one argument in the script's first line to work.
+That is, the -2 in the preceding example might work, but if you add another argument, the system could decide to treat the -2 and the new argument as one big argument, spaces and all.
+This can vary from system to system; don't test your patience on something as ingignificant as this.
+Now, let's look at a few of the language out there.
+
+15.5.1 Python
+Python is a scripting language with a strong following and an array of powerful features, such as text processing, database access, networking, and multithreading.
+It has a powerful interactive mode and a very organized object model.
+Python's executable is python, and it's usually in /usr/bin.
+However, Python isn't used just from the command line for scripts.
+One place you'll find it is as a tool to build websites.
+
+15.5.2 Perl
+One of the older third party Unix scripting language is Perl.
+It's the original "Swiss army chainsaw" of programming tools.
+Although Perl has lost a fair amount of ground to Python in recent years, it excels in particular at text processing, conversino, and file manipulation, and you find many tools built with it.
+
+15.5.3  Other Scripting Language
+You might also encounter these scripting languages:
+
+PHP This a hypertext-processing language often found in dynamic web scripts.
+Some people use PHP for standalone scripts.
+The Php web-site is at http://www.php.net/
+
+Ruby Object-oriented fanatics and many web developers enjoy programming in this language
+
+JavaScript  This language is used inside web browsers primarily to manipulate dynamic content.
+Most experienced programmers shun it as a standalone scripting language due to its many flaws, but it's nearly impossible to avoid when doing web programming.
+You might find an implementation called Node.js with an executable name of node on your system.
+
+Emacs Lisp A variety of the Lisp programming language used by the Emacs text editor.
+
+Matlab, Octave  Matlab is a commercial matrix and mathematical programming language and library.
+There is a very similar free software project called Octave.
+
+R A popular free statistical analysis language.
+
+Mathematica Another commercial mathematical programming language with libraries.
+
+m4 This a macro processing language, usually found only in the GNU autotools.
+
+Tcl Tcl(tool command language) is a simple scripting language usually associated with the Tk graphical user interface toolkit and Expect, an automation utility.
+Although Tcl does not enjoy the widespread use that it once did, don't discout its power.
+Many veteran developers prefer Tk, especially for its embedded capabilities.
