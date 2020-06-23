@@ -1,0 +1,30 @@
+15.6 Java
+
+Java is a compiled language like C, with a simpler syntax and powerful support for object-oriented programming.
+It has a few niches in Unix systems.
+for one, it's often used as a web application environment, and it's popular for specialized appliacions.
+For example, Android applications are usually written in Java.
+Even though it's not often seen on a typical Linux desktop, you should known how Java works, at least for standalone appliactions.
+
+There are two kinds of Java compilers: native compilers for producing machine code for your system (like a C compiler) and bytecode compilers for use by a bytecode interpreter
+(sometimes called a virtuall machine, which is different from the virtual machine offered by a hypervirsor, as described in Chapter 17).
+You'll practially always encounter bytecode on Linux.
+Java bytecode files end in .class.
+The Java runtime environment (JRE) contains all of the programs you need to run Java bytecode.
+To run a bytecode file, use
+
+$java file.class
+
+You might also encounter bytecode fules that end in .jar, which are collections of archived .class files.
+To run a .jar file, use this syntax:
+
+$java -jar file.jar
+
+Sometimes you need to set the JAVA_HOME environment variable to your Java installation prefix.
+If you're really unlucky, you might need to use CLASSPATH to include any directories containing classes that your program expects.
+This is a colon-delimited set of directories like the regular PATH variable for executables.
+
+If you need to compile a .java file into bytecode, you need the Java Development Kit (JDK).
+You can run the javac compiler from JDK to create some .class files:
+
+$javac file.java
