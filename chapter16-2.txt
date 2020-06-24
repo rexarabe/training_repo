@@ -1,0 +1,35 @@
+16.2 Unpacking C Source packages
+A package's source code distribution usually comes as a .tar.gz, .tar.bz2, or .tar.xz file, and you should unpack the file as described in Section 2.18.
+Before you unpack, though, verify the contents of the archive with tar tvf or tar ztvf, because some packages don't create their own subdirectories in the directory where you extract the archive.
+Output like this means that the package is probably okay to unpack:
+
+...
+
+However, you may find that not all files are in a common directory (like package.1.2.3 in the preceding example):
+
+
+Extracting an archive like this one can leave a big mess in your current direvtory.
+To avoi d that, create a new directory and cd there before extracting the contents of the archive.
+Finally beware of package that ocntain files with absolute pahtnames like this:
+
+/etc/passwd
+/etc/inetd.conf
+
+You likely won't come across anything, like this, but if you do, remove the archive from your system.
+It probably contains a Trojan horse or some other malicious code.
+
+16.2.1  Where to Start
+Once you've extracted the contents of a source archive and have a bunch of files in front of you, try to get a feel for the package.
+In particular, look for the files README and INSTALL.
+Always look at any README files first because they often contain a description of the package, a small manual, installation hints, and other useful information.
+Many packages also come with INSTALL files with instructions on how to compile and install the package.
+Pay particular attention to special compiler options and defitions.
+In addition nto README and INSTALL files, you will find other package files that roughly fall into three categories:
+
+Files relating to the make system, such as makefile, Makefile.in, configure, and CMakeLists.txt.
+Some very old packages come with a Makefile that you may need to modify, but most use a configuration utility such as GNU autoconf or CMake.
+They come with a script or configuration file (such as configure or CMakeLists.txt) to help generate a Makefile from Makefile.in based on your system settings and configuration options.
+Source code files ending in .c, .h, or .cc C source code files may appear just about anywhere in a package directory. C++ source files usually have .cc, .C or .cxx suffixes.
+Object files ending in .o or binaries.
+normally, there aren't object files in source code distributions, but you might find some in rare cases when the package maintainer is not permitted to release certain source code and you need to do something special in order to use the object files.
+In most cases, object (or binary executable) files in a srouce distribution mean that the package wasn't put together well, and you should run make clean to make sure tha you get a fresh compile.
