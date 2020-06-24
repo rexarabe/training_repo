@@ -1,0 +1,14 @@
+16.1 Software Build Systems
+There are many programming environments on Linux, from traditional C to interpreted scripting languages such as Python.
+Each typically has at least one distinct system fro building and installing packages in addition to the tools that a Linux distribution propvides.
+We're going to look at compiling and installing C source code in this chapter with only one of these build systems - the configuration scripts generated from the GNU autotools suite.
+This system is generally considered stable, and many of the basic Linux utilities use it.
+Because it's based on existing tools such as make, after you see it in action, you'll be able to transfer your knowledge to other build systems.
+Installing a package from C source code usually involves the following steps:
+1.Unpack the source code archive.
+2. Configure the package.
+3. run make to build the programs.
+4. Run make install or distribution-specific install command to install the package.
+
+Note:
+You should understand the basics in chapter 15 before proceeding with this chapter.
