@@ -1,0 +1,20 @@
+Chapter 16
+
+Introduction to compiling software from C source CODE
+
+Most nonproprietary third-party Unix software packages comee as source code thast you can build and install.
+One reason for this is that Unix (and Linux itself) has so many different flavors and architectures that it would be difficult to distribute binary packages for all possible platform combinations.
+
+The other reason, which is at least as important, is that widespread source code distribution throughout the Unix community encourages users to contribute bug fixes and new features to software, giving meaning to the term open source.
+
+You can get nearly everything you see on a Linux system as source code - from the kernel and C library to the web browsers.
+It's even possible to update and augmnent your entire system by (re-) installing parts of your system from the srouce code.
+However, you probably shouldn't update your machine by installing everything from source code, unless you really enjoy the process or have some other reason.
+Linux distribution typically provide easier ways to update core parts of the system, such as the programs in /bin, and one particularly important property of ditributions is that they usually fix security problems very quickly.
+But don't expect your distribution to provide everything for you.
+Here are some resons why you may want to install certain packages yourself:
+
+1) To control configuration options.
+2)To install the software anywhere you like. You can even install several different versions of the same package.
+3) To control the version that you install. Ditributions don't always stay up-to-date with the latest versions of all packages, particularly add-ons to software packages (such as Python libraries).
+4) To better understand how a package works.
