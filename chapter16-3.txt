@@ -1,0 +1,127 @@
+16.3 GNU Autoconf
+Even though C source code is usually fairly portable, differences on each platform make it impossible to compile most packages with a single Makefile.
+Early solutions to this problem were to provide individual Makefiles for every operating system or to provide a Makefile that was easy to modify.
+This approach evolved into script that generate Makefiles based on an analysis of the system used to build the package.
+GNU autoconf is a popular system for automatic Makefile generation.
+Packages using this system come with files named configure, Makefile,. in, and config.h.in.
+The .in files are templates; the idea is to run the configure script in order to discover the characteristics of your system, then make substitutions in the .in files to create the real build files.
+For the end user, it's easy; to generate a Makefile from Makefile.in, run configure:
+$ ./configure
+You should get a lot of diagnostic output as the script checks your system for prerequisites.
+If all goes well, configure creates one or more Makefiles and a config.h file, as well as acahe file (config.cache), so that it doesnt' need to run certain tests again.
+Now you can run make to compile the package.
+A successful configure step doesn't necessarily mean that the make step will work, but the chances are pretty good.
+(See Section 16.6 for troubleshooting failed configures and compiles.)
+Let's get some firsthand experience with the process.
+
+Note:
+At this point, you must have all of the require build tools available on your system.
+For Debian and Ubuntu, the easiest way it to install the build-essantial package; in Fedora-like systems, use "Development Tools" groupintall.
+
+16.3.1 An autoconf Example
+Before discussing how you can change the behavior of autoconf, let's look at a simple example so that you know what to expect.
+You'll install the GNU coreutils package in your own home directory (to make sure that you don't mess up your system).
+Get the package from http://ftp.gnu.org/gnu/coreutils/
+(the latest version is usually the best), unpack it, change to its direcotyr, and configure it like this:
+
+$ ./configure --prefix=$HOME/mycoreutils
+
+checking for a BSD-compatible install ... /usr/bin/install -c
+checking whether build environment is sane... yes
+--snip--
+config.status: executing po-directories commands
+config.status:  creating po.POTfiles
+config.status: creating po/Makefile
+
+Now run make:
+$make
+GEN   lib/alloca.h
+GEN   lib/c++defs.h
+
+--snip--
+make[2]
+make[1]
+
+Next, try to run one of the executables that you just created, such as ./src/ls, and try running make check to run a series of tests on the package.
+(This might take a while, but it's interesting to see.)
+Finally, you're ready to install the package.
+Do a dry run with make -n first to see what make install does without actually doing the install:
+
+$make -n install
+
+Browse through the output, and if nothing seems strange (such as installing anywhere other than your mycoreutils directory), do the install for real:
+
+$make install
+
+You should now have a  subdirectory name mycoreutils in your home directory that contains bin, share, and other subdirectories.
+Check out some of the programs in bin (you just build many of the basic tools that you learned in Chapter 2).
+Finally, because you configured the mycoreutils directory to be independent of the rest of your system, you can remove it completely without worrying about causing damage.
+
+16.3.2 Installing Using a Packaging Tool
+On most distributions, it's possible to install new software as a package that you can maintain later with your distribution's packaging tools.
+Debian-based distributions such as Ubuntu are perhaps the easiest; rather than running a plain make install, you can od it with the checkinstall utility as follows:
+
+#checkinstall make install
+
+Use the --pkgname-name option to give your new package a specific name.
+Creating an RPM package is a little more involved, because you must first create a directory tree for your package(s)
+You can do this with rpmdev-setuptree command; when complete, you can use the rpmbuild utility to work through the rest of the steps.
+It's best to follow an online tutorial for this process.
+
+16.3.3 configure Script Options
+You've just seen one of the most useful options for the configure script: using --prefix to specify the installation directory.
+By default, the install target from an autoconf-generated Makefile uses a prefix of /usr/local- that is, binary programs go in /usr/local/bin, libraries go in /usr/local/bin, and so on.
+You will often want to change that prefix like this:
+
+$ ./configure --prefix=new_prefix
+
+Most versions of configure have a --help option that lists other configuration options.
+Unfortunately, the list is usually so long that it's sometimes hard to figure out what might be important, so here are some essential options:
+
+--bindir=directory  Installs executables in directory.
+--sbindir=directory Installs system executables in directory.
+--libdir=directory  Installs libraries in directory.
+--disable-shared    Prevents the package from building shared libraries. Depending on the library is in a nonstandard location.
+Unfortunately, not all configure scripts recognize this type of option, and it can be difficult to determine the exact syntax.
+
+Using Separate Build Directories
+You can create separate build directories if you want to experiment with some of these options.
+To do so, create a new directory anywhere on the system and, from that directory, run the configure script in the original package source code directory.
+You'll find that configure then makes a symbolic link farm in your new build directory, where all of the links point back to the source tree in the original package directory.
+(Some developers prefer that you build packages this way, because the original source tree is never modified. THis is also useful if you want to build for more than one platform or configuration option set using the same source package)
+
+16.3.4 Environment Variables
+You can influence configure with environment variables that the configure script puts into make variables.
+The most important ones are CPPFLAGS, CFLAGS, and LDFLAGS.
+But be aware that configure can be very picky about environment variables.
+For example, you should normally use CPPFLAGS instead of CFLAGS for header file directories, because configure often runs the preprocessor independently of the compiler.
+In bash, the easiest way to send an environment variable to configure is by placing the variable assignment in front of ./configure on the command line.
+For example, to define a DEBUG macro for the preprocessor, use this commands:
+
+$CPPFLAGS=-DDEBUG ./configure
+
+Note: You can also pass a variable as an option to configure; for example:
+
+$ ./configure CPPFLAGS=-DDEBUG
+
+Environment variables are especially handy when configure handy when configure doesn't know where to look for third party include files and libraries.
+For example, to make the preprocessor search in include_dir, run this command:
+
+$CPPFLAGS=-Iinclude_dir ./configure
+
+As shown in Section 15.2.6, to make the linker look in lib_dir, use this command:
+
+$LDFLAGS=-Llid_dir ./configure
+
+If lib_dire has shared libraries , the previous command probably won't set the runtime dynamic linker path.
+In that case, use the -rpath linker option in addition to -L:
+$ LDFLAGS="-Llib_dir -Wl, -rpath=lib_dir" ./configure
+
+Be careful when setting variables.
+A small slip can trip up the compiler and cause configure to fail.
+For example, say you forget the - in -I, as shown here;
+
+$CPPFLAGS=Iinclude_dir ./configure
+
+This yields an error like this;
+
