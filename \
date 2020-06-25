@@ -132,11 +132,11 @@ Digging through the config.log generated from this failed attempt yields this:
 
 Configure:5037: checking whether the C compiler works
 configure:5059: gcc Iinclude_dir conftest.c  >&5
-gcc: error: Iinclude_dir: No such file or directory
-configure:5063L $? = 1
+gcc: error: Iinclude_dir: No such file or directory 
+configure:5063L $? = 1 
 configure:5101: result: no
 
-16.3.5 Autoconf Targets
+16.3.5 Autoconf Targets 
 Once you get configure working, you'll find that the Makefile that it generates has a number of other useful targets in addition to the standard all and install:
 
 make clean  As described in Chapter 15, this removes all object files, executables, and libraries.
@@ -145,13 +145,13 @@ The idea is that the source tree should look like a newly unpacked distribution 
 
 make check Some packages come with a battery of tests to verify that the compiled programs work properly; the command make check runs the tests.
 
-make install-strip  This is like make install except that it strips the symbol table and other debugging information from executables and libraries when installing.
+make install-strip  This is like make install except that it strips the symbol table and other debugging information from executables and libraries when installing. 
 Stripped binaries require much less space.
 
 16.3.6.  Autoconf Log Files
-If something goes wrong during the configure process and the cause isn't obvious, you can examine config.log to find the problem.
-Unfortunetly, config.log is often a gigantic file, which can make it difficult to locate the exact source of the problem.
-The general approach to finding the problem is to go to the very end of config.log(for example, by pressing G in less) and then page back up until you see the prblem.
+If something goes wrong during the configure process and the cause isn't obvious, you can examine config.log to find the problem. 
+Unfortunetly, config.log is often a gigantic file, which can make it difficult to locate the exact source of the problem. 
+The general approach to finding the problem is to go to the very end of config.log(for example, by pressing G in less) and then page back up until you see the prblem. 
 However, there is still a lot of stuff at the end because configure dumps its entire environment there, including output variables, cache variables, and other definitions.
 So rather than going to the end and paging up, go to the end and search backward for string such as for more details or some other part near the end of the failed configure output.
 (Remember that you can initiate a reverse search in less with the ? command.)
