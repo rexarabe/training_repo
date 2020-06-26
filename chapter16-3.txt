@@ -156,3 +156,54 @@ However, there is still a lot of stuff at the end because configure dumps its en
 So rather than going to the end and paging up, go to the end and search backward for string such as for more details or some other part near the end of the failed configure output.
 (Remember that you can initiate a reverse search in less with the ? command.)
 There's a good change that the error will be just above what your search finds.
+
+16.3.7 pkg-config
+
+There are so many third party libaries that keeping all of them in a common location can be messy.
+However, installing each with a separate prefixcan lead to problems when building packages that require these third party libraries.
+For example, if you want to compile OpenSSH, you need the OpenSSL library.
+How do you tell the OpenSSH configuration process the location of the OpenSSL libraries and which libraries are required?
+Many libraries now use the pkg-config program not only to advertise the locations of their inlcude files and libraries but also to specify to exact flags that you need to compile and link a program.
+The syntax is as follow:
+$pkg-config options package1 package2 ...
+For exmaple, to find the libraries required for OpenSSL, you can run this command:
+
+$pkg-config --libs openssl
+
+The output should be something like this:
+
+-lssl -lcrypto
+
+To see all libraries that pkg-config knows about, run this command:
+
+$pkg-config --list-all
+
+How pkg-config Works
+If you look behind the scenes, you will find that pkg-config finds package information by reading configuration file that end with .pc.
+For example, here is openssl.pc for the OpenSSL socket library, as seen on an Ubuntu system(located in /usr/lib/i386-linux-gnu/pkconfig):
+
+prefix=/usr
+exec_prefix=${prefix}
+libdor=${exec_prefix}/lib/i386-linux-gnu
+includedir=${prefix}/include
+
+Name: OpenSSL
+Description: Secure Sockets layer and cryptography libraries and tools
+Version: 1.0.1
+Requires:
+Libs: -L${libdir} -lssl -lcrypto
+Libs.private: -ldl -lz
+Cflags: -I${includedir} exec_prefix=${prefix}
+
+You can change this file, for example, by adding -Wl, -rpath=${libdir} to the library flags to set a runtime dynamic linker path.
+However, the bigger question is how pkg-config finds the .pc files in the first place.
+By default, pkg-config looks in the lib/pkconfig directory of its installation prefix.
+For example, a pkg-config installed with a /usr/local prefix looks in /usr/local/lib/pkgconfig.
+
+Installing pkg-config File in Nonstandard Locations:
+Unfortunately, by default, pkg-config does not read any .pc ifles outside its installation prefix.
+So a .pc file that's in a nonstandard location, such as /opt/openssl/lib/pkfconfig/openssl.pc, will be out of the reach of any stock pkf-config installation. There are two basic ways to make .pc files available outside of the pkg-config installation prefix
+
+Make symbolic link (or copies ) from the actual .pc files to the central pkgconfig directory.
+Set your PKG_CONFIG_PATH environment variable to include any extra pkfconfig directories.
+This stategy does not work well on a system-wide basis.
