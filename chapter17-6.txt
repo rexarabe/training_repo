@@ -1,0 +1,4 @@
+17.6 Final Remarks
+Whatever your goals for gaining a better understanding of Linux systems, I hope that you've found this book to be helpful.
+My goal has been to instill you with confidence when you need to get inside your system to make changes or do something new. At this point, you should feel like you're really in control of your system.
+Now go and push it around a little and have some fun.

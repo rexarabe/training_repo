@@ -1,0 +1,14 @@
+17.1 Web Servers and Applications
+Linux is a popular operating system for web servers, and the reigning monarch of Linux application servers in the Apache HTTP Server (usually referred to as just "Apache").
+Another web server that you'll often hear about is Tomcat (also an Apache project), which provides support for Java-based applications.
+By themselves, web servers don't do much - they can serve files, but that's about it.
+The end goal of most web servers such as Apache is to provide an underlying platform to server web applications.
+For example, Wikipedia is built on the MediaWiki package, which you can use to set up your own wiki.
+Content management systems like Wordpress and Drupal let you build on programming languages that run especially well on Linux.
+For example, MediaWiki, Wordpress, and Drupal are all written in PHP.
+The building block that make up web applications are highly modular, so it's easy to add your own extensions and create applications with frame-workds such as Django, Flask, and Rails which offer facilities for common web infrastructure and features, such as templates, mutiple users, and database support.
+
+A well-functioning web server depends on a solid operating system foundation.
+In particular, the material in Chapter 8 thouth 10 is particularly important.
+Your network configuration must be flawless, but perhaps more importantly, you must understand resource management.
+Adequately-sized, efficient memroy and disk are critical, especially if you plan to use a database in your application.

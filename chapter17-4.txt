@@ -1,0 +1,9 @@
+17.4 Distributed and On-Demand Computing
+To ease local resource management, you can build sophisticated tools on top of virtual machine techonolgy.
+The term cloud comupting is a catch-all term that's often used as label for this area.
+More specifically, infrastructure as a service (IaaS) refers to systems that allow you to provision and control basic computing resources such as CPU, memory, storage, and networking on a remote server.
+The OpenStack project is one such API and platform that includs IaaS.
+Moving up past the raw infrastructure, you can also provision platform resrouces such as the operating system, database servers, and web servers.
+Systems that offer resrouces on this level are said to be platform as a service(PaaS).
+Linux is central to many of these computing services, ass it's often the underlying operating system behind all of it.
+Nearly all of the elements that you've seen in this book, starting with the kernel, are reflected throughout these system.

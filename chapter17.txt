@@ -1,0 +1,8 @@
+Chapter17:
+Building on the Basics
+
+The chapters in this book have covered the fundamental components of a Linux system, from low-level kernel and process organization, to networking, to some of the tool used to build software.
+With all of that behind you, what can you do now?
+Quite a lot, as it turns out!
+Because Linux supports nearly every kind of non-proprietary programming environment, it's only natural that a plethora of applications is available.
+Let's look at a few application ares where Linux excels and see how what you've learned in this book relates.

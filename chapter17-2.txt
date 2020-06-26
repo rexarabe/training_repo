@@ -1,0 +1,27 @@
+17.2 Databases
+Databases are specialized services for storing and retrieving data, and many different database servers and systems run on Linux.
+Two primary features of databases make them attractive: They offer easy, uniform ways to manage individual pieces and groups of data, and superior access performance.
+Databases make it easier for applications to examine and alter data, especially when compared with parsing and changing text files.
+For example, the /etc/passwd and /etc/shadow files on a Linux system can become difficult to maintain over a network of machines.
+Instead, you can set up a database that offers user information LDAP (Lightweight Directory Access Protocol) to feed this information into the Linux authentication system.
+The configuration on the Linux client side is easy; all you need to do is edit the /etc/nsswitch.conf file and add a little extra configuration.
+The primary reason that databases generally offer superior performance when retrieving data is that they use indexing to keep track of data locations.
+For example, say you have a set of data representing a directory containing first and last names and telephone numbers.
+You can use a database to place an index on any of these attributes, like the last name.
+Then, when looking up a person by last name, the database simply consults the index for the last name rather than searching the entire directory.
+
+17.2.1 Types of Databases
+Databases come in two basic forms: relational and non-relational.
+Relational databases (also called relational Database Management Systems, or RDBMS), such as MySQL, PostgreSQL, Oracle, and MariaDB, are general purpose databases that excel in tying different sets of data together.
+For example, say you have two sets of data, one with postal (ZIP) codes and names , and another with the postal codes and their corresponding states.
+A relational database would allow you to very quicly retrieve all of the names located in a particular state.
+You normally talk to relational databases using a programming language called SQL (Structured Query Language).
+Non-relational databases, sometimes known as NoSQL databases, tend to solve particular problems that reltional databases don't easily handle.
+for example, document-store databases, such as MongoDB, attempt to make storing and indexing entire documents easiert.
+
+Key-value databases, such as redis, tend to focus on performance.
+NoSQL databases don't have a common query language like SQL for access.
+Instead, you'll talk to them using a variety of interfaces and commands.
+The disk and memory performance issues dicsussed in Chapter 8 are extremely important in most database implementations because there's a trade-off between how much you can store in RAM (which is fast) versus on disk.
+Most larger database system also involve significant networking because they're ditributed over many servers.
+The most common such network setup is called replication, where one database is basically copied to a number of database servers to increase the number of clients tht connect to the servers.

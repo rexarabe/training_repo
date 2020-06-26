@@ -1,0 +1,12 @@
+17.3 Virtualization
+In most large organizations, it's inefficient to dedicate hardware to specific server tasks because installing an operating system tailored to one task on one server means that you're limited to that task until you reinstall it.
+Virtual machine techonology makes it possible to simulataneously install one or more operating systems (often called guests) on a single piece of hardware, and then activate and deactivate the systems at will.
+You can even move and copy the virtual machines to other machines.
+There are many virtualization systems for Linux, sucha as the kernel's KVM(KERNEL virtual machine) and Xen.
+Virtual machines are especially handy for web servers and database servers.
+Although it's possible to set up a single Apache server to serve several websites, this comes at a cost of flexibility and maintainability.
+If those sites are all run by different users, you have to manage the servers and the users together.
+Instead, it's usually preferable to set up virtual machiens on one physical server with their own supporting users, so that they don't interfere with each other and you can alter and move them at will.
+The software that operates virtual machines is called a hypervisor.
+The hypervisor manipulates many pieces of the lower levels of a Linux system that you've seen in this book with the result that , if you install a Linux guest on a virtual machine, it should behave just like any other installed Linux system.
+

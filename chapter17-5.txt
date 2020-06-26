@@ -1,0 +1,23 @@
+17.5 Embedded Systems
+An embedded system is anything designed to serve a specific purpose, such as a music player, video streamer, or thermostata.
+Compare this to a desktop or server system that can handle many different kinds of tasks (but may not do one specific thing very well).
+You can think of embedded systems as almost the opposite of distributed computing; rather than expanding the scale of the operating system, an embedded system usually (but not always) shrinks it, often into a small device.
+Android is perhaps the most widespread embedded version of Linux in use today.
+Embedded systems often combine specialized hardware with software.
+For example, you can set up a PC to do anything a wireless router can by adding enough network hardware and correctly configuring a Linux installation.
+But it's usually preferable to buy a smaller, dedicated device consisting of the necessary hardware and eliminate any hardware that isn't necessary.
+For example, a router needs more network ports than most desktops but doesn't need video or sound hardware.
+And once you have custom hardware, you must tailor the system's software, such as the operating system internals and user interface.
+OpenWRT, mentioned in Chapter 9, is once such customized Linux distribution.
+Interest in emdedded systems is increasing as more capable small hardware is introduced, particularly system-on-a-chip (SoC) designs that can cram a processor, memory, and peripheral interfaces into a small space.
+For example, the Rasberry Pi and BeagleBone single board computers are based around such a design, with several Linux variants to choose from as an operating system.
+These devices have easily accessible output and sensor input that connects to language interfaces such as Python, making them popular for prototyping and small gadgets.
+Embedded versions of Linux vary in how many features from the server/desktop version can be carried over.
+Small, very limited devices must strip out everything except the bare minimum because of lack of space, which often means that even the shell and core utilities come in the form of a single BusyBox executable.
+These systems thend to exhibit the most difference between a full-featured Linux installation, and you'll often see older software on them, such as System V init.
+You'll normally develop software for embedded devices using a regular desktop machine.
+More powerful devices, such as the Raspberry Pi, have the luxury of more storage and the power to run many development tools on them.
+Regardless of the differences, though, embedded deices still share the Linux genes described in this book:
+You'll see a kernel, a bunch of devices, network interfaces, and an init alongside a bunch of user processes.
+Embedded kernels tend to be close (or identical) tp regular kernel releases, simply with many features disabled.
+As you work your way up through user space, though, the differences become more pronounced.
