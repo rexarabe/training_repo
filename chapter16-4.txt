@@ -1,0 +1,29 @@
+16.4 Installation Practice
+Knowing how to build and install software is good, but knowing when and where to install your own packages is even more useful.
+Linux distributions try to cram in as much software as possible at installation, and you should always check whether it would be best to install a pacakge yourself instead.
+
+Here are the advantages of doing installs on your own:
+
+#You can customize package defaults.
+#When installing a pacakge, you often get a clearer picture of how to use the package.
+#You control the release that you run.
+#It's easier to back up a custom package.
+#It's easier to distribute self-installed package   across a network (as long as the architecture is consistent and the installation location is relatively isolated)
+
+HEre are the disadvantages:
+#It takes time.
+#Custom packages do not automatically upgrade themselves.
+Distributions keep most packages up-to-date without requiring much work.
+This is a particular concern for packages that interact with the network, because you want to ensure that you always have the latest security updates.
+#If you don't actually use the package, you're wasting your time.
+#There is a potential for misconfiguring packages.
+
+There's not much point in installing packages such as the ones in the coreutils package that you built earlier tin the chapter (ls, ct, and so on) unless you're building a very custom system.
+On the other hand, if you have a vital interest in network servers such as Apache, the best way to get complete control is to install the servers yourself.
+
+16.4.1 Where to Install
+The default prefix in GNU Atuoconf and many other package is /usr/local, the traditional directory for localy installed software.
+Operating system upgrades ignore /usr/local, so you won't lose anything installed there during an operating system upgrade and for small local software installations, /usr/local is fine.
+The only problem is that if you have a lot of custom software installed, this can turn into a terrible mess.
+Thousands of odd little files can make their way into the /usr/local hierarchy, and you may have no idea where the files came from.
+If things really start to get unruly, you should create your own packages as described in Section 16.3.2.
