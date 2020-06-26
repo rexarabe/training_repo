@@ -1,0 +1,98 @@
+16.6 Troubleshooting Compiles and Installations.
+If you understand the difference between compiler erros, compiler warnings, linker erros, and shared library problems as described in Chapter 15, you shouldn't have too much trouble fixing many of the glitches that arise when building software.
+This section covers some common problems.
+Although you're unlikely to run into any of these when building using autoconf, it never hurts to know what these kinds of problems look like.
+Before covering specifics, make sure that you can read certain kinds of make output.
+It's important to know the difference between an error and an ignored error.
+The following is a real error that you need to inverstigate:
+
+make: *** [target] Error 1
+
+However, some Makefiles suspect that an error condition might occur but know that these errors are harmless.
+You can usually disregard any messages like this:
+make: *** [target] Error 1 (ignored)
+
+Furthermore, GNU make often calls itself many times in large packages, with each instance of make in the erro message marked with [N], where N is a number.
+You can often quickly find the error by looking t the make error that comes directly after the compiler error message.
+For example:
+....
+
+The first three lines practically give it away: The trouble centers around file.c located in /home/src/package-5.0/src.
+Unfortunately, there is so much extra output that it can be difficyult to spot the important details.
+Learning how to filter out the subsequent make errors goes a long way toward digging out the real cause.
+
+16.6.1 Specific Errors
+Here are some common build errors that you might encounter.
+Problem
+Compiler error message:
+
+src.c:22: conflicting types for 'item'
+/usr/include/file.h:47: previous declaration of 'item'
+
+Expalnation and Fix
+The programmer made an erroneous redeclaration of item on line 22 of src.c
+You can usually fix this by removing the offending line (with a comment, an #ifdef, or whatever works).
+
+Problem
+Compiler error message:
+src.c:37: 'time_t' undeclared (first use this function)
+--snip--
+src.:37: parse error before '...'
+
+Explanation and Fix
+The programmer fogot a critical head-er file.
+The manual pages are the best way to find the missing head-er file.
+First, look at the offending line (in this case, line 37 in src.c).
+It's probably a variable declation like the following:
+
+time_t v1;
+
+Search forward for v1 in the program for its use around a function call.
+For example:
+v1 = time(NULL);
+
+Now run man 3 time or man 3 time to look for system and library calls named time().
+IN this case, the section 2 manual page has what you need:
+
+
+Synopsis
+   #include <time.h>
+
+   time_t time(time_t *t);
+
+
+This means that time() requires time.h.
+Place #include <time.h> at the beginning of src.c and try again.
+Problem
+Compiler (preprocessor) error message;
+
+src.c:4: pkg.h: No such file or directory
+(long list of errors follows)
+
+Explanation and Fix
+The compiler ran the C preprocessor on src.c but could not find the pkg.h include file.
+The srouce code likely depends on a library that you need to install, or you may just need to provide the compiler with the nonstandard include path.
+Usually, you will just need to add a -I include path option to the C preprocessor flags (CPPFLAGS).
+(Keep in mind that you might also need a -L linker flag to go along with the include files.)
+If it doesn't look as through you're missing a library, there's an outside change that you're attempting a compile for aan operating system that this source code does not support.
+Check the Makefile and README files for details about platforms.
+If you're running a Debian-based ditribution, try the apt-file command on the head-er filename:
+
+$apt-file search pkg.h
+
+This might find the development package that you need.
+For distributions that provide yum, you can try this instead:
+
+$yum provides  */pkg.h
+
+Problem
+make error message:
+make: prog: Command not found
+
+Explanation and Fix
+To build the package, you need prog on your system.
+If prog is something like cc, gcc or ld, you don't have the development utilities installed on your system.
+on the other hand, if you think prog is already installed on your system, try altering the Makefile to specify the full pathname of prog.
+In rare cases, make builds prog and then uses prog immediately, assuming that the current directory(.) is in your command path.
+If your $PATH does not include the current directory, you can edit the Makefile and change prog to .?prog.
+Alternatively, you could append . to your path temporarily.
