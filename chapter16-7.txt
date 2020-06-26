@@ -1,0 +1,21 @@
+16.7 Looking Forward
+We've only touched on the basics of building software. Here are some more topics that you can explore after you get the hang of your own builds:
+
+#Understanding how to use build systems other than autoconf, such as CMake and SCons.
+#Setting up builds for your own software.
+If you're writing your own software, you want to choose a build system and learn to use it.
+
+#Compiling the Linux kernel.
+The kernel's build system is completely different from that of other tools.
+It has its own configuration system tailored to customizing your own kernel and modules.
+The procedure is straightforward, though, and if you understand how the boot loader works, you won't ahve any trouble with it.
+However, you should be careful when doing so; make sure that you always keep your old kernel handy in case you can't boot with a new one.
+
+#Distribution specific source packages.
+Linux distributions maintain their own versions of software source code as special source packages.
+Sometimes you can find useful patches that expand functionality r fix problems in otherwise unmaintainted packages.
+The srouce package management system include tools for automatic builds, such as Debian's debuild and the RPM-based mock.
+
+Building software is often a stepping-stone to learning about programming and software development.
+The tools you've seen in the past two chapters take the mystery out of the where your system software came from.
+It's not difficult to take the next steps of looking inside the source code, making changes, and creating your own software.
