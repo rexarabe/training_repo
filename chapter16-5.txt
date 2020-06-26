@@ -1,0 +1,30 @@
+16.5 Applying a Patch
+Most changes to software source code are available as branches of the developer's online version of the srouce code (such as a git repository).
+However, every now and then, you might get a patch that you need to apply against source code to fix bugs or add features.
+You may also see the term diff used as a synonym for patch, because the diff program produces the patch.
+The beginning of a path looks something like this:
+
+.....see page 339...
+Patches usually contain alterations to more than one file.
+Search the patch for three dashses in a row (---) to see the files that have alterations and always look at the beginning of a patch to determine the required working directory.
+Notice that the preceding example refers to src/file.c.
+Therefore, you should change to the directory that contains src before applying the patch, not to the src directory itself.
+To apply the patch , run the patch command:
+
+$patch -p0 < patch_file
+
+If everything goes well, patch exits without a fuss, leaving you with an updates set of files.
+However, patch may ask you this question:
+
+File to patch:
+
+This usually means that you are not in the correct directory, but it could also indicate that you source code does not match the srouce code in the patch.
+In this case, you're probably out of luck: Even if you could identify some of the files to patch, others would not be properly updates, leaving you with source code that you could not compile.
+In some cases, you might come across a patch that refers to a package version like this:
+
+..... page 339 ....
+If you have a slightly different version number (or you just renamed the directory), you can tell patch to strip leading path components.
+For example, say you were in the directoyr that contains src (as before).
+To tell patch to ignore the package-3.42 / part of the path (that is, strip one leading path component), use -p1:
+
+$pathc -p1 < patch_file
